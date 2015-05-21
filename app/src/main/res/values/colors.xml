@@ -1,0 +1,19 @@
+<resources>
+
+    <color name="black_overlay">#66000000</color>
+    <color name="草绿色">#7CFC00</color>
+    <color name="栗色">#B03060</color>
+    <color name="青色">#00FFFF</color>
+    <color name="淡灰蓝色">#B0E0E6</color>
+    <color name="黄色">#FFFF00</color>
+    <color name="黑色">#000000</color>
+    <color name="橙色">#FF6100</color>
+    <color name="绿色">#00FF00</color>
+    <color name="紫色">#A020F0</color>
+    <color name="蓝色">#0000FF</color>
+    <color name="橘红色">#FF4500</color>
+    <color name="红色">#FF0000</color>
+    <color name="灰色">#C0C0C0</color>
+    <color name="象牙黑">#292421</color>
+    <color name="白色">#F0F0F0</color>
+</resources>

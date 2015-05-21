@@ -1,0 +1,51 @@
+<resources>
+    <string name="app_name">Project</string>
+    <string name="title_activity_main">Project</string>
+
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">设置</string>
+
+    <string name="title_activity_fullscreen">FullscreenActivity</string>
+    <string name="dummy_button">Dummy Button</string>
+    <string name="dummy_content">DUMMY\nCONTENT</string>
+    <string name="search">搜索</string>
+    <string name="title_activity_search">搜索</string>
+    <string name="title_activity_picture">图片</string>
+
+    <string name="camera">相机</string>
+    <string name="searchByName">搜索用户</string>
+    <string name="searchByTab">搜索标签</string>
+    <string name="Pictures">图片</string>
+    <string name="title_activity_edit_picture">编辑图片</string>
+    <string name="title_activity_view_picture">查看图片</string>
+    <string name="zan">赞</string>
+    <string name="no_zan">取消赞</string>
+    <string name="comment">评论</string>
+    <string name="upload">上传</string>
+    <string name="give_up">放弃</string>
+    <string name="title_activity_register">注册</string>
+
+    <string name="title_activity_login">登录</string>
+
+    <string name="prompt_email">邮箱</string>
+    <string name="prompt_password">密码</string>
+    <string name="action_sign_in">登录</string>
+    <string name="action_sign_in_short">登录</string>
+
+    <string name="error_invalid_email">邮箱格式错误</string>
+    <string name="error_invalid_password">密码长度错误</string>
+
+    <string name="error_incorrect_password">密码错误</string>
+    <string name="error_field_required">该项不能为空</string>
+    <string name="register">注册</string>
+    <string name="user_name">用户名</string>
+    <string name="user_name_invalid">用户名不符合格式（长度为4~20个字符）</string>
+    <string name="title_activity_user_list">名单</string>
+    <string name="enter_password">输入密码</string>
+    <string name="reenter_password">再次输入密码</string>
+    <string name="password_not_same">密码不一致</string>
+    <string name="OK">确定</string>
+    <string name="title_activity_user_page">UserPageActivity</string>
+    <string name="auto_login">自动登录</string>
+    <string name="remember_password">记住密码</string>
+</resources>
