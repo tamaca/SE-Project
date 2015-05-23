@@ -2,28 +2,25 @@ package com.example.team.myapplication;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
+import android.content.Context;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.v7.app.ActionBarActivity;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.team.myapplication.Network.AES;
-import com.example.team.myapplication.Network.JsonPost;
-
-import org.json.JSONException;
-import org.json.JSONObject;
+import com.example.team.myapplication.util.GeneralActivity;
 
 
-public class RegisterActivity extends ActionBarActivity {
+public class RegisterActivity extends GeneralActivity {
     private UserRegisterTask mAuthTask = null;
     private Button okButton;
     private TextView userName;
@@ -32,6 +29,7 @@ public class RegisterActivity extends ActionBarActivity {
     private EditText secondPassword;
     private View progressView;
     private View registerView;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -42,11 +40,11 @@ public class RegisterActivity extends ActionBarActivity {
         setContentView(R.layout.activity_register);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        okButton = (Button)findViewById(R.id.register_ok);
-        userName = (TextView)findViewById(R.id.register_user_name);
-        eMail = (TextView)findViewById(R.id.register_email);
-        firstPassword = (EditText)findViewById(R.id.register_password);
-        secondPassword = (EditText)findViewById(R.id.register_password_again);
+        okButton = (Button) findViewById(R.id.register_ok);
+        userName = (TextView) findViewById(R.id.register_user_name);
+        eMail = (TextView) findViewById(R.id.register_email);
+        firstPassword = (EditText) findViewById(R.id.register_password);
+        secondPassword = (EditText) findViewById(R.id.register_password_again);
         progressView = findViewById(R.id.login_progress);
         registerView = findViewById(R.id.register_view);
         okButton.setOnClickListener(new View.OnClickListener() {
@@ -73,7 +71,7 @@ public class RegisterActivity extends ActionBarActivity {
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        switch (id){
+        switch (id) {
             case android.R.id.home:
                 finish();
                 return true;
@@ -84,6 +82,7 @@ public class RegisterActivity extends ActionBarActivity {
 
         return super.onOptionsItemSelected(item);
     }
+
     public void showProgress(final boolean show) {
         // On Honeycomb MR2 we have the ViewPropertyAnimator APIs, which allow
         // for very easy animations. If available, use these APIs to fade-in
@@ -116,29 +115,38 @@ public class RegisterActivity extends ActionBarActivity {
         }
     }
 
-    public boolean isUserNameValid(String userName){
-        //检查用户名是否唯一
-        return userName.length()>=4&&userName.length()<=20;
+    public void closeKeyboard(){
+        View view = getWindow().peekDecorView();
+        if (view != null) {
+            InputMethodManager inputmanger = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+            inputmanger.hideSoftInputFromWindow(view.getWindowToken(), 0);
+        }
+    }
+    public boolean isUserNameValid(String userName) {
+        //还要检查用户名是否唯一
+        return userName.length() >= 2 && userName.length() <= 20;
     }
 
-    public boolean isPasswordValid(String password){
+    public boolean isPasswordValid(String password) {
         //检查密码复杂度？？
-        return password.length()>5&&password.length()<=15;
+        return password.length() > 5 && password.length() <= 15;
     }
 
     private boolean isEmailValid(String email) {
 
 
-        return email.contains("@");
+        return email.matches("^([a-zA-Z0-9_\\.\\-])+\\@(([a-zA-Z0-9\\-])+\\.)+([a-zA-Z0-9]{2,4})+$");
     }
-    public boolean isPasswordSame(String password1,String password2){
+
+    public boolean isPasswordSame(String password1, String password2) {
 
         return password1.equals(password2);
     }
-    public void attemptRegister(){
 
-        if(mAuthTask != null){
-            return ;
+    public void attemptRegister() {
+
+        if (mAuthTask != null) {
+            return;
         }
 
         boolean cancel = false;
@@ -153,12 +161,11 @@ public class RegisterActivity extends ActionBarActivity {
         String password_1 = firstPassword.getText().toString();
         String password_2 = secondPassword.getText().toString();
 
-        if(TextUtils.isEmpty(user_name)){
+        if (TextUtils.isEmpty(user_name)) {
             userName.setError(getString(R.string.error_field_required));
             cancel = true;
             focusView = userName;
-        }
-        else if(!isUserNameValid(user_name)){
+        } else if (!isUserNameValid(user_name)) {
             userName.setError(getString(R.string.user_name_invalid));
             cancel = true;
             focusView = userName;
@@ -174,17 +181,15 @@ public class RegisterActivity extends ActionBarActivity {
             cancel = true;
         }
 
-        if(TextUtils.isEmpty(password_1)){
+        if (TextUtils.isEmpty(password_1)) {
             firstPassword.setError(getString(R.string.error_field_required));
             focusView = firstPassword;
             cancel = true;
-        }
-        else if(!isPasswordValid(password_1)){
+        } else if (!isPasswordValid(password_1)) {
             firstPassword.setError(getString(R.string.error_invalid_password));
             focusView = firstPassword;
             cancel = true;
-        }
-        else {
+        } else {
             if (TextUtils.isEmpty(password_2)) {
                 secondPassword.setError(getString(R.string.error_field_required));
                 focusView = secondPassword;
@@ -205,10 +210,9 @@ public class RegisterActivity extends ActionBarActivity {
             // Show a progress spinner, and kick off a background task to
             // perform the user login attempt.
             showProgress(true);
-            mAuthTask = new UserRegisterTask(user_name,email, password_1);
+            mAuthTask = new UserRegisterTask(user_name, email, password_1);
             mAuthTask.execute((Void) null);
         }
-
 
 
     }
@@ -230,14 +234,26 @@ public class RegisterActivity extends ActionBarActivity {
 
             try {
 
-                // Simulate network access.
-                Thread.sleep(2000);
-            } catch (InterruptedException e) {
+                /*String key = "1234567891234567";
+                String username = mUserName;
+                String Email = mEmail;
+                String Password = mPassword;
+                AES aesEncrypt = new AES(key);
+                String encrptname = aesEncrypt.encrypt(username);
+                String encrptEmail = aesEncrypt.encrypt(Email);
+                String encrptPassword = aesEncrypt.encrypt(Password);
+                String url = "http://172.16.16.164/php21/index.php";
+                HashMap<String, String> map = new HashMap<String, String>();
+                map.put("email", encrptEmail);
+                map.put("password", encrptPassword);
+                map.put("name", encrptname);
+                JsonPost post = new JsonPost(map, url, 2);*/
+                Thread.sleep(3000);
+
+            } catch (Exception e) {
+
                 return false;
             }
-
-
-
 
             return true;
         }
@@ -248,10 +264,23 @@ public class RegisterActivity extends ActionBarActivity {
             showProgress(false);
 
             if (success) {
-                Toast.makeText(getApplicationContext(),"注册成功",Toast.LENGTH_SHORT).show();
-                finish();
+                Toast.makeText(getApplicationContext(), "注册成功", Toast.LENGTH_LONG).show();
+                LoginState.setLogined(true);
+                MainActivity.setCurrentTag("tab1");
+
+                /*Intent intent = new Intent(RegisterActivity.this,MainActivity.class);
+                startActivity(intent);*/
+                Intent intent = getIntent();
+
+                intent.putExtra("Email", mEmail);
+                intent.putExtra("UserName", mUserName);
+                intent.putExtra("Password",mPassword);
+
+                RegisterActivity.this.setResult(RESULT_OK,intent);
+                RegisterActivity.this.finish();
+
             } else {
-                Toast.makeText(getApplicationContext(),"注册失败",Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), "注册失败", Toast.LENGTH_LONG).show();
             }
         }
 
@@ -260,35 +289,6 @@ public class RegisterActivity extends ActionBarActivity {
             mAuthTask = null;
             showProgress(false);
         }
-        protected void finish() {
-            Thread getThread = new Thread() {
-                @Override
-                public void run() {
-                    String key = "1234567891234567";
-                    String username = mUserName;
-                    String Email = mEmail;
-                    String Password = mPassword;
-                    AES aesEncrypt = new AES(key);
-                    String encrptname = aesEncrypt.encrypt(username);
-                    String encrptEmail = aesEncrypt.encrypt(Email);
-                    String encrptPassword = aesEncrypt.encrypt(Password);
-                    String url = "http://172.16.16.164/php21/index.php";
-                    JsonPost post = new JsonPost(url);
-                    String name[] = {"name", "email", "password"};
-                    String data[] = {encrptname, encrptEmail, encrptPassword};
-                    JSONObject jsonObject1 = post.Post(name, data, 3);
-                    try {
-                        String id = jsonObject1.getString("user_id");
-                        String password = jsonObject1.getString("user_password");
-                        Log.v("id", "id=" + id);
-                        Log.v("afterpassword", "password" + password);
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                }
-            };
-            getThread.start();
-        }
-    }
 
+    }
 }

@@ -2,11 +2,12 @@ package com.example.team.myapplication;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
+
+import com.example.team.myapplication.util.GeneralActivity;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -14,13 +15,14 @@ import java.util.List;
 import java.util.Map;
 
 
-public class UserListActivity extends ActionBarActivity {
+public class UserListActivity extends GeneralActivity {
     private ListView listView;
     private ArrayList<String> userNames;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         /*if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
             getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
@@ -50,7 +52,6 @@ public class UserListActivity extends ActionBarActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
     }
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.

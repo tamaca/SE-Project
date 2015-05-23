@@ -8,10 +8,15 @@ import android.content.pm.ResolveInfo;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.support.v4.view.PagerAdapter;
+import android.support.v4.view.ViewPager;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.TabHost;
@@ -26,43 +31,80 @@ import java.util.Map;
 public class MainActivity extends Activity {
     private TabHost mTabHost;
     private ListView listView;
-    private ArrayList<String> items;
     public final static int friend_list = 1;
     public final static int blacklist = 2;
-    public static boolean isSigned = false;
-    private View main_view;
-    private View login_view;
+    public View squareView;
+    public View meView;
+    private View loginView;
     private View userOptions;
+    private ViewPager viewPager;
+    private List <View>listOfViews;
+    private ImageView []imageViews;
 
+    public static String getCurrentTag() {
+        return currentTag;
+    }
+
+    public static void setCurrentTag(String currentTag) {
+        MainActivity.currentTag = currentTag;
+    }
+
+    private static String currentTag;
 
     //private ImageView imgView;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
+        Toast.makeText(getApplicationContext(),"创建MainActivity",Toast.LENGTH_LONG).show();
         /*if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
             getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
         }*/
         setContentView(R.layout.activity_main);
-        login_view = findViewById(R.id.login_button);
-        listView = (ListView) findViewById(R.id.listView);
-        userOptions = findViewById(R.id.user_options);
-        main_view = findViewById(R.id.linearLayout3);
+        //变量初始化
+        View squareView = LayoutInflater.from(MainActivity.this).inflate(R.layout.layout_square, null);
+        View meView = LayoutInflater.from(MainActivity.this).inflate(R.layout.layout_me, null);
+
+        userOptions = meView.findViewById(R.id.user_options);
         mTabHost = (TabHost)findViewById(R.id.tabHost2);
-        mTabHost.setup();
-        mTabHost.addTab(mTabHost.newTabSpec("tab_test1").setIndicator("广场").setContent(R.id.linearLayout));
-        //mTabHost.addTab(mTabHost.newTabSpec("tab_test2").setIndicator("我").setContent(R.id.linearLayout2));
-        mTabHost.addTab(mTabHost.newTabSpec("tab_test2").setIndicator("我").setContent(R.id.linearLayout3));
-        mTabHost.setOnTabChangedListener(new TabHost.OnTabChangeListener() {
+        viewPager = (ViewPager)findViewById(R.id.viewPager);
+        listOfViews = new ArrayList<>();
+        listView = (ListView)meView.findViewById(R.id.listView);
+        loginView = meView.findViewById(R.id.login_button);
+        listOfViews.add(squareView);
+        listOfViews.add(meView);
+        viewPager.setAdapter(new MyPagerAdapter());
+        viewPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
-            public void onTabChanged(String tabId) {
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
 
             }
 
+            @Override
+            public void onPageSelected(int position) {
+                mTabHost.setCurrentTab(position);
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
+            }
         });
 
-        items = new ArrayList<String>();
+        mTabHost.setup();
+        mTabHost.addTab(mTabHost.newTabSpec("tab1").setIndicator("广场").setContent(R.id.linearLayout));
+        mTabHost.addTab(mTabHost.newTabSpec("tab2").setIndicator("我").setContent(R.id.linearLayout));
+        mTabHost.setOnTabChangedListener(new TabHost.OnTabChangeListener() {
+            @Override
+            public void onTabChanged(String tabId) {
+                viewPager.setCurrentItem(mTabHost.getCurrentTab());
+
+            }
+        });
+
+
+        ArrayList<String> items = new ArrayList<String>();
         //0
         items.add("搜索");
         //1
@@ -74,8 +116,7 @@ public class MainActivity extends Activity {
         //4
         items.add("注销");
         //5
-        items.add("");
-        items.add("And Whatever You Want to Add");
+
 
         final List<Map<String, Object>> listItems = new ArrayList<Map<String, Object>>();
         for (int i = 0; i < items.size(); i++) {
@@ -105,24 +146,38 @@ public class MainActivity extends Activity {
 
                         break;
                     case 4:
-
-                        break;
-                    case 5:
-
+                        //
+                        logout();
                         break;
 
 
                 }
             }
         });
-        changeView(isSigned);
-        UIThread uiThread = new UIThread();
-        uiThread.run();
 
+        changeView(LoginState.getLogined());
+        //Toast.makeText(getBaseContext(),"isLogin?"+LoginState.logined,Toast.LENGTH_LONG).show();
+
+        //imageview
+    }
+    public void imagedownload()
+    {
 
     }
+
+    @Override
+    public void onResume(){
+        super.onResume();
+        changeView(LoginState.getLogined());
+        //mTabHost.setCurrentTabByTag(getCurrentTag());
+    }
+    public void logout(){
+        LoginState.setLogined(false);
+        changeView(LoginState.logined);
+        
+    }
     public void changeView(boolean isLogined){
-        login_view.setVisibility(isLogined ? View.GONE : View.VISIBLE);
+        loginView.setVisibility(isLogined ? View.GONE : View.VISIBLE);
         userOptions.setVisibility(isLogined ? View.VISIBLE : View.GONE);
     }
     public void toLoginActivity(View view) {
@@ -193,28 +248,27 @@ public class MainActivity extends Activity {
         super.onActivityResult(requestCode,resultCode,data);
         if(resultCode == RESULT_OK){
             Bitmap image = (Bitmap)data.getExtras().get("data");
-            Intent toEditPictureIntent = new Intent(getApplicationContext(),EditPictureActivity.class);
+
+            Intent toEditPictureIntent = new Intent(MainActivity.this,EditPictureActivity.class);
             toEditPictureIntent.putExtra("picture",image);
+
             switch (requestCode){
                 case REQUEST_IMAGE_CAPTURE:
-                    Toast.makeText(getApplicationContext(),"whatHappens", Toast.LENGTH_LONG).show();
-                    break;
+
+                    Toast.makeText(getApplicationContext(),"Picture is Taken", Toast.LENGTH_LONG).show();
                     //startActivity(toEditPictureIntent);
+
+                    break;
+
                     //ImageView imgView = (ImageView)findViewById(R.id.imageView);
                     //imgView.setImageBitmap(image);
 
 
             }
         }
-        else if(resultCode == Activity.RESULT_CANCELED){
-            Intent it =new Intent(getApplicationContext(), MainActivity.class);
-
-            startActivity(it);
-            finish();
-            return;
+        else{
+            Toast.makeText(getApplicationContext(),"Picture is not Taken",Toast.LENGTH_SHORT).show();
         }
-        else
-            return;
     }
 
     public void toEditPictureActivity(View view){
@@ -235,23 +289,28 @@ public class MainActivity extends Activity {
         intent.putExtra("message", x);
         startActivity(intent);
     }
-    class UIThread implements Runnable {
-        public void run() {
-            if (!Thread.currentThread().isInterrupted()) {
-                try {
-                    Thread.sleep(100);
-                    main_view.postInvalidate();
-                }
-                catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
-                }
 
-                // 使用postInvalidate可以直接在线程中更新界面
+    class MyPagerAdapter extends PagerAdapter {
 
-            }
+        @Override
+        public int getCount() {
+            return listOfViews.size();
+        }
 
+        @Override
+        public boolean isViewFromObject(View view, Object object) {
+            return view == object;
+        }
+        @Override
+        public Object instantiateItem(ViewGroup container, int position) {
+            ((ViewPager) container).addView(listOfViews.get(position));
+            return listOfViews.get(position);
+        }
+        @Override
+        public void destroyItem(View container, int position, Object object) {
+
+            ((ViewPager) container).removeView(listOfViews.get(position));
         }
     }
-
 
 }

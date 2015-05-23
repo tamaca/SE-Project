@@ -1,11 +1,12 @@
 package com.example.team.myapplication;
 
 import android.os.Bundle;
-import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 
-public class UserPageActivity extends ActionBarActivity {
+import com.example.team.myapplication.util.GeneralActivity;
+
+public class UserPageActivity extends GeneralActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

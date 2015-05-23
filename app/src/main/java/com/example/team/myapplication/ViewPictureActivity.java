@@ -3,13 +3,14 @@ package com.example.team.myapplication;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
-import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ImageView;
 
+import com.example.team.myapplication.util.GeneralActivity;
 
-public class ViewPictureActivity extends ActionBarActivity {
+
+public class ViewPictureActivity extends GeneralActivity {
     ImageView imgview;
     @Override
 

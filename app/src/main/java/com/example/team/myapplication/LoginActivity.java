@@ -13,9 +13,8 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.ContactsContract;
-import android.support.v7.app.ActionBarActivity;
 import android.text.TextUtils;
-import android.util.Log;
+import android.view.GestureDetector;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -31,11 +30,8 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.team.myapplication.Network.AES;
-import com.example.team.myapplication.Network.JsonPost;
-
-import org.json.JSONException;
-import org.json.JSONObject;
+import com.example.team.myapplication.Database.DB;
+import com.example.team.myapplication.util.GeneralActivity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -44,7 +40,7 @@ import java.util.List;
 /**
  * A login screen that offers login via email/password.
  */
-public class LoginActivity extends ActionBarActivity implements LoaderCallbacks<Cursor> {
+public class LoginActivity extends GeneralActivity implements LoaderCallbacks<Cursor> {
 
     /**
      * A dummy authentication store containing known user names and passwords.
@@ -65,7 +61,10 @@ public class LoginActivity extends ActionBarActivity implements LoaderCallbacks<
     private View mLoginFormView;
     private CheckBox autoLogin;
     private CheckBox rememPassword;
+    private DB db = new DB(this);
+    private final static int SIGN_IN = 1;
     Toast toast;
+    private GestureDetector gestureDetector;
 
 
 
@@ -84,10 +83,25 @@ public class LoginActivity extends ActionBarActivity implements LoaderCallbacks<
         catch(NullPointerException e) {
             //
         }
+
+
         // Set up the login form.
         mEmailView = (AutoCompleteTextView) findViewById(R.id.email);
         populateAutoComplete();
+        mEmailView.setOnFocusChangeListener(new View.OnFocusChangeListener() {
 
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (mEmailView.hasFocus() == false) {
+                    String email = mEmailView.getText().toString();
+                    String password;
+                    password = db.getmUserPassword(email);
+                    if (password != null) {
+                        mPasswordView.setText(password);
+                    }
+                }
+            }
+        });
         mPasswordView = (EditText) findViewById(R.id.password);
         mPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
@@ -110,6 +124,7 @@ public class LoginActivity extends ActionBarActivity implements LoaderCallbacks<
 
         mLoginFormView = findViewById(R.id.login_form);
         mProgressView = findViewById(R.id.login_progress);
+
         autoLogin = (CheckBox)findViewById(R.id.auto_login);
         rememPassword = (CheckBox)findViewById(R.id.remember_password);
         toast = new Toast(getApplicationContext());
@@ -136,12 +151,31 @@ public class LoginActivity extends ActionBarActivity implements LoaderCallbacks<
 
             }
         });
+        autologin();
+    }
+
+
+    public void testLogin(View view){
+        LoginState.setLogined(true);
+        Toast.makeText(getApplicationContext(),"isLogin?"+LoginState.getLogined(),Toast.LENGTH_SHORT).show();
+        showProgress(true);
+        finish();
+
 
 
     }
-    public void testLogin(){
-        MainActivity.isSigned = true;
-        this.finish();
+    private void autologin() {
+        Cursor cursor= db.lastuserselect();
+        if (cursor.moveToFirst()) {
+            String encryptid = cursor.getString(cursor.getColumnIndex("m_lastuser_id"));
+            String encryptpassword=cursor.getString(cursor.getColumnIndex("m_lastuser_password"));
+            if (mAuthTask != null) {
+                return;
+            }
+            showProgress(true);
+            mAuthTask = new UserLoginTask(encryptid, encryptpassword,2);
+            mAuthTask.execute((Void) null);
+        }
     }
     private void populateAutoComplete() {
         getLoaderManager().initLoader(0, null, this);
@@ -195,14 +229,15 @@ public class LoginActivity extends ActionBarActivity implements LoaderCallbacks<
             // Show a progress spinner, and kick off a background task to
             // perform the user login attempt.
             showProgress(true);
-            mAuthTask = new UserLoginTask(email, password);
+            mAuthTask = new UserLoginTask(email, password,1);
             mAuthTask.execute((Void) null);
         }
     }
 
+
     private boolean isEmailValid(String email) {
 
-        return email.contains("@");
+        return email.matches("^([a-zA-Z0-9_\\.\\-])+\\@(([a-zA-Z0-9\\-])+\\.)+([a-zA-Z0-9]{2,4})+$");
     }
 
     private boolean isPasswordValid(String password) {
@@ -328,8 +363,44 @@ public class LoginActivity extends ActionBarActivity implements LoaderCallbacks<
     }
 
     public void toRegisterActivity(View view){
+
         Intent intent = new Intent(this,RegisterActivity.class);
-        startActivity(intent);
+        startActivityForResult(intent,SIGN_IN);
+
+    }
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data){
+        super.onActivityResult(requestCode, resultCode, data);
+
+
+
+
+        if(resultCode == RESULT_OK) {
+            switch (requestCode) {
+                case SIGN_IN:
+                    showProgress(true);
+                    String userName = data.getExtras().get("UserName").toString();
+                    String email = data.getExtras().get("Email").toString();
+                    String password = data.getExtras().get("Password").toString();
+
+                    Toast.makeText(getApplicationContext(),"email: "+email+"\n"+"password: " +password+
+                            "\n"+"userName: "+userName,Toast.LENGTH_LONG).show();
+                    LoginState.setLogined(true);
+
+                    //Toast.makeText(getApplicationContext(),"isLogin?"+LoginState.getLogined(),Toast.LENGTH_SHORT).show();
+                    if (mAuthTask != null) {
+                        return;
+                    }
+                    mAuthTask = new UserLoginTask(email,password,2);
+                    mAuthTask.execute((Void) null);
+
+                    break;
+
+            }
+        }
+        /*else if(resultCode == RESULT_CANCELED) {
+            //finish();
+        }*/
     }
 
     /**
@@ -340,20 +411,50 @@ public class LoginActivity extends ActionBarActivity implements LoaderCallbacks<
 
         private final String mEmail;
         private final String mPassword;
-
-        UserLoginTask(String email, String password) {
+        private int type;
+        UserLoginTask(String email, String password,int type) {
             mEmail = email;
             mPassword = password;
+            this.type=type;
         }
+
 
         @Override
         protected Boolean doInBackground(Void... params) {
 
 
             try {
-                // Simulate network access.
-                Thread.sleep(2000);
-            } catch (InterruptedException e) {
+                /*String encryptEmail="";
+                String encryptPassword="";
+                if(1==type) {
+                    String key = "1234567891234567";
+                    String Email = mEmail;
+                    String Password = mPassword;
+                    AES aesEncrypt = new AES(key);
+                    encryptEmail = aesEncrypt.encrypt(Email);
+                    encryptPassword = aesEncrypt.encrypt(Password);
+
+                }
+                else if(2==type)
+                {
+                    encryptEmail=mEmail;
+                    encryptPassword=mPassword;
+                }
+                else
+                {
+                    try {
+                        throw new Exception("参数错误");
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+                String url = "http://192.168.137.1/php2/index.php";
+                HashMap<String, String> map = new HashMap<String, String>();
+                map.put("email", encryptEmail);
+                map.put("password", encryptPassword);
+                JsonPost post = new JsonPost(map, url, 1, autoLogin.isChecked(), rememPassword.isChecked(), db);*/
+                Thread.sleep(3000);
+            } catch (Exception e) {
                 return false;
             }
 
@@ -375,7 +476,9 @@ public class LoginActivity extends ActionBarActivity implements LoaderCallbacks<
             showProgress(false);
 
             if (success) {
-                MainActivity.isSigned = true;
+                Toast.makeText(getApplicationContext(),"Login successfully!",Toast.LENGTH_SHORT).show();
+                LoginState.setLogined(true);
+                
                 finish();
             } else {
                 mPasswordView.setError(getString(R.string.error_incorrect_password));
@@ -388,33 +491,7 @@ public class LoginActivity extends ActionBarActivity implements LoaderCallbacks<
             mAuthTask = null;
             showProgress(false);
         }
-        protected void finish() {
-            Thread getThread = new Thread() {
-                @Override
-                public void run() {
-                    String key = "1234567891234567";
-                    String Email = mEmail;
-                    String Password = mPassword;
-                    AES aesEncrypt = new AES(key);
-                    String encrptEmail = aesEncrypt.encrypt(Email);
-                    String encrptPassword = aesEncrypt.encrypt(Password);
-                    String url = "http://172.16.16.164/php2/index.php";
-                    JsonPost post = new JsonPost(url);
-                    String name[]={"email","password"};
-                    String data[]={encrptEmail,encrptPassword};
-                    JSONObject jsonObject1=post.Post(name,data,2);
-                    try {
-                        String id = jsonObject1.getString("user_id");
-                        String password = jsonObject1.getString("user_password");
-                        Log.v("id", "id=" + id);
-                        Log.v("afterpassword", "password" + password);
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                }
-            };
-            getThread.start();
-        }
+
     }
 }
 

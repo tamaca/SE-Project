@@ -5,9 +5,9 @@
         <!-- Customize your theme here. -->
     </style>
 
-    <style name="LoginTheme" parent="Theme.AppCompat.Light">
+    <style name="GeneralTheme" parent="Base.Theme.AppCompat.Light">
         <!-- Customize your theme here. -->
-        
+
     </style>
 
     <style name="FullscreenTheme" parent="android:Theme.NoTitleBar">

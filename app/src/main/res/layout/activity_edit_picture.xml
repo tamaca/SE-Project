@@ -7,7 +7,8 @@
     tools:context="com.example.team.myapplication.EditPictureActivity"
     android:id="@+id/EditPictureActivity"
     android:clipToPadding="true"
-    android:fitsSystemWindows="true">
+    android:fitsSystemWindows="true"
+    android:background="@drawable/background2">
 
     <FrameLayout
         android:layout_width="fill_parent"
@@ -36,13 +37,15 @@
             android:layout_gravity="center_horizontal"
             android:layout_alignParentTop="true"
             android:layout_alignParentRight="true"
-            android:layout_alignParentEnd="true" />
+            android:layout_alignParentEnd="true"
+            android:background="@drawable/button_style2"/>
 
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/upload"
-            android:id="@+id/button" />
+            android:id="@+id/button"
+            android:background="@drawable/button_style3"/>
     </RelativeLayout>
 
 </RelativeLayout>
