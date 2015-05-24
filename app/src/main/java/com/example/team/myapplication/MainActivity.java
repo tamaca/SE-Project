@@ -22,6 +22,9 @@ import android.widget.SimpleAdapter;
 import android.widget.TabHost;
 import android.widget.Toast;
 
+import com.example.team.myapplication.Database.DB;
+import com.example.team.myapplication.Network.ImageGet;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -39,8 +42,8 @@ public class MainActivity extends Activity {
     private View userOptions;
     private ViewPager viewPager;
     private List <View>listOfViews;
-    private ImageView []imageViews;
 
+    private DB db=new DB(this);
     public static String getCurrentTag() {
         return currentTag;
     }
@@ -56,15 +59,10 @@ public class MainActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
-        Toast.makeText(getApplicationContext(),"创建MainActivity",Toast.LENGTH_LONG).show();
-        /*if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-            getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
-        }*/
         setContentView(R.layout.activity_main);
         //变量初始化
-        View squareView = LayoutInflater.from(MainActivity.this).inflate(R.layout.layout_square, null);
-        View meView = LayoutInflater.from(MainActivity.this).inflate(R.layout.layout_me, null);
+        squareView = LayoutInflater.from(MainActivity.this).inflate(R.layout.layout_square, null);
+        meView = LayoutInflater.from(MainActivity.this).inflate(R.layout.layout_me, null);
 
         userOptions = meView.findViewById(R.id.user_options);
 
@@ -158,7 +156,14 @@ public class MainActivity extends Activity {
 
         changeView(LoginState.getLogined());
         //Toast.makeText(getBaseContext(),"isLogin?"+LoginState.logined,Toast.LENGTH_LONG).show();
+        imagedownload();
+        //imageview
+    }
 
+    public void imagedownload()
+    {
+        String picURL1 = "http://7.share.photo.xuite.net/angel890208/1719fd6/4701295/179671143_x.jpg";
+        ImageGet imageGet=new ImageGet((ImageView)squareView.findViewById(R.id.imageView6),picURL1,db);
 
     }
 
