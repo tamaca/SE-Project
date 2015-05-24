@@ -62,13 +62,17 @@ public class Localstorage {
         }
         String imageFilePath=null;
         String imageName=null;
-        int start=imageUrl.lastIndexOf("/");
-        int end=imageUrl.lastIndexOf(".");
-        imageName=imageUrl.substring(start+1, end);
+        imageName=getImagesId(imageUrl);
         imageFilePath=IMAGES_DIR_PATH+File.separator+imageName+".jpg";
         return imageFilePath;
     }
-
+    public static String getImagesId(String imageUrl)
+    {
+        int start=imageUrl.lastIndexOf("/");
+        int end=imageUrl.lastIndexOf(".");
+        String imageId=imageUrl.substring(start+1, end);
+        return imageId;
+    }
 
     /**
      * 从网络获取图片且保存至SD卡

@@ -21,6 +21,8 @@ import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.TabHost;
 import android.widget.Toast;
+
+import com.example.team.myapplication.Database.DB;
 import com.example.team.myapplication.Network.ImageGet;
 
 import java.util.ArrayList;
@@ -40,6 +42,7 @@ public class MainActivity extends Activity {
     private View userOptions;
     private ViewPager viewPager;
     private List <View>listOfViews;
+    private DB db=new DB(this);
     private ImageView []imageViews;
     public static String getCurrentTag() {
         return currentTag;
@@ -161,8 +164,8 @@ public class MainActivity extends Activity {
     }
     public void imagedownload()
     {
-        String picURL1 = "http://www.yyhh.com/file/upload/201012/08/23-25-05-70-1.jpg";
-        ImageGet imageGet=new ImageGet((ImageView)squareView.findViewById(R.id.imageView6),picURL1);
+        String picURL1 = "http://7.share.photo.xuite.net/angel890208/1719fd6/4701295/179671143_x.jpg";
+        ImageGet imageGet=new ImageGet((ImageView)squareView.findViewById(R.id.imageView6),picURL1,db);
     }
 
     @Override

@@ -1,5 +1,6 @@
 package com.example.team.myapplication.Network;
 
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
@@ -11,6 +12,7 @@ import android.widget.ImageView;
 
 import com.example.team.myapplication.Cache.Localstorage;
 import com.example.team.myapplication.Cache.LruCacheImageLoader;
+import com.example.team.myapplication.Database.DB;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -23,6 +25,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.ref.WeakReference;
+import java.sql.Timestamp;
 import java.util.HashSet;
 
 /**
@@ -35,11 +38,14 @@ public class ImageGet {
     private ImageView imageView;
     private DownloadDrawable downloadDrawable;
     private String imageUrl;
-
-    public ImageGet(ImageView imageView, String imageUrl) {
+    private String imageId;
+    private DB db;
+    public ImageGet(ImageView imageView, String imageUrl,DB db) {
         imageViewWeakReference = new WeakReference<ImageView>(imageView);
         mLoadImageAsyncTaskHashSet = new HashSet<BitmapDownloaderTask>();
         this.imageUrl = imageUrl;
+        this.db=db;
+        imageId=Localstorage.getImagesId(imageUrl);
         mLruCacheImageLoader = LruCacheImageLoader.getLruCacheImageLoaderInstance();
         Load(imageUrl);
        /* LoadImageAsyncTask loadImageAsyncTask=new LoadImageAsyncTask();
@@ -84,6 +90,18 @@ public class ImageGet {
         protected void onPostExecute(Bitmap bitmap) {
             mLoadImageAsyncTaskHashSet.remove(this);
             if (bitmap != null) {
+             /*   long time = System.currentTimeMillis();
+                Timestamp tsTemp = new Timestamp(time);
+                db.userinsert("me");
+                db.imageinsert(imageId, "me", "500", tsTemp);
+                Cursor mCursor=db.imageselect();
+                for (mCursor.moveToFirst(); !mCursor.isAfterLast(); mCursor.moveToNext()) {
+                    String id= mCursor.getString((mCursor.getColumnIndex("m_image_imageid")));
+                    String userid = mCursor.getString((mCursor.getColumnIndex("m_image_userid")));
+                    String likenumber = mCursor.getString((mCursor.getColumnIndex("m_image_likenumber")));
+                    String updatedate = mCursor.getString((mCursor.getColumnIndex("m_image_updatedate")));
+                    String name1 = mCursor.getString((mCursor.getColumnIndex("m_image_imageid")));
+                }*/
                 imageView.setImageBitmap(bitmap);
             }
         }
@@ -112,7 +130,7 @@ public class ImageGet {
 
         @Override
         protected Bitmap doInBackground(String... params) {
-            return downloadBitmap(params[0]);
+                return downloadBitmap(params[0]);
         }
 
         @Override
@@ -120,8 +138,7 @@ public class ImageGet {
             if (isCancelled()) {
                 bitmap = null;
             }
-            if(bitmap==null)
-            {
+            if (bitmap == null) {
                 try {
                     throw new Exception();
                 } catch (Exception e) {
@@ -138,6 +155,9 @@ public class ImageGet {
                         mLoadImageAsyncTaskHashSet.remove(this);
                         imageView.setImageBitmap(bitmap);
                         mLruCacheImageLoader.addBitmapToLruCache(imageUrl, bitmap);
+                       /* long time = System.currentTimeMillis();
+                        Timestamp tsTemp = new Timestamp(time);
+                        db.imageinsert(imageId, "me", "500", tsTemp);*/
                         try {
                             File imageFile = new File(filePath);
                             if (!imageFile.getParentFile().exists()) {
