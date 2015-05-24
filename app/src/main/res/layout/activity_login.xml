@@ -8,7 +8,7 @@
     android:clipToPadding="true"
     android:fitsSystemWindows="true"
     tools:context="com.example.team.myapplication.LoginActivity"
-    android:background="@drawable/background1">
+    >
 
     <!-- Login progress -->
     <ProgressBar android:id="@+id/login_progress" style="?android:attr/progressBarStyleLarge"

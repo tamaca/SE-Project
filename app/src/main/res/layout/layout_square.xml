@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent" android:layout_height="match_parent">
+    android:layout_width="match_parent" android:layout_height="match_parent"
+    android:paddingTop="10dp">
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        >
 
         <RelativeLayout
             android:layout_width="170dp"
@@ -15,35 +17,19 @@
             >
 
             <ImageView
-                android:layout_width="190dp"
-                android:layout_height="230dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:id="@+id/imageView4"
                 android:src="@drawable/littlegril"
                 android:adjustViewBounds="true"
-                android:maxWidth="150dp"
+                android:maxWidth="160dp"
                 android:maxHeight="300dp"
                 android:scaleType="centerInside"
                 android:layout_marginTop="10dp"
                 android:onClick="toViewPictureActivity"
                 android:layout_marginLeft="10dp" />
 
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/imageView6"
 
-
-                android:layout_below="@+id/imageView4"
-                android:layout_alignRight="@+id/imageView4"
-                android:layout_alignEnd="@+id/imageView4"
-
-                android:adjustViewBounds="true"
-                android:maxWidth="157dp"
-                android:maxHeight="314dp"
-                android:scaleType="centerInside"
-                android:layout_marginTop="10dp"
-                android:onClick="toViewPictureActivity"
-                android:layout_marginLeft="10dp" />
         </RelativeLayout>
 
         <RelativeLayout
@@ -57,29 +43,16 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/imageView5"
+                android:src="@drawable/tu"
                 android:adjustViewBounds="true"
-                android:maxWidth="150dp"
+                android:maxWidth="160dp"
                 android:maxHeight="314dp"
                 android:scaleType="centerInside"
                 android:layout_marginTop="10dp"
                 android:onClick="toViewPictureActivity"
-                android:layout_marginLeft="10dp" />
+                android:layout_marginRight="10dp" />
 
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/imageView7"
-                android:layout_below="@+id/imageView5"
-                android:layout_alignParentRight="@+id/imageView5"
-                android:layout_alignParentEnd="@+id/imageView5"
 
-                android:adjustViewBounds="true"
-                android:maxWidth="157dp"
-                android:maxHeight="314dp"
-                android:scaleType="centerInside"
-                android:layout_marginTop="10dp"
-                android:onClick="toViewPictureActivity"
-                android:layout_marginLeft="10dp" />
         </RelativeLayout>
     </RelativeLayout>
 </LinearLayout>
