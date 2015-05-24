@@ -19,7 +19,7 @@ public class SearchActivity extends GeneralActivity {
         }*/
         setTitle("搜索");
         setContentView(R.layout.activity_search);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getActionBar().setDisplayHomeAsUpEnabled(true);
 
     }
 

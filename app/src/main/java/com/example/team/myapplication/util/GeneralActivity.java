@@ -1,11 +1,11 @@
 package com.example.team.myapplication.util;
 
+import android.app.Activity;
 import android.os.Bundle;
-import android.support.v7.app.ActionBarActivity;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 
-public class GeneralActivity extends ActionBarActivity implements GestureDetector.OnGestureListener {
+public class GeneralActivity extends Activity implements GestureDetector.OnGestureListener {
     private GestureDetector gestureDetector = null;
     @Override
     protected void onCreate(Bundle savedInstanceState){

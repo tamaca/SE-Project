@@ -22,9 +22,6 @@ import android.widget.SimpleAdapter;
 import android.widget.TabHost;
 import android.widget.Toast;
 
-import com.example.team.myapplication.Database.DB;
-import com.example.team.myapplication.Network.ImageGet;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -42,8 +39,8 @@ public class MainActivity extends Activity {
     private View userOptions;
     private ViewPager viewPager;
     private List <View>listOfViews;
-    private DB db=new DB(this);
     private ImageView []imageViews;
+
     public static String getCurrentTag() {
         return currentTag;
     }
@@ -66,10 +63,11 @@ public class MainActivity extends Activity {
         }*/
         setContentView(R.layout.activity_main);
         //变量初始化
-        squareView = LayoutInflater.from(MainActivity.this).inflate(R.layout.layout_square, null);
-        meView = LayoutInflater.from(MainActivity.this).inflate(R.layout.layout_me, null);
+        View squareView = LayoutInflater.from(MainActivity.this).inflate(R.layout.layout_square, null);
+        View meView = LayoutInflater.from(MainActivity.this).inflate(R.layout.layout_me, null);
 
         userOptions = meView.findViewById(R.id.user_options);
+
         mTabHost = (TabHost)findViewById(R.id.tabHost2);
         viewPager = (ViewPager)findViewById(R.id.viewPager);
         listOfViews = new ArrayList<>();
@@ -153,20 +151,17 @@ public class MainActivity extends Activity {
                         logout();
                         break;
 
+
                 }
             }
         });
 
         changeView(LoginState.getLogined());
         //Toast.makeText(getBaseContext(),"isLogin?"+LoginState.logined,Toast.LENGTH_LONG).show();
-        imagedownload();
-        //imageview
+
+
     }
-    public void imagedownload()
-    {
-        String picURL1 = "http://7.share.photo.xuite.net/angel890208/1719fd6/4701295/179671143_x.jpg";
-        ImageGet imageGet=new ImageGet((ImageView)squareView.findViewById(R.id.imageView6),picURL1,db);
-    }
+
 
     @Override
     public void onResume(){

@@ -16,6 +16,8 @@ public class UserPageActivity extends GeneralActivity {
             getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
         }*/
         setContentView(R.layout.activity_user_page);
+        getActionBar().setDisplayHomeAsUpEnabled(true);
+
     }
 
     @Override

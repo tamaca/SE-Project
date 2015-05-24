@@ -49,7 +49,7 @@ public class UserListActivity extends GeneralActivity {
 
 
         showList(message);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getActionBar().setDisplayHomeAsUpEnabled(true);
 
     }
     @Override

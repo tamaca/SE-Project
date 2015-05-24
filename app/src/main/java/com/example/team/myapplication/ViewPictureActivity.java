@@ -22,7 +22,7 @@ public class ViewPictureActivity extends GeneralActivity {
         imgview = (ImageView)findViewById(R.id.imageView8);
         Bitmap bitmap = (Bitmap)intent.getExtras().get("pic");
         imgview.setImageBitmap(bitmap);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getActionBar().setDisplayHomeAsUpEnabled(true);
 
     }
 

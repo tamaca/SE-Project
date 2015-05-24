@@ -78,7 +78,7 @@ public class LoginActivity extends GeneralActivity implements LoaderCallbacks<Cu
         setContentView(R.layout.activity_login);
         try {
             //noinspection ConstantConditions
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getActionBar().setDisplayHomeAsUpEnabled(true);
         }
         catch(NullPointerException e) {
             //

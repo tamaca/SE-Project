@@ -38,7 +38,7 @@ public class RegisterActivity extends GeneralActivity {
             getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
         }*/
         setContentView(R.layout.activity_register);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getActionBar().setDisplayHomeAsUpEnabled(true);
 
         okButton = (Button) findViewById(R.id.register_ok);
         userName = (TextView) findViewById(R.id.register_user_name);
