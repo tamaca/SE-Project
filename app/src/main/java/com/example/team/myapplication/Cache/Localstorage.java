@@ -3,10 +3,6 @@ package com.example.team.myapplication.Cache;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Environment;
-import android.widget.ImageView;
-
-import com.example.team.myapplication.Network.ImageDownloader;
-
 import java.io.File;
 
 /**
@@ -69,7 +65,7 @@ public class Localstorage {
         int start=imageUrl.lastIndexOf("/");
         int end=imageUrl.lastIndexOf(".");
         imageName=imageUrl.substring(start+1, end);
-        imageFilePath=IMAGES_DIR_PATH+File.separator+imageName;
+        imageFilePath=IMAGES_DIR_PATH+File.separator+imageName+".jpg";
         return imageFilePath;
     }
 
@@ -77,10 +73,10 @@ public class Localstorage {
     /**
      * 从网络获取图片且保存至SD卡
      */
-
+/*
     public static void getBitmapFromNetWorkAndSaveToSDCard(ImageDownloader imageDownloader,ImageView imageView,String imageUrl,String filePath){
         String _filePath=filePath;
         imageDownloader.download(imageUrl,_filePath,imageView);
     }
-
+*/
 }

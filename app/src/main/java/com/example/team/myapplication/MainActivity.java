@@ -21,6 +21,7 @@ import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.TabHost;
 import android.widget.Toast;
+import com.example.team.myapplication.Network.ImageGet;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -40,7 +41,6 @@ public class MainActivity extends Activity {
     private ViewPager viewPager;
     private List <View>listOfViews;
     private ImageView []imageViews;
-
     public static String getCurrentTag() {
         return currentTag;
     }
@@ -63,8 +63,8 @@ public class MainActivity extends Activity {
         }*/
         setContentView(R.layout.activity_main);
         //变量初始化
-        View squareView = LayoutInflater.from(MainActivity.this).inflate(R.layout.layout_square, null);
-        View meView = LayoutInflater.from(MainActivity.this).inflate(R.layout.layout_me, null);
+        squareView = LayoutInflater.from(MainActivity.this).inflate(R.layout.layout_square, null);
+        meView = LayoutInflater.from(MainActivity.this).inflate(R.layout.layout_me, null);
 
         userOptions = meView.findViewById(R.id.user_options);
         mTabHost = (TabHost)findViewById(R.id.tabHost2);
@@ -150,19 +150,19 @@ public class MainActivity extends Activity {
                         logout();
                         break;
 
-
                 }
             }
         });
 
         changeView(LoginState.getLogined());
         //Toast.makeText(getBaseContext(),"isLogin?"+LoginState.logined,Toast.LENGTH_LONG).show();
-
+        imagedownload();
         //imageview
     }
     public void imagedownload()
     {
-
+        String picURL1 = "http://www.yyhh.com/file/upload/201012/08/23-25-05-70-1.jpg";
+        ImageGet imageGet=new ImageGet((ImageView)squareView.findViewById(R.id.imageView6),picURL1);
     }
 
     @Override
