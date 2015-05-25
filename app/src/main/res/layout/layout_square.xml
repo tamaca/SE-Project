@@ -4,7 +4,7 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        >
+        android:background="@color/背景蓝">
 
         <RelativeLayout
             android:layout_width="170dp"
@@ -12,8 +12,7 @@
             android:layout_alignParentTop="true"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
-            android:layout_alignParentBottom="true"
-            >
+            android:layout_alignParentBottom="true" >
 
             <ImageView
                 android:layout_width="wrap_content"

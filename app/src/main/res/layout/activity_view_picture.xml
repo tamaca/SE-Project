@@ -15,31 +15,54 @@
         android:id="@+id/imageView8"
         android:layout_gravity="center_horizontal|top" />
 
-    <RelativeLayout
-        android:layout_width="fill_parent"
-        android:layout_height="421dp"
-        android:layout_gravity="center">
-
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:weightSum="3"
+        android:id="@+id/linearLayout2"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true">
 
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/zan"
+            android:layout_weight="1"
+            android:text="@string/like"
+            android:textColor="@color/白色"
             android:id="@+id/button7"
-            android:layout_alignParentBottom="true"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
-            android:background="@drawable/button_style4"
-            android:layout_alignTop="@+id/button8" />
+            android:background="@drawable/button_style2" />
 
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/comment"
-            android:id="@+id/button8"
-            android:layout_alignParentBottom="true"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentEnd="true"
+            android:text="@string/comment_all"
+            android:textColor="@color/白色"
+            android:id="@+id/comment_all"
+            android:layout_weight="1"
             android:background="@drawable/button_style4"/>
-    </RelativeLayout>
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/comment"
+            android:textColor="@color/白色"
+            android:id="@+id/comment"
+            android:background="@drawable/button_style3"/>
+
+    </LinearLayout>
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/editText2"
+        android:hint="@string/comment_text"
+        android:background="@drawable/textview_style4"
+        android:layout_above="@+id/linearLayout2"
+        android:layout_marginBottom="5dp"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+
 </RelativeLayout>
