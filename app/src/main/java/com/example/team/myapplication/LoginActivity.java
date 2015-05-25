@@ -3,7 +3,6 @@ package com.example.team.myapplication;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
-import android.app.ActionBar;
 import android.app.LoaderManager.LoaderCallbacks;
 import android.content.CursorLoader;
 import android.content.Intent;
@@ -64,7 +63,6 @@ public class LoginActivity extends GeneralActivity implements LoaderCallbacks<Cu
     private CheckBox rememPassword;
     private DB db = new DB(this);
     private final static int SIGN_IN = 1;
-    private ActionBar actionBar;
     Toast toast;
     private GestureDetector gestureDetector;
 
@@ -73,19 +71,17 @@ public class LoginActivity extends GeneralActivity implements LoaderCallbacks<Cu
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        /*if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+            getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
+        }*/
         setContentView(R.layout.activity_login);
-        actionBar = getActionBar();
-        if(actionBar != null) {
-            //更改ActionBar
-            //设置是否能返回
-            actionBar.setDisplayHomeAsUpEnabled(true);
-            //设置是否能显示Title
-            actionBar.setDisplayShowTitleEnabled(true);
-            //设置是否显示本页面的logo
-            actionBar.setDisplayUseLogoEnabled(false);
-            //设置返回图标是否显示
-            actionBar.setDisplayShowHomeEnabled(false);
-
+        try {
+            //noinspection ConstantConditions
+            getActionBar().setDisplayHomeAsUpEnabled(true);
+        }
+        catch(NullPointerException e) {
+            //
         }
 
 
@@ -160,8 +156,12 @@ public class LoginActivity extends GeneralActivity implements LoaderCallbacks<Cu
 
 
     public void testLogin(View view){
-        LoginState.setLogined(true);
+        LoginState.setLogined(true,"test");
         Toast.makeText(getApplicationContext(),"isLogin?"+LoginState.getLogined(),Toast.LENGTH_SHORT).show();
+        if(LoginState.getLogined())
+        {
+            Toast.makeText(getApplicationContext(),"Username"+LoginState.username,Toast.LENGTH_SHORT).show();
+        }
         showProgress(true);
         finish();
 
@@ -389,7 +389,7 @@ public class LoginActivity extends GeneralActivity implements LoaderCallbacks<Cu
 
                     Toast.makeText(getApplicationContext(),"email: "+email+"\n"+"password: " +password+
                             "\n"+"userName: "+userName,Toast.LENGTH_LONG).show();
-                    LoginState.setLogined(true);
+                    LoginState.setLogined(true,userName);
 
                     //Toast.makeText(getApplicationContext(),"isLogin?"+LoginState.getLogined(),Toast.LENGTH_SHORT).show();
                     if (mAuthTask != null) {
@@ -481,7 +481,7 @@ public class LoginActivity extends GeneralActivity implements LoaderCallbacks<Cu
 
             if (success) {
                 Toast.makeText(getApplicationContext(),"Login successfully!",Toast.LENGTH_SHORT).show();
-                LoginState.setLogined(true);
+                LoginState.setLogined(true,mEmail);
                 
                 finish();
             } else {
