@@ -91,7 +91,9 @@
                 android:layout_below="@+id/register_password_again"
                 style="?android:textAppearanceSmall"
                 android:layout_alignEnd="@+id/register_password_again"
-                android:layout_alignStart="@+id/register_password_again" />
+                android:layout_alignRight="@+id/register_password_again"
+                android:layout_alignStart="@+id/register_password_again"
+                android:layout_alignLeft="@+id/register_password_again"/>
         </RelativeLayout>
     </ScrollView>
 

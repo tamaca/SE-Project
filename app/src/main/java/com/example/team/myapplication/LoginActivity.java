@@ -62,6 +62,7 @@ public class LoginActivity extends GeneralActivity implements LoaderCallbacks<Cu
     private CheckBox autoLogin;
     private CheckBox rememPassword;
     private DB db = new DB(this);
+    private TextView register;
     private final static int SIGN_IN = 1;
     Toast toast;
     private GestureDetector gestureDetector;
@@ -124,7 +125,13 @@ public class LoginActivity extends GeneralActivity implements LoaderCallbacks<Cu
 
         mLoginFormView = findViewById(R.id.login_form);
         mProgressView = findViewById(R.id.login_progress);
-
+        register = (TextView)findViewById(R.id.register_button);
+        register.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                toRegisterActivity(view);
+            }
+        });
         autoLogin = (CheckBox)findViewById(R.id.auto_login);
         rememPassword = (CheckBox)findViewById(R.id.remember_password);
         toast = new Toast(getApplicationContext());
@@ -208,10 +215,16 @@ public class LoginActivity extends GeneralActivity implements LoaderCallbacks<Cu
         View focusView = null;
 
         // Check for a valid password, if the user entered one.
-        if (TextUtils.isEmpty(password) || !isPasswordValid(password)) {
+        if(password.isEmpty()){
+            mPasswordView.setError(getString(R.string.error_field_required));
+            focusView = mPasswordView;
+            cancel = true;
+        }
+        else if (!isPasswordValid(password)) {
             mPasswordView.setError(getString(R.string.error_invalid_password));
             focusView = mPasswordView;
             cancel = true;
+
         }
 
         // Check for a valid email address.
@@ -219,10 +232,12 @@ public class LoginActivity extends GeneralActivity implements LoaderCallbacks<Cu
             mEmailView.setError(getString(R.string.error_field_required));
             focusView = mEmailView;
             cancel = true;
+
         } else if (!isEmailValid(email)) {
             mEmailView.setError(getString(R.string.error_invalid_email));
             focusView = mEmailView;
             cancel = true;
+
         }
 
         if (cancel) {
@@ -369,7 +384,7 @@ public class LoginActivity extends GeneralActivity implements LoaderCallbacks<Cu
     public void toRegisterActivity(View view){
 
         Intent intent = new Intent(this,RegisterActivity.class);
-        startActivityForResult(intent,SIGN_IN);
+        startActivityForResult(intent, SIGN_IN);
 
     }
     @Override
