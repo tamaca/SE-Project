@@ -8,7 +8,7 @@
     android:clipToPadding="true"
     android:fitsSystemWindows="true"
     tools:context="com.example.team.myapplication.LoginActivity"
-    android:background="@color/背景蓝">
+    >
 
     <!-- Login progress -->
     <ProgressBar android:id="@+id/login_progress" style="?android:attr/progressBarStyleLarge"
@@ -48,29 +48,23 @@
                     android:layout_height="wrap_content"
                     android:text="@string/auto_login"
                     android:id="@+id/auto_login"
-                    android:layout_gravity="end"
+                    android:layout_gravity="right"
                     android:textStyle="normal"
                     android:layout_alignParentTop="true"
                     android:layout_alignParentEnd="true"
-                    android:layout_alignParentRight="true"
                     android:layout_marginLeft="25dp"
-                    android:layout_marginStart="25dp"
-                    android:layout_marginRight="30dp"
-                    android:layout_marginEnd="25dp"
-                    android:layout_marginTop="10dp"/>
+                    android:layout_marginRight="30dp"/>
 
                 <CheckBox
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/remember_password"
                     android:id="@+id/remember_password"
-                    android:layout_gravity="start"
+                    android:layout_gravity="left"
                     android:layout_alignParentTop="true"
                     android:layout_alignParentStart="true"
-                    android:layout_alignParentLeft="true"
                     android:layout_marginLeft="25dp"
-                    android:layout_marginRight="25dp"
-                    android:layout_marginTop="10dp"/>
+                    android:layout_marginRight="25dp"/>
             </RelativeLayout>
 
             <RelativeLayout
@@ -80,41 +74,35 @@
                 <Button android:id="@+id/email_sign_in_button" style="?android:textAppearanceSmall"
                     android:layout_width="wrap_content" android:layout_height="wrap_content"
                     android:text="@string/action_sign_in"
-                    android:textSize="18sp"
-                    android:textColor="#FFFFFF"
-                    android:layout_gravity="start"
+                    android:textStyle="bold"
+                    android:layout_gravity="left"
                     android:layout_alignParentTop="true"
                     android:layout_alignParentStart="true"
-                    android:layout_alignParentLeft="true"
                     android:background="@drawable/button_style1"
-                    android:layout_marginLeft="25dp"
-                    android:layout_marginRight="25dp"
+                    android:layout_marginLeft="25dp"/>
+
+                <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/register"
+                    android:textStyle="bold"
+                    android:id="@+id/register_button"
+                    android:layout_gravity="right"
+                    style="?android:textAppearanceSmall"
+                    android:onClick="toRegisterActivity"
+                    android:layout_alignParentTop="true"
                     android:layout_alignParentEnd="true"
-                    android:layout_alignParentRight="true"
-                    android:layout_marginTop="10dp"/>
+                    android:background="@drawable/button_style2"
+                    android:layout_marginRight="25dp" />
 
             </RelativeLayout>
 
         </LinearLayout>
     </ScrollView>
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceSmall"
-        android:text="@string/register"
-        android:textColor="#000CCC"
-        android:id="@+id/register_button"
-        android:onClick="toRegisterActivity"
-        android:layout_gravity="end"
-        android:layout_marginRight="30dp"
-        android:layout_marginEnd="25dp"
-        android:layout_marginTop="15dp"/>
-
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:height="30dp"
         android:text="New Button"
         android:id="@+id/button9"
         android:onClick="testLogin"/>
