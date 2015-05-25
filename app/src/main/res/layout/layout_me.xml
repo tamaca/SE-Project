@@ -7,8 +7,7 @@
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:orientation="vertical"
-        android:gravity="center"
-        >
+        android:gravity="center">
 
         <ImageButton
             android:layout_width="wrap_content"
@@ -30,7 +29,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/listView"
-                android:divider="@color/灰色"
+                android:divider="@color/背景蓝"
                 android:dividerHeight="1dp"/>
         </RelativeLayout>
     </LinearLayout>

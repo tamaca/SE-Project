@@ -18,9 +18,11 @@
     <string name="Pictures">图片</string>
     <string name="title_activity_edit_picture">编辑图片</string>
     <string name="title_activity_view_picture">查看图片</string>
-    <string name="zan">赞</string>
-    <string name="no_zan">取消赞</string>
+    <string name="like">赞</string>
+    <string name="cancel_like">取消赞</string>
     <string name="comment">评论</string>
+    <string name="comment_all">查看全部</string>
+    <string name="comment_text">说点什么吧~</string>
     <string name="upload">上传</string>
     <string name="give_up">放弃</string>
     <string name="title_activity_register">注册</string>

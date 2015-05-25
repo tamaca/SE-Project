@@ -1,5 +1,6 @@
 package com.example.team.myapplication;
 
+import android.app.ActionBar;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
@@ -22,13 +23,9 @@ public class UserListActivity extends GeneralActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        /*if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-            getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
-        }*/
         Intent intent = getIntent();
         setContentView(R.layout.activity_user_list);
+        ActionBar actionBar = getActionBar();
 
         listView = (ListView)findViewById(R.id.user_name_list);
         userNames = new ArrayList<String>();
@@ -37,10 +34,14 @@ public class UserListActivity extends GeneralActivity {
         switch (message){
             case MainActivity.friend_list:
                 setTitle("我关注的人");
+                if(actionBar!=null)
+                    actionBar.setLogo(R.mipmap.ic_userlist);
                 //Toast.makeText(getApplicationContext(), "将会列出关注的人的名单！", Toast.LENGTH_LONG).show();
                 break;
             case MainActivity.blacklist:
                 setTitle("黑名单");
+                if(actionBar!=null)
+                    actionBar.setLogo(R.mipmap.ic_blacklist);
                 //Toast.makeText(getApplicationContext(),"将会列出黑名单！",Toast.LENGTH_LONG).show();
                 break;
             default:
