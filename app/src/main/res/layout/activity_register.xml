@@ -8,7 +8,7 @@
     android:fitsSystemWindows="true"
     tools:context="com.example.team.myapplication.RegisterActivity"
     android:gravity="center_horizontal"
-    >
+    android:background="@color/背景蓝">
 
     <ProgressBar android:id="@+id/login_progress" style="?android:attr/progressBarStyleLarge"
         android:layout_width="wrap_content" android:layout_height="wrap_content"
@@ -81,14 +81,17 @@
 
             <Button
                 android:background="@drawable/button_style1"
-                android:layout_marginTop="5dp"
+                android:layout_marginTop="10dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/OK"
+                android:textSize="18dp"
+                android:textColor="#FFFFFF"
                 android:id="@+id/register_ok"
                 android:layout_below="@+id/register_password_again"
-                android:layout_centerHorizontal="true"
-                style="?android:textAppearanceSmall"/>
+                style="?android:textAppearanceSmall"
+                android:layout_alignEnd="@+id/register_password_again"
+                android:layout_alignStart="@+id/register_password_again" />
         </RelativeLayout>
     </ScrollView>
 
