@@ -8,7 +8,7 @@
     android:id="@+id/EditPictureActivity"
     android:clipToPadding="true"
     android:fitsSystemWindows="true"
-    android:background="@drawable/background2">
+    android:background="@color/背景蓝">
 
     <FrameLayout
         android:layout_width="fill_parent"
@@ -38,14 +38,16 @@
             android:layout_alignParentTop="true"
             android:layout_alignParentRight="true"
             android:layout_alignParentEnd="true"
-            android:background="@drawable/button_style2"/>
+            android:textColor="@color/白色"
+            android:background="@drawable/button_style3"/>
 
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/upload"
             android:id="@+id/button"
-            android:background="@drawable/button_style3"/>
+            android:textColor="@color/白色"
+            android:background="@drawable/button_style2" />
     </RelativeLayout>
 
 </RelativeLayout>

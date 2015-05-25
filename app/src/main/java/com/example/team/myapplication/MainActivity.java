@@ -175,7 +175,7 @@ public class MainActivity extends Activity {
         //mTabHost.setCurrentTabByTag(getCurrentTag());
     }
     public void logout(){
-        LoginState.setLogined(false,"guest");
+        LoginState.setLogined(false);
         changeView(LoginState.logined);
         
     }

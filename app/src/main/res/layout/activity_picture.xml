@@ -8,7 +8,8 @@
     android:columnCount="2"
     android:clipToPadding="true"
     android:fitsSystemWindows="true"
-    android:id="@+id/PictureActivity">
+    android:id="@+id/PictureActivity"
+    android:background="@color/背景蓝">
 
     <LinearLayout
         android:orientation="vertical"
