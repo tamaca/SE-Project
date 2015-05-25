@@ -1,9 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
-<shape xmlns:android="http://schemas.android.com/apk/res/android" >
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android" >
+    <item>
+        <shape
+            android:shape="rectangle">
+            <solid android:color="@color/天依蓝" />
+            <corners android:radius="10dp"/>
+        </shape>
+    </item>
 
-    <!-- 实心 -->
-    <solid android:color="#ffcc99" />
+    <item android:left="10dp">
+        <shape
+            android:shape="rectangle">
+            <solid android:color="@color/天依蓝" />
+        </shape>
+    </item>
 
-    <corners android:radius="10dp"/>
-
-</shape>  
+</layer-list> 
