@@ -1,16 +1,24 @@
 package com.example.team.myapplication.Cache;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Environment;
 import java.io.File;
+import java.sql.Date;
 
 /**
  * Created by coco on 2015/4/24.
  */
 public class Localstorage {
-    public final static String IMAGES_DIR_NAME="XXX"+File.separator;
-    public final static String IMAGES_DIR_PATH= Environment.getExternalStorageDirectory()+ File.separator+IMAGES_DIR_NAME;
+    public static String IMAGES_DIR_PATH=null;
+    public static String DATABASE_DIR_PATH=null;
+    public static void  setpath(Context context)
+    {
+        IMAGES_DIR_PATH=context.getExternalFilesDir(Environment.DIRECTORY_PICTURES).toString()+File.separator;
+        DATABASE_DIR_PATH=context.getExternalFilesDir(null).toString()+File.separator;
+    }
+
     /**
      * 判断SD卡是否存在
      */

@@ -22,6 +22,7 @@ import android.widget.SimpleAdapter;
 import android.widget.TabHost;
 import android.widget.Toast;
 
+import com.example.team.myapplication.Cache.Localstorage;
 import com.example.team.myapplication.Database.DB;
 import com.example.team.myapplication.Network.ImageGet;
 
@@ -42,8 +43,7 @@ public class MainActivity extends Activity {
     private View userOptions;
     private ViewPager viewPager;
     private List <View>listOfViews;
-
-    private DB db=new DB(this);
+    private DB db=null;
     public static String getCurrentTag() {
         return currentTag;
     }
@@ -57,8 +57,11 @@ public class MainActivity extends Activity {
     //private ImageView imgView;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
         super.onCreate(savedInstanceState);
+        //Localstroage
+        Localstorage.setpath(this);
+        db=new DB(this);
+        //
         setContentView(R.layout.activity_main);
         //变量初始化
         squareView = LayoutInflater.from(MainActivity.this).inflate(R.layout.layout_square, null);

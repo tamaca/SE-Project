@@ -21,7 +21,7 @@ class CustomPathDatabaseContext extends ContextWrapper {
 
     @Override
     public File getDatabasePath(String name) {
-        File result = new File(mDirPath + File.separator + name);
+        File result = new File(mDirPath  + name);
 
         if (!result.getParentFile().exists()) {
             result.getParentFile().mkdirs();

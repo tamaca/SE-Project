@@ -7,6 +7,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
+import com.example.team.myapplication.Cache.Localstorage;
 import com.example.team.myapplication.Network.AES;
 
 import java.sql.Timestamp;
@@ -16,11 +17,9 @@ import java.text.SimpleDateFormat;
  * Created by coco on 2015/5/15.
  */
 public class DB extends SQLiteOpenHelper {
-    private final static String DATABASE_NAME = "XXX.db";
+    private final static String DATABASE_NAME = "Dolphin.db";
     private final static int DATABASE_VERSION = 1;
-    private final static String DATABASE_PATH = android.os.Environment
-            .getExternalStorageDirectory().getAbsolutePath()
-            + "/XXX";
+    private final static String DATABASE_PATH = Localstorage.DATABASE_DIR_PATH;
     //
     private final static String M_USER = "m_user";
     private final static String M_USER_ID = "m_user_id";
