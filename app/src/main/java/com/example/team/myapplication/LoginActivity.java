@@ -156,8 +156,12 @@ public class LoginActivity extends GeneralActivity implements LoaderCallbacks<Cu
 
 
     public void testLogin(View view){
-        LoginState.setLogined(true);
+        LoginState.setLogined(true,"test");
         Toast.makeText(getApplicationContext(),"isLogin?"+LoginState.getLogined(),Toast.LENGTH_SHORT).show();
+        if(LoginState.getLogined())
+        {
+            Toast.makeText(getApplicationContext(),"Username"+LoginState.username,Toast.LENGTH_SHORT).show();
+        }
         showProgress(true);
         finish();
 
@@ -385,7 +389,7 @@ public class LoginActivity extends GeneralActivity implements LoaderCallbacks<Cu
 
                     Toast.makeText(getApplicationContext(),"email: "+email+"\n"+"password: " +password+
                             "\n"+"userName: "+userName,Toast.LENGTH_LONG).show();
-                    LoginState.setLogined(true);
+                    LoginState.setLogined(true,userName);
 
                     //Toast.makeText(getApplicationContext(),"isLogin?"+LoginState.getLogined(),Toast.LENGTH_SHORT).show();
                     if (mAuthTask != null) {
@@ -477,7 +481,7 @@ public class LoginActivity extends GeneralActivity implements LoaderCallbacks<Cu
 
             if (success) {
                 Toast.makeText(getApplicationContext(),"Login successfully!",Toast.LENGTH_SHORT).show();
-                LoginState.setLogined(true);
+                LoginState.setLogined(true,mEmail);
                 
                 finish();
             } else {

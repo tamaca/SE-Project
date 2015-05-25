@@ -265,7 +265,7 @@ public class RegisterActivity extends GeneralActivity {
 
             if (success) {
                 Toast.makeText(getApplicationContext(), "注册成功", Toast.LENGTH_LONG).show();
-                LoginState.setLogined(true);
+                LoginState.setLogined(true,mUserName);
                 MainActivity.setCurrentTag("tab1");
 
                 /*Intent intent = new Intent(RegisterActivity.this,MainActivity.class);
