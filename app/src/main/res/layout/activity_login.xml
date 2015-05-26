@@ -99,9 +99,8 @@
                     android:layout_height="30dp"
                     android:textAppearance="?android:attr/textAppearanceSmall"
                     android:text="@string/register"
-                    android:textColor="#000CCC"
+                    android:textColor="@color/天依蓝"
                     android:id="@+id/register_button"
-
                     android:layout_gravity="right"
                     android:gravity="top|right"
                     android:layout_alignParentRight="true"
