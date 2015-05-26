@@ -207,6 +207,10 @@ public class ImageGet {
                     if (in != null) {
                         in.close();
                     }
+                    if(resp!=null)
+                    {
+                        resp.close();
+                    }
                     entity.consumeContent();
                 }
             }
@@ -217,6 +221,11 @@ public class ImageGet {
         } finally {
             if (httpclient != null) {
                 httpclient.getConnectionManager().shutdown();
+                try {
+                    httpclient.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         }
         return null;
