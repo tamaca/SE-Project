@@ -1,6 +1,5 @@
 package com.example.team.myapplication.Network;
 
-import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
@@ -15,10 +14,10 @@ import com.example.team.myapplication.Cache.LruCacheImageLoader;
 import com.example.team.myapplication.Database.DB;
 
 import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.HttpStatus;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http4.client.methods.CloseableHttpResponse;
+import org.apache.http4.client.methods.HttpGetHC4;
+import org.apache.http4.impl.client.CloseableHttpClient;
+import org.apache.http4.impl.client.HttpClientBuilder;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -190,15 +189,13 @@ public class ImageGet {
     }
 
     static Bitmap downloadBitmap(String url) {
-        DefaultHttpClient httpclient = new DefaultHttpClient();
-        HttpGet httpget = new HttpGet(url);
+        CloseableHttpClient httpclient = HttpClientBuilder.create()
+                .useSystemProperties()
+                .build();
+        HttpGetHC4 httpget = new HttpGetHC4(url);
         try {
-            HttpResponse resp = httpclient.execute(httpget);
-            final int statusCode = resp.getStatusLine().getStatusCode();
-            if (statusCode != HttpStatus.SC_OK) {
-                Log.w("ImageDownloader", "Error" + statusCode + "while retrieving bitmap from" + url);
-                return null;
-            }
+            CloseableHttpResponse resp = httpclient.execute(httpget);
+            int Status=resp.getStatusLine().getStatusCode();
             final HttpEntity entity = resp.getEntity();
             if (entity != null) {
                 InputStream in = null;
@@ -224,7 +221,6 @@ public class ImageGet {
         }
         return null;
     }
-
     static class DownloadDrawable extends ColorDrawable {
         private final WeakReference<BitmapDownloaderTask> bitmapDownloaderTaskWeakReference;
 
