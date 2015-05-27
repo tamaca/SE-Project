@@ -1,8 +1,9 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
-    android:layout_height="match_parent" android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
+    android:layout_height="match_parent"
+    android:paddingLeft="0dp"
+    android:paddingRight="0dp"
+    android:paddingTop="0dp"
     android:paddingBottom="0dp"
     android:clipToPadding="true"
     android:fitsSystemWindows="true"
@@ -10,75 +11,108 @@
     android:background="@color/背景蓝"
     android:gravity="center_horizontal">
 
-    <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/imageView8"
-        android:layout_gravity="center_horizontal|top"
-        android:contentDescription="@string/OK"
-        android:layout_alignWithParentIfMissing="false"
-        android:layout_alignParentTop="false" />
-
     <LinearLayout
-        android:orientation="horizontal"
+        android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:weightSum="3"
-        android:id="@+id/linearLayout2"
-        android:layout_alignParentBottom="false"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_below="@id/imageView8"
-        android:gravity="center"
-        android:layout_marginTop="20dp">
+        android:layout_height="match_parent"
+        android:showDividers="middle"
+        android:weightSum="1">
 
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+        <ScrollView
+            android:layout_width="fill_parent"
+            android:layout_height="0dp"
+            android:id="@+id/scrollView"
+            android:fillViewport="false"
             android:layout_weight="1"
-            android:text="@string/like"
-            android:textColor="@color/白色"
-            android:id="@+id/button7"
-            android:background="@drawable/button_style2" />
+            android:layout_marginTop="10dp">
 
-        <Button
-            android:layout_width="wrap_content"
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal"
+                android:orientation="vertical">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/imageView8"
+                    android:layout_gravity="center_horizontal|top"
+                    android:contentDescription="@string/OK" />
+
+                <LinearLayout
+                    android:orientation="horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:weightSum="3"
+                    android:id="@+id/linearLayout2"
+                    android:gravity="center"
+                    android:layout_marginTop="10dp">
+
+                    <Button
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="@string/like"
+                        android:textColor="@color/白色"
+                        android:id="@+id/button7"
+                        android:background="@drawable/button_style2" />
+
+                    <Button
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/comment_all"
+                        android:textColor="@color/白色"
+                        android:id="@+id/comment_all"
+                        android:layout_weight="1"
+                        android:background="@drawable/button_style3"/>
+
+
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/comment_view"
+                    android:orientation="vertical"
+                    android:layout_marginLeft="25dp"
+                    android:layout_marginRight="25dp"
+                    android:layout_marginTop="10dp">
+
+
+                </LinearLayout>
+
+            </LinearLayout>
+        </ScrollView>
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:text="@string/comment_all"
-            android:textColor="@color/白色"
-            android:id="@+id/comment_all"
-            android:layout_weight="1"
-            android:background="@drawable/button_style3"/>
+            android:paddingBottom="5dp"
+            android:paddingTop="5dp"
+            android:background="@color/淡灰蓝色"
+            android:baselineAligned="false"
+            android:gravity="center">
 
-    </LinearLayout>
+            <EditText
+                android:layout_width="241dp"
+                android:layout_height="wrap_content"
+                android:id="@+id/comment_text"
+                android:hint="@string/comment_text"
+                android:background="@drawable/textview_style4"
+                android:layout_weight="0.04" />
 
-    <LinearLayout
-        android:orientation="horizontal"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-
-        android:layout_alignParentEnd="false"
-        android:layout_alignParentBottom="true"
-        android:layout_alignWithParentIfMissing="true"
-        android:layout_marginBottom="0dp"
-        >
-
-        <EditText
-            android:layout_width="241dp"
-            android:layout_height="wrap_content"
-            android:id="@+id/comment_text"
-            android:hint="@string/comment_text"
-            android:background="@drawable/textview_style4"
-            android:layout_weight="0.04" />
-
-        <Button
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="0.85"
-            android:text="@string/comment"
-            android:textColor="@color/白色"
-            android:id="@+id/submit_comment"
-            android:background="@drawable/button_style3"/>
+            <Button
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.85"
+                android:text="@string/comment"
+                android:textColor="@color/白色"
+                android:id="@+id/submit_comment"
+                android:background="@drawable/button_style3"
+                android:onClick="submitComment"/>
+        </LinearLayout>
     </LinearLayout>
 
     <ProgressBar
