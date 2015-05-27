@@ -65,7 +65,9 @@
             android:label="@string/title_activity_view_picture"
             android:icon="@mipmap/ic_picture"
             android:screenOrientation="portrait"
-            android:theme="@style/GeneralTheme" >
+            android:theme="@style/GeneralTheme"
+            android:windowSoftInputMode="adjustResize|stateVisible|stateHidden"
+            android:configChanges="keyboardHidden|orientation">
         </activity>
         <activity
             android:name=".LoginActivity"

@@ -20,6 +20,7 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.TabHost;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.team.myapplication.Cache.Localstorage;
@@ -47,6 +48,7 @@ public class MainActivity extends Activity {
     public static String getCurrentTag() {
         return currentTag;
     }
+    private TextView userNameView;
 
     public static void setCurrentTag(String currentTag) {
         MainActivity.currentTag = currentTag;
@@ -66,14 +68,15 @@ public class MainActivity extends Activity {
         //变量初始化
         squareView = LayoutInflater.from(MainActivity.this).inflate(R.layout.layout_square, null);
         meView = LayoutInflater.from(MainActivity.this).inflate(R.layout.layout_me, null);
-
         userOptions = meView.findViewById(R.id.user_options);
-
         mTabHost = (TabHost)findViewById(R.id.tabHost2);
         viewPager = (ViewPager)findViewById(R.id.viewPager);
         listOfViews = new ArrayList<>();
         listView = (ListView)meView.findViewById(R.id.listView);
         loginView = meView.findViewById(R.id.login_button);
+        userNameView = (TextView)meView.findViewById(R.id.user_name);
+
+
         listOfViews.add(squareView);
         listOfViews.add(meView);
         viewPager.setAdapter(new MyPagerAdapter());
@@ -185,6 +188,9 @@ public class MainActivity extends Activity {
     public void changeView(boolean isLogined){
         loginView.setVisibility(isLogined ? View.GONE : View.VISIBLE);
         userOptions.setVisibility(isLogined ? View.VISIBLE : View.GONE);
+        userNameView.setVisibility(isLogined ? View.VISIBLE : View.GONE);
+        userNameView.setText(LoginState.username);
+
     }
     public void toLoginActivity(View view) {
         Intent intent = new Intent(this,LoginActivity.class);
