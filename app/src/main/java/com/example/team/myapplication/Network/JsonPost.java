@@ -25,6 +25,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+
 /**
  * Created by coco on 2015/5/8.
  */
@@ -35,76 +36,65 @@ public class JsonPost {
     boolean rememPassword;
     private DB db;
     private LoginActivity loginActivity;
+
     //Login
-    public JsonPost(HashMap<String, String> map, String url, int type,boolean autoLogin,boolean rememPassword,DB db) {
+    public JsonPost(HashMap<String, String> map, String url, int type, boolean autoLogin, boolean rememPassword, DB db) {
         this.url = url;
         this.type = type;
-        this.autoLogin=autoLogin;
-        this.rememPassword=rememPassword;
-        this.db=db;
+        this.autoLogin = autoLogin;
+        this.rememPassword = rememPassword;
+        this.db = db;
         this.loginActivity = loginActivity;
         try {
             Post post = new Post();
             post.execute(map);
-        }catch (Exception e)
-        {
+        } catch (Exception e) {
             e.toString();
         }
 
     }
+
     //Register
-    public JsonPost(HashMap<String, String> map, String url, int type) {
+    public JsonPost(HashMap<String, String> map, String url, int type,DB db) {
         this.url = url;
         this.type = type;
-
+        this.db=db;
         try {
             Post post = new Post();
             post.execute(map);
-        }catch (Exception e)
-        {
+        } catch (Exception e) {
             e.toString();
         }
     }
-    private void dbsave(String id,String password)
-    {
-        if(rememPassword)
-        {
-            boolean usercheck=db.checkuser(id);
-            if(!usercheck)
-            {
+
+    private void dbsave(String id, String password) {
+        if (rememPassword) {
+            boolean usercheck = db.checkuser(id);
+            if (!usercheck) {
                 db.userinsert(id, password);
+            } else {
+                db.userupdatepassword(id, password);
             }
-            else
-            {
-                db.userupdatepassword(id,password);
-            }
-            if(autoLogin)
-            {
-                if(!usercheck) {
-                    db.lastuserinsert(id,password);
+            if (autoLogin) {
+                if (!usercheck) {
+                    db.lastuserinsert(id, password);
+                } else {
+                    db.lastuserupdateid(id, password);
                 }
-                else
-                {
-                    db.lastuserupdateid(id,password);
-                };
+                ;
             }
-        }
-        else
-        {
-            if(!db.checkuser(id))
-            {
+        } else {
+            if (!db.checkuser(id)) {
                 db.userinsert(id);
-            }
-            else
-            {
-                db.userupdatepassword(id,null);
+            } else {
+                db.userupdatepassword(id, null);
             }
         }
-        if(!autoLogin)
-        {
+        if (!autoLogin) {
             db.lastuserdelete();
         }
     }
+
     private class Post extends AsyncTask<HashMap<String, String>, Void, JSONObject> {
         //  HttpClient client = new DefaultHttpClient();
         CloseableHttpClient client = HttpClients.custom().useSystemProperties().build();
@@ -113,6 +103,7 @@ public class JsonPost {
         JSONObject jsonObject = new JSONObject();
         List<NameValuePair> nameValuePair = new ArrayList<NameValuePair>();
         HashMap<String, String> map;
+
         @Override
         protected JSONObject doInBackground(HashMap<String, String>... params) {
             map = params[0];
@@ -129,7 +120,7 @@ public class JsonPost {
             }
             nameValuePair.add(new BasicNameValuePair("jsonString", jsonObject
                     .toString()));
-            CloseableHttpResponse response=null;
+            CloseableHttpResponse response = null;
             try {
                 httpPost.setEntity(new UrlEncodedFormEntity(nameValuePair));
                 try {
@@ -152,8 +143,7 @@ public class JsonPost {
 
             } catch (UnsupportedEncodingException e) {
                 e.printStackTrace();
-            }
-            finally {
+            } finally {
                 try {
                     response.close();
                 } catch (IOException e) {
@@ -174,7 +164,7 @@ public class JsonPost {
                         String password = jsonObject.getString("user_password");
                         Log.v("id", "id=" + id);
                         Log.v("afterpassword", "password" + password);
-                        dbsave(this.jsonObject.getString("email"),this.jsonObject.getString("password"));
+                        dbsave(this.jsonObject.getString("email"), this.jsonObject.getString("password"));
                         //这里写跳转代码
                         //loginActivity.showProgress(false);
 
@@ -192,6 +182,16 @@ public class JsonPost {
                         Log.v("id", "id=" + id);
                         Log.v("password", "password" + password);
                         Log.v("name", "name" + name);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                    break;
+                }
+                //comment
+                case 3: {
+                    try {
+                        String username = jsonObject.getString("username");
+                        String content= jsonObject.getString("content");
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
