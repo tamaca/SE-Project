@@ -62,7 +62,6 @@ public class LoginActivity extends GeneralActivity implements LoaderCallbacks<Cu
     private CheckBox autoLogin;
     private CheckBox rememPassword;
     private DB db = new DB(this);
-    private TextView register;
     private final static int SIGN_IN = 1;
     Toast toast;
     private GestureDetector gestureDetector;
@@ -125,7 +124,7 @@ public class LoginActivity extends GeneralActivity implements LoaderCallbacks<Cu
 
         mLoginFormView = findViewById(R.id.login_form);
         mProgressView = findViewById(R.id.login_progress);
-        register = (TextView)findViewById(R.id.register_button);
+        TextView register = (TextView) findViewById(R.id.register_button);
         register.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {

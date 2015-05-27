@@ -45,8 +45,10 @@ public class GeneralActivity extends Activity implements GestureDetector.OnGestu
 
     @Override
     public boolean onFling(MotionEvent motionEvent, MotionEvent motionEvent1, float v, float v1) {
-        if(v>0){
-            GeneralActivity.this.finish();
+        if(v>2000){
+            //if(Math.abs(v1)<2000)
+                if(v > Math.abs(v1)*2)
+                    GeneralActivity.this.finish();
         }
         return false;
     }

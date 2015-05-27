@@ -5,6 +5,8 @@ import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.EditText;
 import android.widget.ImageView;
 
 import com.example.team.myapplication.util.GeneralActivity;
@@ -12,6 +14,7 @@ import com.example.team.myapplication.util.GeneralActivity;
 
 public class ViewPictureActivity extends GeneralActivity {
     ImageView imgview;
+    private EditText editText;
     @Override
 
     protected void onCreate(Bundle savedInstanceState) {
@@ -23,6 +26,13 @@ public class ViewPictureActivity extends GeneralActivity {
         Bitmap bitmap = (Bitmap)intent.getExtras().get("pic");
         imgview.setImageBitmap(bitmap);
         getActionBar().setDisplayHomeAsUpEnabled(true);
+        editText = (EditText)findViewById(R.id.comment_text);
+        editText.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                submitComment();
+            }
+        });
 
     }
 
@@ -52,5 +62,11 @@ public class ViewPictureActivity extends GeneralActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    //在此上传评论
+    public void submitComment(){
+        String comment = editText.getText().toString();
+
     }
 }

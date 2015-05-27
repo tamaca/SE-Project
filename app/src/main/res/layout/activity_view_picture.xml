@@ -3,17 +3,21 @@
     android:layout_height="match_parent" android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingBottom="0dp"
     android:clipToPadding="true"
     android:fitsSystemWindows="true"
     tools:context="com.example.team.myapplication.ViewPictureActivity"
-    android:background="@color/背景蓝">
+    android:background="@color/背景蓝"
+    android:gravity="center_horizontal">
 
     <ImageView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/imageView8"
-        android:layout_gravity="center_horizontal|top" />
+        android:layout_gravity="center_horizontal|top"
+        android:contentDescription="@string/OK"
+        android:layout_alignWithParentIfMissing="false"
+        android:layout_alignParentTop="false" />
 
     <LinearLayout
         android:orientation="horizontal"
@@ -21,9 +25,12 @@
         android:layout_height="wrap_content"
         android:weightSum="3"
         android:id="@+id/linearLayout2"
-        android:layout_alignParentBottom="true"
+        android:layout_alignParentBottom="false"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true">
+        android:layout_alignParentStart="true"
+        android:layout_below="@id/imageView8"
+        android:gravity="center"
+        android:layout_marginTop="20dp">
 
         <Button
             android:layout_width="wrap_content"
@@ -41,28 +48,42 @@
             android:textColor="@color/白色"
             android:id="@+id/comment_all"
             android:layout_weight="1"
-            android:background="@drawable/button_style4"/>
-
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="@string/comment"
-            android:textColor="@color/白色"
-            android:id="@+id/comment"
             android:background="@drawable/button_style3"/>
 
     </LinearLayout>
 
-    <EditText
+    <LinearLayout
+        android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/editText2"
-        android:hint="@string/comment_text"
-        android:background="@drawable/textview_style4"
-        android:layout_above="@+id/linearLayout2"
-        android:layout_marginBottom="5dp"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
+
+        android:layout_alignParentEnd="false"
+        android:layout_alignParentBottom="true"
+        android:layout_alignWithParentIfMissing="true">
+
+        <EditText
+            android:layout_width="241dp"
+            android:layout_height="wrap_content"
+            android:id="@+id/comment_text"
+            android:hint="@string/comment_text"
+            android:background="@drawable/textview_style4"
+            android:layout_weight="0.04" />
+
+        <Button
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.85"
+            android:text="@string/comment"
+            android:textColor="@color/白色"
+            android:id="@+id/submit_comment"
+            android:background="@drawable/button_style3"/>
+    </LinearLayout>
+
+    <ProgressBar
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/progressBar"
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true" />
 
 </RelativeLayout>
