@@ -10,7 +10,9 @@ import org.apache.http.NameValuePair;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.message.BasicNameValuePair;
+import org.apache.http4.client.entity.UrlEncodedFormEntityHC4;
 import org.apache.http4.client.methods.CloseableHttpResponse;
+import org.apache.http4.client.methods.HttpPostHC4;
 import org.apache.http4.impl.client.CloseableHttpClient;
 import org.apache.http4.impl.client.HttpClients;
 import org.json.JSONException;
@@ -99,7 +101,7 @@ public class JsonPost {
         //  HttpClient client = new DefaultHttpClient();
         CloseableHttpClient client = HttpClients.custom().useSystemProperties().build();
         //HttpPost httpPost = new HttpPost(url);
-        HttpPost httpPost = new HttpPost(url);
+        HttpPostHC4 httpPost = new HttpPostHC4(url);
         JSONObject jsonObject = new JSONObject();
         List<NameValuePair> nameValuePair = new ArrayList<NameValuePair>();
         HashMap<String, String> map;
@@ -122,7 +124,10 @@ public class JsonPost {
                     .toString()));
             CloseableHttpResponse response = null;
             try {
-                httpPost.setEntity(new UrlEncodedFormEntity(nameValuePair));
+              //  httpPost.setHeader("Content-Type", "application/x-www-form-urlencoded");
+              //  httpPost.setHeader("Accept", "application/json");
+              //  httpPost.setHeader("Content-type", "application/json");
+                httpPost.setEntity(new UrlEncodedFormEntityHC4(nameValuePair, "UTF-8"));
                 try {
                     response = client.execute(httpPost);
                     StringBuilder builder = new StringBuilder();
@@ -146,6 +151,7 @@ public class JsonPost {
             } finally {
                 try {
                     response.close();
+                    client.close();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -190,8 +196,9 @@ public class JsonPost {
                 //comment
                 case 3: {
                     try {
-                        String username = jsonObject.getString("username");
-                        String content= jsonObject.getString("content");
+                        String username = jsonObject.getString("user_name");
+                        String content= jsonObject.getString("user_content");
+                        Log.v("content", "content" + content);
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }

@@ -13,10 +13,13 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 
 import com.example.team.myapplication.Database.DB;
+import com.example.team.myapplication.Network.AES;
+import com.example.team.myapplication.Network.JsonPost;
 import com.example.team.myapplication.util.Comment;
 import com.example.team.myapplication.util.GeneralActivity;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 
@@ -90,17 +93,18 @@ public class ViewPictureActivity extends GeneralActivity {
             editText.setError("评论不能超过120字");
             return;
         }
-        addComment(comment);//在用户界面能看到评论更新
+       // addComment(comment);//在用户界面能看到评论更新
         editText.setText(null);
-        /*String key = "1234567891234567";
+        //TODO:显示评论发送中（孙晓宇做）
+        String key = "1234567891234567";
         String username= LoginState.username;
         AES aesEncrypt = new AES(key);
         String encryptUsername=aesEncrypt.encrypt(username);
-        String url = "http://192.168.137.1/php2/index.php";
+        String url = "http://192.168.137.1/php22/index.php";
         HashMap<String, String> map = new HashMap<String, String>();
         map.put("username", encryptUsername);
         map.put("content", comment);
-        JsonPost post = new JsonPost(map, url,3,db);*/
+        JsonPost post = new JsonPost(map, url,3,db);
     }
 
     public void addComment(String comment){
