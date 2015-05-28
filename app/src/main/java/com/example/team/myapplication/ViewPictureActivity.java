@@ -12,34 +12,27 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 
-<<<<<<< HEAD
+import com.example.team.myapplication.Database.DB;
+import com.example.team.myapplication.Network.AES;
+import com.example.team.myapplication.Network.JsonPost;
 import com.example.team.myapplication.util.Comment;
 import com.example.team.myapplication.util.GeneralActivity;
 
 import java.util.ArrayList;
-import java.util.List;
-=======
-import com.example.team.myapplication.Cache.Localstorage;
-import com.example.team.myapplication.Database.DB;
-import com.example.team.myapplication.Network.AES;
-import com.example.team.myapplication.Network.JsonPost;
-import com.example.team.myapplication.util.GeneralActivity;
-
 import java.util.HashMap;
->>>>>>> origin/develop
+import java.util.List;
+
 
 
 public class ViewPictureActivity extends GeneralActivity {
     ImageView imgview;
     private EditText editText;
-<<<<<<< HEAD
     private LinearLayout commentView;
     private ProgressBar progressBar;
     private List<Comment> comments;
     private View scrollView;
-=======
+
     private DB db = new DB(this);
->>>>>>> origin/develop
     @Override
 
     protected void onCreate(Bundle savedInstanceState) {
@@ -92,16 +85,15 @@ public class ViewPictureActivity extends GeneralActivity {
     }
 
     //在此上传评论
-<<<<<<< HEAD
-    public void submitComment(View view){
+    public void submitComment(View view) {
         String comment = editText.getText().toString();//获取输入的评论
-        if(comment.isEmpty()){
+        if (comment.isEmpty()) {
 
             return;
         }
         addComment(comment);//在用户界面能看到评论更新
         editText.setText(null);
-=======
+    }
     public void submitComment(){
         String comment = editText.getText().toString();
         String key = "1234567891234567";
@@ -113,7 +105,6 @@ public class ViewPictureActivity extends GeneralActivity {
         map.put("username", encryptUsername);
         map.put("content", comment);
         JsonPost post = new JsonPost(map, url,3,db);
->>>>>>> origin/develop
     }
 
     public void addComment(String comment){
