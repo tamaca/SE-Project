@@ -178,7 +178,6 @@ public class MainActivity extends Activity {
     public void onResume(){
         super.onResume();
         changeView(LoginState.getLogined());
-        //mTabHost.setCurrentTabByTag(getCurrentTag());
     }
     public void logout(){
         LoginState.setLogined(false,"guest");

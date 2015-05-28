@@ -9,17 +9,16 @@ import android.widget.TextView;
 import com.example.team.myapplication.R;
 
 public class Comment extends LinearLayout {
-    public Comment(Context context,String _userName,String _comment) {
+    public TextView textView1;
+    public TextView textView2;
+    public Comment(Context context, final String _userName,String _comment) {
         super(context);
         View view = LayoutInflater.from(context).inflate(R.layout.layout_comment, null);
-        TextView textView1 = (TextView)view.findViewById(R.id.user_name_in_comment);
-        TextView textView2 = (TextView)view.findViewById(R.id.comment);
+        textView1 = (TextView)view.findViewById(R.id.user_name_in_comment);
+        textView2 = (TextView)view.findViewById(R.id.comment);
         textView1.setText(_userName);
         textView2.setText(_comment);
         addView(view);
-
-
-
 
     }
 

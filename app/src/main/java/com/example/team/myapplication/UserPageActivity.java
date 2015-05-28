@@ -1,21 +1,24 @@
 package com.example.team.myapplication;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.TextView;
 
 import com.example.team.myapplication.util.GeneralActivity;
 
 public class UserPageActivity extends GeneralActivity {
-
+    private TextView name;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        /*if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-            getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
-        }*/
+
         setContentView(R.layout.activity_user_page);
+        Intent intent = getIntent();
+        String userName = intent.getExtras().get("user_name").toString();
+        name = (TextView)findViewById(R.id.name);
+        name.setText(userName);
         getActionBar().setDisplayHomeAsUpEnabled(true);
 
     }
