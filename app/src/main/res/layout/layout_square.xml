@@ -25,7 +25,8 @@
                 android:scaleType="centerInside"
                 android:layout_marginTop="10dp"
                 android:onClick="toViewPictureActivity"
-                android:layout_marginLeft="10dp" />
+                android:layout_marginLeft="10dp"
+                android:contentDescription="sssss" />
 
 
         </RelativeLayout>
