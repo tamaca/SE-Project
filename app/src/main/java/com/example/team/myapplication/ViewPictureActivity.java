@@ -1,5 +1,7 @@
 package com.example.team.myapplication;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
@@ -8,13 +10,16 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.team.myapplication.Database.DB;
+import com.example.team.myapplication.Network.NetworkState;
 import com.example.team.myapplication.util.Comment;
 import com.example.team.myapplication.util.GeneralActivity;
 
@@ -30,9 +35,13 @@ public class ViewPictureActivity extends GeneralActivity {
     private ProgressBar progressBar;
     private List<Comment> comments;
     private UploadComment uploadComment = null;
-    private View scrollView;
-
+    private TextView author;
+    private TextView uploadTime;
     private DB db = new DB(this);
+    private int likeNumber;
+    private Button like;
+    private boolean isLike = false;
+
 
     @Override
 
@@ -40,23 +49,30 @@ public class ViewPictureActivity extends GeneralActivity {
         super.onCreate(savedInstanceState);
         setTitle("查看图片");
         Intent intent = getIntent();
+
         setContentView(R.layout.activity_view_picture);
         imgview = (ImageView)findViewById(R.id.imageView8);
         Bitmap bitmap = (Bitmap)intent.getExtras().get("pic");
         imgview.setImageBitmap(bitmap);
-        imgview.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-            }
-        });
         getActionBar().setDisplayHomeAsUpEnabled(true);
         editText = (EditText)findViewById(R.id.comment_text);
         commentView = (LinearLayout)findViewById(R.id.comment_view);
         progressBar = (ProgressBar)findViewById(R.id.progressBar);
+        author = (TextView)findViewById(R.id.author);
+        like = (Button)findViewById(R.id.like_button);
+        uploadTime = (TextView)findViewById(R.id.upload_time);
+
+        author.setOnClickListener(new ToUserPageListener());
+        like.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                changeLike(view);
+            }
+        });
+
         comments = new ArrayList<>();//评论的ArrayList 数组，把获得的评论放在这里
 
-        getComments();
+        getImageInformation();
 
     }
 
@@ -88,7 +104,6 @@ public class ViewPictureActivity extends GeneralActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    //在此上传评论
     public void submitComment(View view) {
         String comment = editText.getText().toString();//获取输入的评论
         if (comment.isEmpty()) {
@@ -115,27 +130,108 @@ public class ViewPictureActivity extends GeneralActivity {
     }
 
     public void addComment(String comment){
-        comments.add(new Comment(getApplicationContext(), LoginState.username , comment));
+        comments.add(new Comment(getApplicationContext(), LoginState.username, comment));
         commentView.addView(comments.get(comments.size() - 1));
+        comments.get(comments.size()-1).textView1.setOnClickListener(new ToUserPageListener());
         Thread refresh = new Thread(new Refresh());
         refresh.start();
 
     }
 
-    public void getComments(){
-        //测试显示评论.
-        //获取评论
+
+    public void getImageInformation(){
+        //TODO 获取上传者
+        String _author = "The Hammer";
+        author.setText(_author);
+
+        //TODO 获取赞的数量和该用户是否已经赞
+        isLike = false;//测试用, false 代表没有赞过
+        likeNumber = 999;//测试用
+        like.setText(isLike ? "取消赞\n" : "赞\n" + "(" + likeNumber + ")");
+
+        //TODO 获取该图片的上传时间
+        String _uploadTime = "2月1日";
+        uploadTime.setText(_uploadTime);
+
+        //TODO 获取评论
+        String commenter = "sxy";
+        String comment = "评论在这里（5毛一条，括号里不要复制）";
         comments.add(new Comment(getApplicationContext(),
-                "sxy", "评论在这里（5毛一条，括号里不要复制）"));
+                commenter,comment ));
 
         for(int i = 0;i<comments.size();i++){
             commentView.addView(comments.get(i));
+            comments.get(i).textView1.setOnClickListener(new ToUserPageListener());
         }
+    }
+
+    public void changeLike(View view){
+        onLikeChange(isLike);
+    }
+    public void onLikeChange(boolean zan){
+        if(!zan){
+            likeNumber++;
+            //TODO 上传赞
+            like.setText("取消赞\n"+"("+likeNumber+")");
+        }
+        else{
+            likeNumber--;
+            //TODO 上传取消赞
+            like.setText("赞\n"+"("+likeNumber+")");
+        }
+        isLike = !isLike;
     }
 
     public void showProgress(boolean show){
 
-        progressBar.setVisibility(show?View.VISIBLE:View.GONE);
+        progressBar.setVisibility(show ? View.VISIBLE : View.GONE);
+    }
+
+    public void toUserPageActivity(View view){
+        Intent intent = new Intent(this,UserPageActivity.class);
+        intent.putExtra("user_name", ((TextView) view).getText());
+        //TODO 加入查看个人主页时传入的其他参数
+        startActivity(intent);
+    }
+
+    public void toPictureActivity(View view){
+        if(NetworkState.isNetworkConnected(getApplicationContext())) {
+            if (!NetworkState.isWifiEnable(getApplicationContext())) {
+                AlertDialog.Builder builder =
+                        new AlertDialog.Builder(ViewPictureActivity.this).setMessage("将会消耗流量下载，继续？");
+                builder.setPositiveButton("继续", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        /*Intent intent = new Intent(getApplicationContext(), PictureActivity.class);
+                        //TODO 在这里添加想传入查看原图页面的信息，比如图片主人的名字，图片ID 啥的。
+
+                        startActivity(intent);*/
+                    }
+                });
+                builder.setNegativeButton("不了", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+
+                    }
+                });
+                builder.create().show();
+            }
+            else {
+                /*Intent intent = new Intent(getApplicationContext(), PictureActivity.class);
+                //TODO 在这里添加想传入查看原图页面的信息，比如图片主人的名字，图片ID 啥的。
+
+                startActivity(intent);*/
+            }
+        }
+        else{
+            /*Intent intent = new Intent(this,PictureActivity.class);
+            view.setDrawingCacheEnabled(true);
+            Bitmap bitmap = view.getDrawingCache();
+            intent.putExtra("pic",bitmap);
+            startActivity(intent);*/
+        }
+
+
     }
 
     class Refresh implements Runnable{
@@ -214,5 +310,12 @@ public class ViewPictureActivity extends GeneralActivity {
 
     }
 
+    class ToUserPageListener implements TextView.OnClickListener{
+
+        @Override
+        public void onClick(View view) {
+            toUserPageActivity(view);
+        }
+    }
 
 }
