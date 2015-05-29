@@ -19,6 +19,7 @@ public class UserPageActivity extends GeneralActivity {
         String userName = intent.getExtras().get("user_name").toString();
         name = (TextView)findViewById(R.id.name);
         name.setText(userName);
+        setTitle(userName+"的个人主页");
         getActionBar().setDisplayHomeAsUpEnabled(true);
 
     }
@@ -38,9 +39,14 @@ public class UserPageActivity extends GeneralActivity {
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
+        switch (id){
+            case android.R.id.home:
+                finish();
+                return true;
+            case R.id.action_settings:
+                return true;
         }
+
 
         return super.onOptionsItemSelected(item);
     }

@@ -1,10 +1,7 @@
 package com.example.team.myapplication;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.content.pm.ResolveInfo;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -244,13 +241,6 @@ public class MainActivity extends Activity {
         }
         /*CharSequence text = ((Button)view).getText();
         Toast.makeText(this,text,Toast.LENGTH_SHORT).show();*/
-    }
-
-    public boolean isIntentAvailable(Context context,String action){
-        PackageManager packageManager = context.getPackageManager();
-        Intent intent = new Intent(action);
-        List<ResolveInfo>list = packageManager.queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY);
-        return list.size()>0;
     }
 
     @Override
