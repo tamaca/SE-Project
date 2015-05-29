@@ -51,7 +51,7 @@
             android:name=".PictureActivity"
             android:label="@string/title_activity_picture"
             android:screenOrientation="portrait"
-            android:theme="@style/GeneralTheme" >
+            android:theme="@style/FullscreenTheme" >
         </activity>
         <activity
             android:name=".EditPictureActivity"

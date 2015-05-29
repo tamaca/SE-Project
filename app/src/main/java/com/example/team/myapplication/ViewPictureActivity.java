@@ -2,6 +2,7 @@ package com.example.team.myapplication;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -11,15 +12,13 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import com.example.team.myapplication.Database.DB;
-import com.example.team.myapplication.Network.AES;
-import com.example.team.myapplication.Network.JsonPost;
 import com.example.team.myapplication.util.Comment;
 import com.example.team.myapplication.util.GeneralActivity;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 
@@ -30,7 +29,7 @@ public class ViewPictureActivity extends GeneralActivity {
     private LinearLayout commentView;
     private ProgressBar progressBar;
     private List<Comment> comments;
-
+    private UploadComment uploadComment = null;
     private View scrollView;
 
     private DB db = new DB(this);
@@ -45,6 +44,12 @@ public class ViewPictureActivity extends GeneralActivity {
         imgview = (ImageView)findViewById(R.id.imageView8);
         Bitmap bitmap = (Bitmap)intent.getExtras().get("pic");
         imgview.setImageBitmap(bitmap);
+        imgview.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+            }
+        });
         getActionBar().setDisplayHomeAsUpEnabled(true);
         editText = (EditText)findViewById(R.id.comment_text);
         commentView = (LinearLayout)findViewById(R.id.comment_view);
@@ -89,22 +94,24 @@ public class ViewPictureActivity extends GeneralActivity {
         if (comment.isEmpty()) {
             return;
         }
+        else if(comment.charAt(0)==' '){
+            editText.setError("首字为空格");
+            return;
+        }
         else if(comment.length()>120){
             editText.setError("评论不能超过120字");
             return;
         }
-       // addComment(comment);//在用户界面能看到评论更新
-        editText.setText(null);
-        //TODO:显示评论发送中（孙晓宇做）
-        String key = "1234567891234567";
-        String username= LoginState.username;
-        AES aesEncrypt = new AES(key);
-        String encryptUsername=aesEncrypt.encrypt(username);
-        String url = "http://192.168.137.1/php22/index.php";
-        HashMap<String, String> map = new HashMap<String, String>();
-        map.put("username", encryptUsername);
-        map.put("content", comment);
-        JsonPost post = new JsonPost(map, url,3,db);
+        if(uploadComment==null) {
+            showProgress(true);
+            uploadComment = new UploadComment(comment);
+            uploadComment.execute((Void) null);
+        }
+        else{
+            Toast.makeText(getApplicationContext(),"5秒内只能上传一次评论",Toast.LENGTH_SHORT).show();
+        }
+
+
     }
 
     public void addComment(String comment){
@@ -125,6 +132,12 @@ public class ViewPictureActivity extends GeneralActivity {
             commentView.addView(comments.get(i));
         }
     }
+
+    public void showProgress(boolean show){
+
+        progressBar.setVisibility(show?View.VISIBLE:View.GONE);
+    }
+
     class Refresh implements Runnable{
         @Override
         public void run() {
@@ -141,5 +154,65 @@ public class ViewPictureActivity extends GeneralActivity {
             }
         }
     }
+
+    class UploadComment extends AsyncTask<Void,Void,Boolean>{
+        private String comment;
+        public UploadComment(String comment){
+            this.comment = comment;
+
+        }
+
+        @Override
+        protected Boolean doInBackground(Void... voids) {
+            try{
+                /*String key = "1234567891234567";
+                String username= LoginState.username;
+                AES aesEncrypt = new AES(key);
+                String encryptUsername=aesEncrypt.encrypt(username);
+                String url = "http://192.168.137.1/php22/index.php";
+                HashMap<String, String> map = new HashMap<String, String>();
+                map.put("username", encryptUsername);
+                map.put("content", comment);
+                JsonPost post = new JsonPost(map, url,3,db);*/
+                Thread.sleep(100);
+            }
+            catch (Exception e){
+                return false;
+            }
+
+
+            return true;
+        }
+
+        @Override
+        protected void onPostExecute(final Boolean success){
+
+            showProgress(false);
+            if(success){
+                Toast.makeText(getApplicationContext(),"评论成功",Toast.LENGTH_SHORT).show();
+                addComment(comment);
+                editText.setText(null);
+                Thread thread = new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            Thread.sleep(5000);
+                            uploadComment = null;
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                });
+                thread.start();
+
+            }
+            else{
+                Toast.makeText(getApplicationContext(),"评论失败",Toast.LENGTH_SHORT).show();
+                uploadComment = null;
+            }
+        }
+
+    }
+
 
 }
