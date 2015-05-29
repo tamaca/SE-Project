@@ -2,9 +2,14 @@ package com.example.team.myapplication.Network;
 
 import android.os.AsyncTask;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
+import android.widget.TextView;
 
 import com.example.team.myapplication.Database.DB;
 import com.example.team.myapplication.LoginActivity;
+import com.example.team.myapplication.R;
+import com.example.team.myapplication.util.Comment;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
@@ -38,6 +43,7 @@ public class JsonPost {
     boolean rememPassword;
     private DB db;
     private LoginActivity loginActivity;
+    private View view;
 
     //Login
     public JsonPost(HashMap<String, String> map, String url, int type, boolean autoLogin, boolean rememPassword, DB db) {
@@ -57,10 +63,24 @@ public class JsonPost {
     }
 
     //Register
-    public JsonPost(HashMap<String, String> map, String url, int type,DB db) {
+    public JsonPost(HashMap<String, String> map, String url, int type, DB db) {
         this.url = url;
         this.type = type;
-        this.db=db;
+        this.db = db;
+        try {
+            Post post = new Post();
+            post.execute(map);
+        } catch (Exception e) {
+            e.toString();
+        }
+    }
+
+    //图片信息获取
+    public JsonPost(HashMap<String, String> map, String url, int type, DB db, View view) {
+        this.url = url;
+        this.type = type;
+        this.db = db;
+        this.view = view;
         try {
             Post post = new Post();
             post.execute(map);
@@ -97,6 +117,46 @@ public class JsonPost {
         }
     }
 
+    public void getImageInformation(JSONObject info) {
+        try {
+            TextView author = (TextView) view.findViewById(R.id.author);
+            Button like = (Button) view.findViewById(R.id.like_button);
+            TextView uploadTime = (TextView) view.findViewById(R.id.upload_time);
+            List<Comment> comments;
+            //
+            String originImageurl = info.getString("origin");
+            String _author = info.getString("author");
+            String _like = info.getString("like");
+            String _isLike = info.getString("islike");
+            String _updateTime = info.getString("updatetime");
+            String _comment = info.getString("comment");
+            //TODO 获取上传者
+            //String _author = "The Hammer";
+            author.setText(_author);
+            //TODO 获取赞的数量和该用户是否已经赞
+            Boolean isLike =(_isLike=="true");//测试用, false 代表没有赞过
+            int likeNumber =Integer.parseInt(_like);//测试用
+            like.setText(isLike ? "取消赞\n" : "赞\n" + "(" + likeNumber + ")");
+
+            //TODO 获取该图片的上传时间
+            uploadTime.setText(_updateTime);
+
+            //TODO 获取评论
+            String commenter = "sxy";
+            String comment = "评论在这里（5毛一条，括号里不要复制）";
+            comments.add(new Comment(getApplicationContext(),
+                    commenter, comment));
+
+            for (int i = 0; i < comments.size(); i++) {
+                commentView.addView(comments.get(i));
+                comments.get(i).textView1.setOnClickListener(new ToUserPageListener());
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+    }
+
     private class Post extends AsyncTask<HashMap<String, String>, Void, JSONObject> {
         //  HttpClient client = new DefaultHttpClient();
         CloseableHttpClient client = HttpClients.custom().useSystemProperties().build();
@@ -124,9 +184,9 @@ public class JsonPost {
                     .toString()));
             CloseableHttpResponse response = null;
             try {
-              //  httpPost.setHeader("Content-Type", "application/x-www-form-urlencoded");
-              //  httpPost.setHeader("Accept", "application/json");
-              //  httpPost.setHeader("Content-type", "application/json");
+                //  httpPost.setHeader("Content-Type", "application/x-www-form-urlencoded");
+                //  httpPost.setHeader("Accept", "application/json");
+                //  httpPost.setHeader("Content-type", "application/json");
                 httpPost.setEntity(new UrlEncodedFormEntityHC4(nameValuePair, "UTF-8"));
                 try {
                     response = client.execute(httpPost);
@@ -197,11 +257,18 @@ public class JsonPost {
                 case 3: {
                     try {
                         String username = jsonObject.getString("user_name");
-                        String content= jsonObject.getString("user_content");
+                        String content = jsonObject.getString("user_content");
                         Log.v("content", "content" + content);
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
+                    break;
+                }
+                //获取图片信息
+                case 4: {
+                    //直接获取原图的URL
+                    //图片的评论以JSON格式收取
+                    getImageInformation(jsonObject);
                     break;
                 }
                 default:

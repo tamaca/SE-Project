@@ -101,7 +101,6 @@ public class MainActivity extends Activity {
             @Override
             public void onTabChanged(String tabId) {
                 viewPager.setCurrentItem(mTabHost.getCurrentTab());
-
             }
         });
 
@@ -168,8 +167,6 @@ public class MainActivity extends Activity {
     {
         String picURL1 = "http://7.share.photo.xuite.net/angel890208/1719fd6/4701295/179671143_x.jpg";
         ImageGet imageGet=new ImageGet((ImageView)squareView.findViewById(R.id.imageView6),picURL1,db);
-        ((ImageView)squareView.findViewById(R.id.imageView4)).setContentDescription("what???");
-        String des= ((ImageView)squareView.findViewById(R.id.imageView4)).getContentDescription().toString();
     }
 
 
@@ -280,10 +277,10 @@ public class MainActivity extends Activity {
     }
     public void toViewPictureActivity(View view){
         Intent intent = new Intent(this,ViewPictureActivity.class);
-        view.setDrawingCacheEnabled(true);
-        Bitmap bitmap = view.getDrawingCache();
-
-        intent.putExtra("pic",bitmap);
+      //  view.setDrawingCacheEnabled(true);
+       // Bitmap bitmap = view.getDrawingCache();
+        String imageid=view.getContentDescription().toString();
+        intent.putExtra("id",imageid);
         startActivity(intent);
     }
     public void toUserListActivity(View view, int x){

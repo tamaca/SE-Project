@@ -19,13 +19,14 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.team.myapplication.Database.DB;
+import com.example.team.myapplication.Network.JsonPost;
 import com.example.team.myapplication.Network.NetworkState;
 import com.example.team.myapplication.util.Comment;
 import com.example.team.myapplication.util.GeneralActivity;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-
 
 
 public class ViewPictureActivity extends GeneralActivity {
@@ -51,16 +52,15 @@ public class ViewPictureActivity extends GeneralActivity {
         Intent intent = getIntent();
 
         setContentView(R.layout.activity_view_picture);
-        imgview = (ImageView)findViewById(R.id.imageView8);
-        Bitmap bitmap = (Bitmap)intent.getExtras().get("pic");
-        imgview.setImageBitmap(bitmap);
+        imgview = (ImageView) findViewById(R.id.imageView8);
+
         getActionBar().setDisplayHomeAsUpEnabled(true);
-        editText = (EditText)findViewById(R.id.comment_text);
-        commentView = (LinearLayout)findViewById(R.id.comment_view);
-        progressBar = (ProgressBar)findViewById(R.id.progressBar);
-        author = (TextView)findViewById(R.id.author);
-        like = (Button)findViewById(R.id.like_button);
-        uploadTime = (TextView)findViewById(R.id.upload_time);
+        editText = (EditText) findViewById(R.id.comment_text);
+        commentView = (LinearLayout) findViewById(R.id.comment_view);
+        progressBar = (ProgressBar) findViewById(R.id.progressBar);
+        author = (TextView) findViewById(R.id.author);
+        like = (Button) findViewById(R.id.like_button);
+        uploadTime = (TextView) findViewById(R.id.upload_time);
 
         author.setOnClickListener(new ToUserPageListener());
         like.setOnClickListener(new View.OnClickListener() {
@@ -70,9 +70,9 @@ public class ViewPictureActivity extends GeneralActivity {
             }
         });
 
-        comments = new ArrayList<>();//评论的ArrayList 数组，把获得的评论放在这里
-
-        getImageInformation();
+       //评论的ArrayList 数组，把获得的评论放在这里
+        String imageid = (String) intent.getExtras().get("id");
+        getImageInformation(imageid);
 
     }
 
@@ -92,7 +92,7 @@ public class ViewPictureActivity extends GeneralActivity {
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        switch (id){
+        switch (id) {
             case android.R.id.home:
                 finish();
                 return true;
@@ -108,38 +108,41 @@ public class ViewPictureActivity extends GeneralActivity {
         String comment = editText.getText().toString();//获取输入的评论
         if (comment.isEmpty()) {
             return;
-        }
-        else if(comment.charAt(0)==' '){
+        } else if (comment.charAt(0) == ' ') {
             editText.setError("首字为空格");
             return;
-        }
-        else if(comment.length()>120){
+        } else if (comment.length() > 120) {
             editText.setError("评论不能超过120字");
             return;
         }
-        if(uploadComment==null) {
+        if (uploadComment == null) {
             showProgress(true);
             uploadComment = new UploadComment(comment);
             uploadComment.execute((Void) null);
-        }
-        else{
-            Toast.makeText(getApplicationContext(),"5秒内只能上传一次评论",Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(getApplicationContext(), "5秒内只能上传一次评论", Toast.LENGTH_SHORT).show();
         }
 
 
     }
 
-    public void addComment(String comment){
+    public void addComment(String comment) {
         comments.add(new Comment(getApplicationContext(), LoginState.username, comment));
         commentView.addView(comments.get(comments.size() - 1));
-        comments.get(comments.size()-1).textView1.setOnClickListener(new ToUserPageListener());
+        comments.get(comments.size() - 1).textView1.setOnClickListener(new ToUserPageListener());
         Thread refresh = new Thread(new Refresh());
         refresh.start();
 
     }
 
+    public void getImageInformation(String imageid) {
+        String url = "http://192.168.137.1/php2/index.php";
+        HashMap<String, String> map = new HashMap<String, String>();
+        map.put("imageid", imageid);
+        JsonPost post = new JsonPost(map, url, 4, db);
+    }
 
-    public void getImageInformation(){
+    public void getImageInformation() {
         //TODO 获取上传者
         String _author = "The Hammer";
         author.setText(_author);
@@ -157,45 +160,45 @@ public class ViewPictureActivity extends GeneralActivity {
         String commenter = "sxy";
         String comment = "评论在这里（5毛一条，括号里不要复制）";
         comments.add(new Comment(getApplicationContext(),
-                commenter,comment ));
+                commenter, comment));
 
-        for(int i = 0;i<comments.size();i++){
+        for (int i = 0; i < comments.size(); i++) {
             commentView.addView(comments.get(i));
             comments.get(i).textView1.setOnClickListener(new ToUserPageListener());
         }
     }
 
-    public void changeLike(View view){
+    public void changeLike(View view) {
         onLikeChange(isLike);
     }
-    public void onLikeChange(boolean zan){
-        if(!zan){
+
+    public void onLikeChange(boolean zan) {
+        if (!zan) {
             likeNumber++;
             //TODO 上传赞
-            like.setText("取消赞\n"+"("+likeNumber+")");
-        }
-        else{
+            like.setText("取消赞\n" + "(" + likeNumber + ")");
+        } else {
             likeNumber--;
             //TODO 上传取消赞
-            like.setText("赞\n"+"("+likeNumber+")");
+            like.setText("赞\n" + "(" + likeNumber + ")");
         }
         isLike = !isLike;
     }
 
-    public void showProgress(boolean show){
+    public void showProgress(boolean show) {
 
         progressBar.setVisibility(show ? View.VISIBLE : View.GONE);
     }
 
-    public void toUserPageActivity(View view){
-        Intent intent = new Intent(this,UserPageActivity.class);
+    public void toUserPageActivity(View view) {
+        Intent intent = new Intent(this, UserPageActivity.class);
         intent.putExtra("user_name", ((TextView) view).getText());
         //TODO 加入查看个人主页时传入的其他参数
         startActivity(intent);
     }
 
-    public void toPictureActivity(View view){
-        if(NetworkState.isNetworkConnected(getApplicationContext())) {
+    public void toPictureActivity(View view) {
+        if (NetworkState.isNetworkConnected(getApplicationContext())) {
             if (!NetworkState.isWifiEnable(getApplicationContext())) {
                 AlertDialog.Builder builder =
                         new AlertDialog.Builder(ViewPictureActivity.this).setMessage("将会消耗流量下载，继续？");
@@ -215,15 +218,13 @@ public class ViewPictureActivity extends GeneralActivity {
                     }
                 });
                 builder.create().show();
-            }
-            else {
+            } else {
                 /*Intent intent = new Intent(getApplicationContext(), PictureActivity.class);
                 //TODO 在这里添加想传入查看原图页面的信息，比如图片主人的名字，图片ID 啥的。
 
                 startActivity(intent);*/
             }
-        }
-        else{
+        } else {
             /*Intent intent = new Intent(this,PictureActivity.class);
             view.setDrawingCacheEnabled(true);
             Bitmap bitmap = view.getDrawingCache();
@@ -234,10 +235,10 @@ public class ViewPictureActivity extends GeneralActivity {
 
     }
 
-    class Refresh implements Runnable{
+    class Refresh implements Runnable {
         @Override
         public void run() {
-            while(!Thread.currentThread().isInterrupted()) {
+            while (!Thread.currentThread().isInterrupted()) {
                 try {
                     Thread.sleep(100);
 
@@ -251,16 +252,17 @@ public class ViewPictureActivity extends GeneralActivity {
         }
     }
 
-    class UploadComment extends AsyncTask<Void,Void,Boolean>{
+    class UploadComment extends AsyncTask<Void, Void, Boolean> {
         private String comment;
-        public UploadComment(String comment){
+
+        public UploadComment(String comment) {
             this.comment = comment;
 
         }
 
         @Override
         protected Boolean doInBackground(Void... voids) {
-            try{
+            try {
                 /*String key = "1234567891234567";
                 String username= LoginState.username;
                 AES aesEncrypt = new AES(key);
@@ -271,8 +273,7 @@ public class ViewPictureActivity extends GeneralActivity {
                 map.put("content", comment);
                 JsonPost post = new JsonPost(map, url,3,db);*/
                 Thread.sleep(100);
-            }
-            catch (Exception e){
+            } catch (Exception e) {
                 return false;
             }
 
@@ -281,11 +282,11 @@ public class ViewPictureActivity extends GeneralActivity {
         }
 
         @Override
-        protected void onPostExecute(final Boolean success){
+        protected void onPostExecute(final Boolean success) {
 
             showProgress(false);
-            if(success){
-                Toast.makeText(getApplicationContext(),"评论成功",Toast.LENGTH_SHORT).show();
+            if (success) {
+                Toast.makeText(getApplicationContext(), "评论成功", Toast.LENGTH_SHORT).show();
                 addComment(comment);
                 editText.setText(null);
                 Thread thread = new Thread(new Runnable() {
@@ -301,16 +302,15 @@ public class ViewPictureActivity extends GeneralActivity {
                 });
                 thread.start();
 
-            }
-            else{
-                Toast.makeText(getApplicationContext(),"评论失败",Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(getApplicationContext(), "评论失败", Toast.LENGTH_SHORT).show();
                 uploadComment = null;
             }
         }
 
     }
 
-    class ToUserPageListener implements TextView.OnClickListener{
+    class ToUserPageListener implements TextView.OnClickListener {
 
         @Override
         public void onClick(View view) {
