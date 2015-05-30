@@ -43,6 +43,29 @@ public class ViewPictureActivity extends GeneralActivity {
     private Button like;
     private boolean isLike = false;
 
+    //
+    public ImageView getImgview() {
+        return imgview;
+    }
+    public List<Comment> getComments() {
+        return comments;
+    }
+
+    public LinearLayout getCommentView() {
+        return commentView;
+    }
+
+    public TextView getAuthor() {
+        return author;
+    }
+
+    public TextView getUploadTime() {
+        return uploadTime;
+    }
+
+    public Button getLike() {
+        return like;
+    }
 
     @Override
 
@@ -61,7 +84,7 @@ public class ViewPictureActivity extends GeneralActivity {
         author = (TextView) findViewById(R.id.author);
         like = (Button) findViewById(R.id.like_button);
         uploadTime = (TextView) findViewById(R.id.upload_time);
-
+        comments=new ArrayList<>();
         author.setOnClickListener(new ToUserPageListener());
         like.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -70,7 +93,7 @@ public class ViewPictureActivity extends GeneralActivity {
             }
         });
 
-       //评论的ArrayList 数组，把获得的评论放在这里
+        //评论的ArrayList 数组，把获得的评论放在这里
         String imageid = (String) intent.getExtras().get("id");
         getImageInformation(imageid);
 
@@ -132,17 +155,16 @@ public class ViewPictureActivity extends GeneralActivity {
         comments.get(comments.size() - 1).textView1.setOnClickListener(new ToUserPageListener());
         Thread refresh = new Thread(new Refresh());
         refresh.start();
-
     }
 
     public void getImageInformation(String imageid) {
-        String url = "http://192.168.137.1/php2/index.php";
+        String url = "http://192.168.137.1/php23/index.php";
         HashMap<String, String> map = new HashMap<String, String>();
         map.put("imageid", imageid);
-        JsonPost post = new JsonPost(map, url, 4, db);
+        JsonPost post = new JsonPost(map, url, 4, db, this);
     }
 
-    public void getImageInformation() {
+  /*  public void getImageInformation() {
         //TODO 获取上传者
         String _author = "The Hammer";
         author.setText(_author);
@@ -167,7 +189,7 @@ public class ViewPictureActivity extends GeneralActivity {
             comments.get(i).textView1.setOnClickListener(new ToUserPageListener());
         }
     }
-
+*/
     public void changeLike(View view) {
         onLikeChange(isLike);
     }
@@ -310,7 +332,7 @@ public class ViewPictureActivity extends GeneralActivity {
 
     }
 
-    class ToUserPageListener implements TextView.OnClickListener {
+    public class ToUserPageListener implements TextView.OnClickListener {
 
         @Override
         public void onClick(View view) {

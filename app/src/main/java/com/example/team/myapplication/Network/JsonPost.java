@@ -1,14 +1,17 @@
 package com.example.team.myapplication.Network;
 
+import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.example.team.myapplication.Database.DB;
 import com.example.team.myapplication.LoginActivity;
 import com.example.team.myapplication.R;
+import com.example.team.myapplication.ViewPictureActivity;
 import com.example.team.myapplication.util.Comment;
 
 import org.apache.http.NameValuePair;
@@ -43,7 +46,7 @@ public class JsonPost {
     boolean rememPassword;
     private DB db;
     private LoginActivity loginActivity;
-    private View view;
+    private ViewPictureActivity view;
 
     //Login
     public JsonPost(HashMap<String, String> map, String url, int type, boolean autoLogin, boolean rememPassword, DB db) {
@@ -76,7 +79,7 @@ public class JsonPost {
     }
 
     //图片信息获取
-    public JsonPost(HashMap<String, String> map, String url, int type, DB db, View view) {
+    public JsonPost(HashMap<String, String> map, String url, int type, DB db, ViewPictureActivity view) {
         this.url = url;
         this.type = type;
         this.db = db;
@@ -119,42 +122,44 @@ public class JsonPost {
 
     public void getImageInformation(JSONObject info) {
         try {
-            TextView author = (TextView) view.findViewById(R.id.author);
-            Button like = (Button) view.findViewById(R.id.like_button);
-            TextView uploadTime = (TextView) view.findViewById(R.id.upload_time);
-            List<Comment> comments;
-            //
             String originImageurl = info.getString("origin");
             String _author = info.getString("author");
             String _like = info.getString("like");
             String _isLike = info.getString("islike");
             String _updateTime = info.getString("updatetime");
             String _comment = info.getString("comment");
+            JSONObject commentJson = new JSONObject(_comment);
+            String commenter1 = commentJson.getString("name1");
+            String comment1 = commentJson.getString("comment1");
+            String commenter2 = commentJson.getString("name2");
+            String comment2 = commentJson.getString("comment2");
+            //原图位置
+            view.getImgview().setContentDescription(originImageurl);
             //TODO 获取上传者
             //String _author = "The Hammer";
-            author.setText(_author);
+            view.getAuthor().setText(_author);
             //TODO 获取赞的数量和该用户是否已经赞
-            Boolean isLike =(_isLike=="true");//测试用, false 代表没有赞过
-            int likeNumber =Integer.parseInt(_like);//测试用
-            like.setText(isLike ? "取消赞\n" : "赞\n" + "(" + likeNumber + ")");
-
+            Boolean isLike = (_isLike.equals("true"));//测试用, false 代表没有赞过
+            view.getLike().setText(isLike ? "取消赞\n" : "赞\n" + "(" + _like + ")");
             //TODO 获取该图片的上传时间
-            uploadTime.setText(_updateTime);
-
+            view.getUploadTime().setText(_updateTime);
             //TODO 获取评论
-            String commenter = "sxy";
-            String comment = "评论在这里（5毛一条，括号里不要复制）";
-            comments.add(new Comment(getApplicationContext(),
-                    commenter, comment));
-
-            for (int i = 0; i < comments.size(); i++) {
-                commentView.addView(comments.get(i));
-                comments.get(i).textView1.setOnClickListener(new ToUserPageListener());
+            //String commenter1 = "sxy";
+            //String comment1 = "评论在这里（5毛一条，括号里不要复制）";
+            view.getComments().add(new Comment(view.getApplicationContext(), commenter1, comment1));
+            view.getComments().add(new Comment(view.getApplicationContext(), commenter2, comment2));
+            for (int i = 0; i < view.getComments().size(); i++) {
+                view.getCommentView().addView(view.getComments().get(i));
+                view.getComments().get(i).textView1.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        view.toUserPageActivity(v);
+                    }
+                });
             }
         } catch (JSONException e) {
             e.printStackTrace();
         }
-
     }
 
     private class Post extends AsyncTask<HashMap<String, String>, Void, JSONObject> {

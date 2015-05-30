@@ -19,8 +19,5 @@ public class Comment extends LinearLayout {
         textView1.setText(_userName);
         textView2.setText(_comment);
         addView(view);
-
     }
-
-
 }
