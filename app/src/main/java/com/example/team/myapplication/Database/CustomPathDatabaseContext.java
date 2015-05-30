@@ -10,7 +10,7 @@ import java.io.File;
 /**
  * Created by coco on 2015/5/23.
  */
-//ÖØÔØÊı¾İ¿â½¨Á¢º¯Êı  Ê¹Êı¾İ¿âÎÄ¼ş±£´æÔÚÓ¦ÓÃ³ÌĞòÄ¿Â¼ÖĞ
+//é‡è½½æ•°æ®åº“å»ºç«‹å‡½æ•°  ä½¿æ•°æ®åº“æ–‡ä»¶ä¿å­˜åœ¨åº”ç”¨ç¨‹åºç›®å½•ä¸­
 class CustomPathDatabaseContext extends ContextWrapper {
 
     private String mDirPath;

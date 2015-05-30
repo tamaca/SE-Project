@@ -8,7 +8,7 @@ import javax.crypto.spec.SecretKeySpec;
 /**
  * Created by coco on 2015/5/8.
  */
-//AES加密解密
+//AES鍔犲瘑瑙ｅ瘑
 public class AES {
     private String key;
 
@@ -20,7 +20,7 @@ public class AES {
         byte[] crypted = null;
         try {
             SecretKeySpec skey = new SecretKeySpec(key.getBytes(), "AES");
-            Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");//加密类型 AES加密 ECB方式
+            Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");//鍔犲瘑绫诲瀷 AES鍔犲瘑 ECB鏂瑰紡
             cipher.init(Cipher.ENCRYPT_MODE, skey);
             crypted = cipher.doFinal(input.getBytes());
         } catch (Exception e) {

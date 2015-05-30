@@ -24,13 +24,12 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.ref.WeakReference;
-import java.sql.Timestamp;
 import java.util.HashSet;
 
 /**
  * Created by coco on 2015/4/25.
  */
-//Í¼Æ¬»ñÈ¡Àà
+//å›¾ç‰‡è·å–ç±»
 public class ImageGet {
     private LruCacheImageLoader mLruCacheImageLoader;
     private final WeakReference<ImageView> imageViewWeakReference;
@@ -49,16 +48,16 @@ public class ImageGet {
         mLruCacheImageLoader = LruCacheImageLoader.getLruCacheImageLoaderInstance();
         Load(imageUrl);
     }
-   //Èı¼¶»º´æ»ñÈ¡»úÖÆ
+   //ä¸‰çº§ç¼“å­˜è·å–æœºåˆ¶
     public void Load(String imageUrl) {
         imageView = imageViewWeakReference.get();
-        Bitmap bitmap = mLruCacheImageLoader.getBitmapFromLruCache(imageUrl);//´Ó»º´æ»ñÈ¡Í¼Æ¬
+        Bitmap bitmap = mLruCacheImageLoader.getBitmapFromLruCache(imageUrl);//ä»ç¼“å­˜è·å–å›¾ç‰‡
         if (bitmap == null) {
             String filePath = Localstorage.getImageFilePath(imageUrl);
             File imageFile = new File(filePath);
-            //´ÓÊÖ»ú´æ´¢Ä¿Â¼»ñÈ¡Í¼Æ¬
+            //ä»æ‰‹æœºå­˜å‚¨ç›®å½•è·å–å›¾ç‰‡
             if (!imageFile.exists()) {
-                //´Ó·şÎñÆ÷ÉÏÏÂÔØÍ¼Æ¬
+                //ä»æœåŠ¡å™¨ä¸Šä¸‹è½½å›¾ç‰‡
                 if (cancelPotentialDownload(imageUrl, imageView)) {
                     BitmapDownloaderTask bitmapDownloaderTask = new BitmapDownloaderTask(imageView, filePath);
                     downloadDrawable = new DownloadDrawable(bitmapDownloaderTask);
@@ -78,7 +77,7 @@ public class ImageGet {
         }
 
     }
-    //Òì²½²Ù×÷Àà    ½«»º´æ»òÄÚ´æÖĞµÄÍ¼Æ¬ÏÔÊ¾
+    //å¼‚æ­¥æ“ä½œç±»    å°†ç¼“å­˜æˆ–å†…å­˜ä¸­çš„å›¾ç‰‡æ˜¾ç¤º
     private class BitmapShowInCache extends AsyncTask<Bitmap, Void, Bitmap> {
 
         @Override
@@ -108,7 +107,7 @@ public class ImageGet {
         }
 
     }
-    //Òì²½²Ù×÷Àà  ´Ó·şÎñÆ÷ÉÏ»ñÈ¡Í¼Æ¬ÏÔÊ¾
+    //å¼‚æ­¥æ“ä½œç±»  ä»æœåŠ¡å™¨ä¸Šè·å–å›¾ç‰‡æ˜¾ç¤º
     private class BitmapDownloaderTask extends AsyncTask<String, Void, Bitmap> {
         private String url = imageUrl;
         private final WeakReference<ImageView> imageViewWeakReference;
@@ -190,7 +189,7 @@ public class ImageGet {
             }
         }*/
     }
-    //ÏÂÔØÍ¼Æ¬µÄ¾²Ì¬Àà
+    //ä¸‹è½½å›¾ç‰‡çš„é™æ€ç±»
     static Bitmap downloadBitmap(String url) {
         CloseableHttpClient httpclient = HttpClientBuilder.create()
                 .useSystemProperties()
@@ -233,7 +232,7 @@ public class ImageGet {
         }
         return null;
     }
-    //ĞèÒª¼ÇÂ¼ÏÂÔØµÄ´ÎĞò£¬±£Ö¤×îºóÒ»´ÎÆô¶¯ÇëÇóµÄÍ¼Æ¬±»ÓĞĞ§µØÕ¹ÏÖ³öÀ´
+    //éœ€è¦è®°å½•ä¸‹è½½çš„æ¬¡åºï¼Œä¿è¯æœ€åä¸€æ¬¡å¯åŠ¨è¯·æ±‚çš„å›¾ç‰‡è¢«æœ‰æ•ˆåœ°å±•ç°å‡ºæ¥
     static class DownloadDrawable extends ColorDrawable {
         private final WeakReference<BitmapDownloaderTask> bitmapDownloaderTaskWeakReference;
 
@@ -246,7 +245,7 @@ public class ImageGet {
             return bitmapDownloaderTaskWeakReference.get();
         }
     }
-    //µ±Ò»¸öĞÂµÄÏÂÔØµÄÊ±ºò£¬Í£Ö¹Õâ¸öÍ¼Æ¬¶ÔÓ¦µÄËùÓĞ¿ÉÄÜµÄÏÂÔØ½ø³Ì
+    //å½“ä¸€ä¸ªæ–°çš„ä¸‹è½½çš„æ—¶å€™ï¼Œåœæ­¢è¿™ä¸ªå›¾ç‰‡å¯¹åº”çš„æ‰€æœ‰å¯èƒ½çš„ä¸‹è½½è¿›ç¨‹
     private static boolean cancelPotentialDownload(String url, ImageView imageView) {
         BitmapDownloaderTask bitmapDownloaderTask = getBitmapDownloader(imageView);
         if (bitmapDownloaderTask != null) {
