@@ -8,7 +8,9 @@ import android.net.wifi.WifiManager;
 /**
  * Created by coco on 2015/5/26.
  */
+//获取网络状况类
 public class NetworkState {
+    //是否连接网络
     public static boolean isNetworkConnected(Context context) {
         ConnectivityManager cm =
                 (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);

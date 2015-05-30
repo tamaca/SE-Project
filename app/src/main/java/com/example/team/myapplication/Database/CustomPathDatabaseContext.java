@@ -10,6 +10,7 @@ import java.io.File;
 /**
  * Created by coco on 2015/5/23.
  */
+//重载数据库建立函数  使数据库文件保存在应用程序目录中
 class CustomPathDatabaseContext extends ContextWrapper {
 
     private String mDirPath;

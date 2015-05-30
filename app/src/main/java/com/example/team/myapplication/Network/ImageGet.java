@@ -30,6 +30,7 @@ import java.util.HashSet;
 /**
  * Created by coco on 2015/4/25.
  */
+//图片获取类
 public class ImageGet {
     private LruCacheImageLoader mLruCacheImageLoader;
     private final WeakReference<ImageView> imageViewWeakReference;
@@ -47,17 +48,17 @@ public class ImageGet {
         imageId=Localstorage.getImagesId(imageUrl);
         mLruCacheImageLoader = LruCacheImageLoader.getLruCacheImageLoaderInstance();
         Load(imageUrl);
-       /* LoadImageAsyncTask loadImageAsyncTask=new LoadImageAsyncTask();
-        loadImageAsyncTask.execute(imageUrl);*/
     }
-
+   //三级缓存获取机制
     public void Load(String imageUrl) {
         imageView = imageViewWeakReference.get();
-        Bitmap bitmap = mLruCacheImageLoader.getBitmapFromLruCache(imageUrl);
+        Bitmap bitmap = mLruCacheImageLoader.getBitmapFromLruCache(imageUrl);//从缓存获取图片
         if (bitmap == null) {
             String filePath = Localstorage.getImageFilePath(imageUrl);
             File imageFile = new File(filePath);
+            //从手机存储目录获取图片
             if (!imageFile.exists()) {
+                //从服务器上下载图片
                 if (cancelPotentialDownload(imageUrl, imageView)) {
                     BitmapDownloaderTask bitmapDownloaderTask = new BitmapDownloaderTask(imageView, filePath);
                     downloadDrawable = new DownloadDrawable(bitmapDownloaderTask);
@@ -77,7 +78,7 @@ public class ImageGet {
         }
 
     }
-
+    //异步操作类    将缓存或内存中的图片显示
     private class BitmapShowInCache extends AsyncTask<Bitmap, Void, Bitmap> {
 
         @Override
@@ -107,7 +108,7 @@ public class ImageGet {
         }
 
     }
-
+    //异步操作类  从服务器上获取图片显示
     private class BitmapDownloaderTask extends AsyncTask<String, Void, Bitmap> {
         private String url = imageUrl;
         private final WeakReference<ImageView> imageViewWeakReference;
@@ -189,7 +190,7 @@ public class ImageGet {
             }
         }*/
     }
-
+    //下载图片的静态类
     static Bitmap downloadBitmap(String url) {
         CloseableHttpClient httpclient = HttpClientBuilder.create()
                 .useSystemProperties()
@@ -232,6 +233,7 @@ public class ImageGet {
         }
         return null;
     }
+    //需要记录下载的次序，保证最后一次启动请求的图片被有效地展现出来
     static class DownloadDrawable extends ColorDrawable {
         private final WeakReference<BitmapDownloaderTask> bitmapDownloaderTaskWeakReference;
 
@@ -244,7 +246,7 @@ public class ImageGet {
             return bitmapDownloaderTaskWeakReference.get();
         }
     }
-
+    //当一个新的下载的时候，停止这个图片对应的所有可能的下载进程
     private static boolean cancelPotentialDownload(String url, ImageView imageView) {
         BitmapDownloaderTask bitmapDownloaderTask = getBitmapDownloader(imageView);
         if (bitmapDownloaderTask != null) {

@@ -6,6 +6,7 @@ import android.util.LruCache;
 /**
  * Created by coco on 2015/4/24.
  */
+//手机缓存类
 public class LruCacheImageLoader {
     private static LruCacheImageLoader mLruCacheImageLoader;
     private static LruCache<String, Bitmap> mLruCache;

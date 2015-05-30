@@ -10,6 +10,7 @@ import java.sql.Date;
 /**
  * Created by coco on 2015/4/24.
  */
+//SD卡或内存存储类
 public class Localstorage {
     public static String IMAGES_DIR_PATH=null;
     public static String DATABASE_DIR_PATH=null;

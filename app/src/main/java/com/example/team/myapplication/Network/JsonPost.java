@@ -47,8 +47,8 @@ public class JsonPost {
     private DB db;
     private LoginActivity loginActivity;
     private ViewPictureActivity view;
-
-    //Login
+    //多种处理方式
+    //登录
     public JsonPost(HashMap<String, String> map, String url, int type, boolean autoLogin, boolean rememPassword, DB db) {
         this.url = url;
         this.type = type;
@@ -65,7 +65,7 @@ public class JsonPost {
 
     }
 
-    //Register
+    //登录
     public JsonPost(HashMap<String, String> map, String url, int type, DB db) {
         this.url = url;
         this.type = type;
@@ -91,8 +91,8 @@ public class JsonPost {
             e.toString();
         }
     }
-
-    private void dbsave(String id, String password) {
+    //数据库储存用户
+    private void dbsaveuser(String id, String password) {
         if (rememPassword) {
             boolean usercheck = db.checkuser(id);
             if (!usercheck) {
@@ -119,7 +119,7 @@ public class JsonPost {
             db.lastuserdelete();
         }
     }
-
+    //UI处理图片信息
     public void getImageInformation(JSONObject info) {
         try {
             String originImageurl = info.getString("origin");
@@ -228,14 +228,15 @@ public class JsonPost {
         protected void onPostExecute(JSONObject jsonObject) {
             super.onPostExecute(jsonObject);
             switch (type) {
-                //login
+                //多种处理方式
+                //登录
                 case 1: {
                     try {
                         String id = jsonObject.getString("user_id");
                         String password = jsonObject.getString("user_password");
                         Log.v("id", "id=" + id);
                         Log.v("afterpassword", "password" + password);
-                        dbsave(this.jsonObject.getString("email"), this.jsonObject.getString("password"));
+                        dbsaveuser(this.jsonObject.getString("email"), this.jsonObject.getString("password"));
                         //这里写跳转代码
                         //loginActivity.showProgress(false);
 
@@ -244,7 +245,7 @@ public class JsonPost {
                     }
                     break;
                 }
-                //register
+                //注册
                 case 2: {
                     try {
                         String id = jsonObject.getString("user_id");
@@ -258,7 +259,7 @@ public class JsonPost {
                     }
                     break;
                 }
-                //comment
+                //提交评论
                 case 3: {
                     try {
                         String username = jsonObject.getString("user_name");
