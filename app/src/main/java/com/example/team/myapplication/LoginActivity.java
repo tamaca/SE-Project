@@ -31,9 +31,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.team.myapplication.Database.DB;
+import com.example.team.myapplication.Network.AES;
+import com.example.team.myapplication.Network.JsonPost;
 import com.example.team.myapplication.util.GeneralActivity;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 
@@ -442,15 +445,11 @@ public class LoginActivity extends GeneralActivity implements LoaderCallbacks<Cu
 
 
             try {
-                /*String encryptEmail="";
+                String encryptEmail="";
                 String encryptPassword="";
                 if(1==type) {
-                    String key = "1234567891234567";
-                    String Email = mEmail;
-                    String Password = mPassword;
-                    AES aesEncrypt = new AES(key);
-                    encryptEmail = aesEncrypt.encrypt(Email);
-                    encryptPassword = aesEncrypt.encrypt(Password);
+                    encryptEmail = AES.encrypt(mEmail);
+                    encryptPassword = AES.encrypt(mPassword);
 
                 }
                 else if(2==type)
@@ -470,7 +469,7 @@ public class LoginActivity extends GeneralActivity implements LoaderCallbacks<Cu
                 HashMap<String, String> map = new HashMap<String, String>();
                 map.put("email", encryptEmail);
                 map.put("password", encryptPassword);
-                JsonPost post = new JsonPost(map, url, 1, autoLogin.isChecked(), rememPassword.isChecked(), db);*/
+                JsonPost post = new JsonPost(map, url, 1, autoLogin.isChecked(), rememPassword.isChecked(), db);
                 Thread.sleep(3000);
             } catch (Exception e) {
                 return false;

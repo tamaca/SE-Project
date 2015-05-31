@@ -10,13 +10,12 @@ import javax.crypto.spec.SecretKeySpec;
  */
 //AES加密解密
 public class AES {
-    private String key;
-
-    public AES(String key) {
+    private static String key="1234567891234567";
+   /* public AES(String key) {
         this.key = key;
-    }
+    }*/
 
-    public String encrypt(String input) {
+    public static String encrypt(String input) {
         byte[] crypted = null;
         try {
             SecretKeySpec skey = new SecretKeySpec(key.getBytes(), "AES");
@@ -29,7 +28,7 @@ public class AES {
         return new String(Base64.encodeBase64(crypted));
     }
 
-    public String decrypt(String input) {
+    public static String decrypt(String input) {
         byte[] output = null;
         try {
             SecretKeySpec skey = new SecretKeySpec(key.getBytes(), "AES");

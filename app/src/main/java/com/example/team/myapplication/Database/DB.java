@@ -32,6 +32,7 @@ public class DB extends SQLiteOpenHelper {
     private final static String M_IMAGE =   "m_image";
     private final static String M_IMAGE_IMAGEID = "m_image_imageid";
     private final static String M_IMAGE_USERID = "m_image_userid";
+    private final static String M_IMAGE_ISLIKE="m_image_islike";
     private final static String M_IMAGE_LIKENUMBER = "m_image_likenumber";
     private final static String M_IMAGE_UPDATEDATE = "m_image_updatedate";
     //
@@ -79,7 +80,7 @@ public class DB extends SQLiteOpenHelper {
         String lastuser = "CREATE TABLE " + M_LASTUSER + " (" + M_LASTUSER_ID
                 + " TEXT primary key, " + M_LASTUSER_PASSWORD + " TEXT NOT NULL," + "FOREIGN KEY (M_LASTUSER_ID) REFERENCES M_USER(M_USER_ID));";
         String image = "CREATE TABLE " + M_IMAGE + " (" + M_IMAGE_IMAGEID
-                + " TEXT primary key, " + M_IMAGE_USERID + " TEXT NOT NULL, "
+                + " TEXT primary key, " + M_IMAGE_USERID + " TEXT NOT NULL, "+M_IMAGE_ISLIKE+"TEXT NOT NULL,"
                 + M_IMAGE_LIKENUMBER + " TEXT NOT NULL," + M_IMAGE_UPDATEDATE + " DATETIME NOT NULL," + " FOREIGN KEY (M_IMAGE_USERID) REFERENCES M_USER(M_USER_ID) ON DELETE CASCADE);";
         String comment = "CREATE TABLE " + M_COMMENT + " (" + M_COMMENT_COMMENTID + " TEXT primary key, "
                 + M_COMMENT_USERID + " TEXT NOT NULL, " + M_COMMENT_IMAGEID + " TEXT NOT NULL, " + M_COMMENT_CONTENT + " TEXT NOT NULL,"
@@ -134,9 +135,7 @@ public class DB extends SQLiteOpenHelper {
     }
     public String getmUserPassword(String id)
     {
-        String key = "1234567891234567";
-        AES aes= new AES(key);
-        String encryptid=aes.encrypt(id);
+        String encryptid=AES.encrypt(id);
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor cur = db.rawQuery("select * from M_USER where M_USER_ID='" + encryptid.trim() + "'", null);
         if (cur.moveToFirst()) {
@@ -145,7 +144,7 @@ public class DB extends SQLiteOpenHelper {
             {
                 return null;
             }
-            String password=aes.decrypt(encryptpassword);
+            String password=AES.decrypt(encryptpassword);
             return password;
         }
         return null;
@@ -252,7 +251,15 @@ public class DB extends SQLiteOpenHelper {
         String[] whereValue = {imageid};
         db.delete(M_IMAGE, where, whereValue);
     }
-
+    public void imageupdateislike(String imageid,String newislike)
+    {
+        SQLiteDatabase db = this.getWritableDatabase();
+        String where = M_IMAGE_IMAGEID + " = ?";
+        String[] whereValue = {imageid};
+        ContentValues cv = new ContentValues();
+        cv.put(M_IMAGE_ISLIKE, newislike);
+        db.update(M_IMAGE, cv, where, whereValue);
+    }
     public void imageupdatelikenumber(String imageid, String newlikenumber) {
         SQLiteDatabase db = this.getWritableDatabase();
         String where = M_IMAGE_IMAGEID + " = ?";

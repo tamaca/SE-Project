@@ -17,7 +17,12 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.team.myapplication.Database.DB;
+import com.example.team.myapplication.Network.AES;
+import com.example.team.myapplication.Network.JsonPost;
 import com.example.team.myapplication.util.GeneralActivity;
+
+import java.util.HashMap;
 
 
 public class RegisterActivity extends GeneralActivity {
@@ -29,7 +34,7 @@ public class RegisterActivity extends GeneralActivity {
     private EditText secondPassword;
     private View progressView;
     private View registerView;
-
+    private DB db;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -40,6 +45,7 @@ public class RegisterActivity extends GeneralActivity {
         setContentView(R.layout.activity_register);
         getActionBar().setDisplayHomeAsUpEnabled(true);
 
+        db=new DB(this);
         okButton = (Button) findViewById(R.id.register_ok);
         userName = (TextView) findViewById(R.id.register_user_name);
         eMail = (TextView) findViewById(R.id.register_email);
@@ -233,23 +239,19 @@ public class RegisterActivity extends GeneralActivity {
 
 
             try {
-
-                /*String key = "1234567891234567";
                 String username = mUserName;
                 String Email = mEmail;
                 String Password = mPassword;
-                AES aesEncrypt = new AES(key);
-                String encrptname = aesEncrypt.encrypt(username);
-                String encrptEmail = aesEncrypt.encrypt(Email);
-                String encrptPassword = aesEncrypt.encrypt(Password);
+                String encrptname = AES.encrypt(username);
+                String encrptEmail = AES.encrypt(Email);
+                String encrptPassword = AES.encrypt(Password);
                 String url = "http://172.16.16.164/php21/index.php";
                 HashMap<String, String> map = new HashMap<String, String>();
                 map.put("email", encrptEmail);
                 map.put("password", encrptPassword);
                 map.put("name", encrptname);
-                JsonPost post = new JsonPost(map, url, 2);*/
+                JsonPost post = new JsonPost(map, url, 2,db);
                 Thread.sleep(3000);
-
             } catch (Exception e) {
 
                 return false;

@@ -119,9 +119,14 @@ public class JsonPost {
             db.lastuserdelete();
         }
     }
+    private  void dbimagesave()
+    {
+
+    }
     //UI处理图片信息
     public void getImageInformation(JSONObject info) {
         try {
+            String imageId=info.getString("imageid");
             String originImageurl = info.getString("origin");
             String _author = info.getString("author");
             String _like = info.getString("like");
