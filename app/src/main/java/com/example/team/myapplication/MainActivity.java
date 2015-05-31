@@ -144,7 +144,7 @@ public class MainActivity extends Activity {
 
                         break;
                     case 3:
-
+                        toChangePasswordActivity(listView);
                         break;
                     case 4:
                         //
@@ -176,7 +176,7 @@ public class MainActivity extends Activity {
         changeView(LoginState.getLogined());
     }
     public void logout(){
-        LoginState.setLogined(false,"guest");
+        LoginState.setLogined(false, "guest");
         changeView(LoginState.logined);
         
     }
@@ -215,8 +215,6 @@ public class MainActivity extends Activity {
         return super.onOptionsItemSelected(item);
     }
 
-
-
     public void toSearchActivity(View view){
         Intent intent = new Intent(this, SearchActivity.class);
         startActivity(intent);
@@ -229,7 +227,10 @@ public class MainActivity extends Activity {
         startActivity(intent);
     }
 
-
+    public void toChangePasswordActivity(View view){
+        Intent intent = new Intent(this,ChangePasswordActivity.class);
+        startActivity(intent);
+    }
     static final int REQUEST_IMAGE_CAPTURE = 1;
 
     public void dispatchTakePictureIntent(View view) {

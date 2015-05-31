@@ -18,7 +18,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.team.myapplication.Database.DB;
-import com.example.team.myapplication.Network.AES;
 import com.example.team.myapplication.Network.JsonPost;
 import com.example.team.myapplication.util.GeneralActivity;
 
@@ -270,7 +269,7 @@ public class RegisterActivity extends GeneralActivity {
 
             if (success) {
                 Toast.makeText(getApplicationContext(), "注册成功", Toast.LENGTH_LONG).show();
-                LoginState.setLogined(true,mUserName);
+                LoginState.setLogined(true, mUserName);
                 MainActivity.setCurrentTag("tab1");
 
                 /*Intent intent = new Intent(RegisterActivity.this,MainActivity.class);

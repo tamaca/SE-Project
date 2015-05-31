@@ -263,7 +263,7 @@ public class LoginActivity extends GeneralActivity implements LoaderCallbacks<Cu
 
     private boolean isPasswordValid(String password) {
 
-        return password.length() > 4;
+        return password.length() > 5 && password.length() <= 15;
     }
 
     /**
@@ -399,12 +399,12 @@ public class LoginActivity extends GeneralActivity implements LoaderCallbacks<Cu
         if(resultCode == RESULT_OK) {
             switch (requestCode) {
                 case SIGN_IN:
-                    showProgress(true);
+                    /*showProgress(true);
                     String userName = data.getExtras().get("UserName").toString();
                     String email = data.getExtras().get("Email").toString();
-                    String password = data.getExtras().get("Password").toString();
+                    String password = data.getExtras().get("Password").toString();*/
 
-                    Toast.makeText(getApplicationContext(),"email: "+email+"\n"+"password: " +password+
+                    /*Toast.makeText(getApplicationContext(),"email: "+email+"\n"+"password: " +password+
                             "\n"+"userName: "+userName,Toast.LENGTH_LONG).show();
                     LoginState.setLogined(true,userName);
 
@@ -413,7 +413,7 @@ public class LoginActivity extends GeneralActivity implements LoaderCallbacks<Cu
                         return;
                     }
                     mAuthTask = new UserLoginTask(email,password,2);
-                    mAuthTask.execute((Void) null);
+                    mAuthTask.execute((Void) null);*/
 
                     break;
 
