@@ -23,8 +23,7 @@
             android:layout_height="0dp"
             android:id="@+id/scrollView"
             android:fillViewport="false"
-            android:layout_weight="1"
-            >
+            android:layout_weight="1">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -43,7 +42,7 @@
                 <RelativeLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:layout_marginTop="10dp">
+                    android:layout_marginTop="5dp">
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -121,28 +120,29 @@
             android:orientation="horizontal"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:paddingBottom="5dp"
-            android:paddingTop="5dp"
-            android:background="@color/淡灰蓝色"
+            android:paddingBottom="3dp"
+            android:paddingTop="3dp"
+            android:background="@color/天依蓝"
             android:baselineAligned="false"
-            android:gravity="center">
+            android:gravity="center"
+            android:weightSum="2">
 
             <EditText
-                android:layout_width="241dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/comment_text"
                 android:hint="@string/comment_text"
                 android:background="@drawable/textview_style4"
-                android:layout_weight="0.04" />
+                android:layout_weight="1.7" />
 
             <Button
-                android:layout_width="0dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="0.85"
+                android:layout_weight="0.3"
                 android:text="@string/comment"
                 android:textColor="@color/白色"
                 android:id="@+id/submit_comment"
-                android:background="@drawable/button_style3"
+                android:background="@drawable/button_style1"
                 android:onClick="submitComment"/>
         </LinearLayout>
     </LinearLayout>
