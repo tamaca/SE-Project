@@ -1,22 +1,15 @@
 package com.example.team.myapplication.Network;
 
-import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
-import android.widget.LinearLayout;
-import android.widget.TextView;
 
 import com.example.team.myapplication.Database.DB;
 import com.example.team.myapplication.LoginActivity;
-import com.example.team.myapplication.R;
 import com.example.team.myapplication.ViewPictureActivity;
 import com.example.team.myapplication.util.Comment;
 
 import org.apache.http.NameValuePair;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpPost;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http4.client.entity.UrlEncodedFormEntityHC4;
 import org.apache.http4.client.methods.CloseableHttpResponse;
@@ -146,6 +139,7 @@ public class JsonPost {
             //TODO 获取赞的数量和该用户是否已经赞
             Boolean isLike = (_isLike.equals("true"));//测试用, false 代表没有赞过
             view.getLike().setText(isLike ? "取消赞\n" : "赞\n" + "(" + _like + ")");
+            view.getCommentView().postInvalidate();
             //TODO 获取该图片的上传时间
             view.getUploadTime().setText(_updateTime);
             //TODO 获取评论
