@@ -23,6 +23,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -40,6 +41,7 @@ public class JsonPost {
     private DB db;
     private LoginActivity loginActivity;
     private ViewPictureActivity view;
+
     //多种处理方式
     //登录
     public JsonPost(HashMap<String, String> map, String url, int type, boolean autoLogin, boolean rememPassword, DB db) {
@@ -84,6 +86,7 @@ public class JsonPost {
             e.toString();
         }
     }
+
     //数据库储存用户
     private void dbsaveuser(String id, String password) {
         if (rememPassword) {
@@ -112,25 +115,47 @@ public class JsonPost {
             db.lastuserdelete();
         }
     }
-    private  void dbimagesave()
-    {
 
+    private void dbimagesave(HashMap<String, String> image) {
+        Timestamp updatetime = new Timestamp(System.currentTimeMillis());
+        updatetime.valueOf(image.get("updatetime"));
+        db.imageinsert(image.get("imageid"), image.get("userid"), image.get("islike"), image.get("likenumber"), updatetime);
     }
+
+    private void dbcommentsave(HashMap<String, String> commentmap) {
+        String _commentnum = commentmap.get("commentnum");
+        int commentnum = Integer.parseInt(_commentnum);
+        String imageid = commentmap.get("imageid");
+        Timestamp updatetime = new Timestamp(System.currentTimeMillis());
+        for (int i = 1; i <= commentnum; i++) {
+            updatetime.valueOf(commentmap.get("updatedate" + String.valueOf(i)));
+            db.commentinsert(commentmap.get("commentid" + String.valueOf(i)), commentmap.get("userid" + String.valueOf(i)), imageid, commentmap.get("commentid" + String.valueOf(i)), updatetime);
+        }
+    }
+
     //UI处理图片信息
     public void getImageInformation(JSONObject info) {
         try {
-            String imageId=info.getString("imageid");
+            String imageId = info.getString("imageid");
             String originImageurl = info.getString("origin");
             String _author = info.getString("author");
             String _like = info.getString("like");
             String _isLike = info.getString("islike");
             String _updateTime = info.getString("updatetime");
+            String _commentnum = info.getString("commentnum");
             String _comment = info.getString("comment");
+            int commentnum = Integer.parseInt(_commentnum);
             JSONObject commentJson = new JSONObject(_comment);
-            String commenter1 = commentJson.getString("name1");
-            String comment1 = commentJson.getString("comment1");
-            String commenter2 = commentJson.getString("name2");
-            String comment2 = commentJson.getString("comment2");
+            String commenter[] = new String[6];
+            String comment[] = new String[6];
+            String commentid[] = new String[6];
+            String updatedate[] = new String[6];
+            for (int i = 1; i <= commentnum; i++) {
+                commenter[i - 1] = commentJson.getString("name" + String.valueOf(i));
+                comment[i - 1] = commentJson.getString("comment" + String.valueOf(i));
+                commentid[i - 1] = commentJson.getString("commentid" + String.valueOf(i));
+                updatedate[i - 1] = commentJson.getString("updatedate" + String.valueOf(i));
+            }
             //原图位置
             view.getImgview().setContentDescription(originImageurl);
             //TODO 获取上传者
@@ -145,8 +170,9 @@ public class JsonPost {
             //TODO 获取评论
             //String commenter1 = "sxy";
             //String comment1 = "评论在这里（5毛一条，括号里不要复制）";
-            view.getComments().add(new Comment(view.getApplicationContext(), commenter1, comment1));
-            view.getComments().add(new Comment(view.getApplicationContext(), commenter2, comment2));
+            for (int i = 1; i <= commentnum; i++) {
+                view.getComments().add(new Comment(view.getApplicationContext(), commenter[i - 1], comment[i - 1]));
+            }
             for (int i = 0; i < view.getComments().size(); i++) {
                 view.getCommentView().addView(view.getComments().get(i));
                 view.getComments().get(i).textView1.setOnClickListener(new View.OnClickListener() {
@@ -155,6 +181,22 @@ public class JsonPost {
                         view.toUserPageActivity(v);
                     }
                 });
+            }
+            HashMap<String, String> image = new HashMap<String, String>();
+            image.put("imageid", imageId);
+            image.put("userid", _author);
+            image.put("islike", _isLike);
+            image.put("likenumber", _like);
+            image.put("updatetime", _updateTime);
+            dbimagesave(image);
+            HashMap<String, String> commentmap = new HashMap<String, String>();
+            commentmap.put("imageid", imageId);
+            commentmap.put("commentnum", _commentnum);
+            for (int i = 1; i <= commentnum; i++) {
+                commentmap.put("commentid" + String.valueOf(i), commentid[i - 1]);
+                commentmap.put("userid" + String.valueOf(i), commenter[i - 1]);
+                commentmap.put("context" + String.valueOf(i), commentid[i - 1]);
+                commentmap.put("updatedate" + String.valueOf(i), updatedate[i - 1]);
             }
         } catch (JSONException e) {
             e.printStackTrace();
@@ -247,12 +289,8 @@ public class JsonPost {
                 //注册
                 case 2: {
                     try {
-                        String id = jsonObject.getString("user_id");
-                        String password = jsonObject.getString("user_password");
-                        String name = jsonObject.getString("user_name");
-                        Log.v("id", "id=" + id);
-                        Log.v("password", "password" + password);
-                        Log.v("name", "name" + name);
+                        String status = jsonObject.getString("status");
+                        Log.v("status", "status=" + status);
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }

@@ -234,11 +234,12 @@ public class DB extends SQLiteOpenHelper {
         return cursor;
     }
 
-    public long imageinsert(String imageid, String userid, String likenumber, Timestamp updatedate) {
+    public long imageinsert(String imageid, String userid,String islike, String likenumber, Timestamp updatedate) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues cv = new ContentValues();
         cv.put(M_IMAGE_IMAGEID, imageid);
         cv.put(M_IMAGE_USERID, userid);
+        cv.put(M_IMAGE_ISLIKE,islike);
         cv.put(M_IMAGE_LIKENUMBER, likenumber);
         cv.put(M_IMAGE_UPDATEDATE, new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(updatedate));
         long row = db.insert(M_IMAGE, null, cv);

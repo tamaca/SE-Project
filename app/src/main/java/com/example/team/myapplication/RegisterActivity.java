@@ -242,14 +242,17 @@ public class RegisterActivity extends GeneralActivity {
                 String username = mUserName;
                 String Email = mEmail;
                 String Password = mPassword;
-                String encrptname = AES.encrypt(username);
-                String encrptEmail = AES.encrypt(Email);
-                String encrptPassword = AES.encrypt(Password);
-                String url = "http://172.16.16.164/php21/index.php";
+               // String encrptname = AES.encrypt(username);
+               // String encrptEmail = AES.encrypt(Email);
+               // String encrptPassword = AES.encrypt(Password);
+                String url = "http://192.168.253.1/register/";
                 HashMap<String, String> map = new HashMap<String, String>();
-                map.put("email", encrptEmail);
-                map.put("password", encrptPassword);
-                map.put("name", encrptname);
+                map.put("username",username);
+                map.put("email",Email);
+                map.put("password",Password);
+                //map.put("email", encrptEmail);
+              // map.put("password", encrptPassword);
+              //  map.put("username", encrptname);
                 JsonPost post = new JsonPost(map, url, 2,db);
                 Thread.sleep(3000);
             } catch (Exception e) {
