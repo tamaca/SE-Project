@@ -61,6 +61,8 @@
                         android:layout_height="wrap_content"
                         android:textAppearance="?android:attr/textAppearanceLarge"
                         android:text="@string/upload_time"
+                        android:textColor="@color/灰色"
+                        android:textSize="20sp"
                         android:id="@+id/upload_time"
                         android:layout_toRightOf="@+id/author"
                         android:layout_centerVertical="true"

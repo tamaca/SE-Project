@@ -51,6 +51,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/auto_login"
+                    android:textColor="@color/深灰色"
                     android:id="@+id/auto_login"
                     android:layout_gravity="end"
                     android:textStyle="normal"
@@ -60,19 +61,22 @@
                     android:layout_marginLeft="25dp"
                     android:layout_marginStart="25dp"
                     android:layout_marginRight="30dp"
-                    android:layout_marginEnd="25dp"/>
+                    android:layout_marginEnd="25dp"
+                    style="@style/CheckboxTheme"/>
 
                 <CheckBox
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/remember_password"
+                    android:textColor="@color/深灰色"
                     android:id="@+id/remember_password"
                     android:layout_gravity="start"
                     android:layout_alignParentTop="true"
                     android:layout_alignParentStart="true"
                     android:layout_alignParentLeft="true"
                     android:layout_marginLeft="25dp"
-                    android:layout_marginRight="25dp"/>
+                    android:layout_marginRight="25dp"
+                    style="@style/CheckboxTheme"/>
             </RelativeLayout>
 
             <RelativeLayout
@@ -109,7 +113,7 @@
                     android:layout_below="@+id/email_sign_in_button"
                     android:layout_alignParentBottom="true"
                     android:layout_marginRight="30dp"
-                    android:layout_marginTop="20dp" />
+                    android:layout_marginTop="10dp" />
 
             </RelativeLayout>
 
