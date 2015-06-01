@@ -3,7 +3,6 @@ package com.example.team.myapplication;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
@@ -15,6 +14,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -42,7 +42,8 @@ public class ViewPictureActivity extends GeneralActivity {
     private int likeNumber;
     private Button like;
     private boolean isLike = false;
-
+    private ScrollView scrollView;
+    private LinearLayout linearLayout;
     //
     public ImageView getImgview() {
         return imgview;
@@ -84,6 +85,7 @@ public class ViewPictureActivity extends GeneralActivity {
         author = (TextView) findViewById(R.id.author);
         like = (Button) findViewById(R.id.like_button);
         uploadTime = (TextView) findViewById(R.id.upload_time);
+        scrollView = (ScrollView)findViewById(R.id.scrollView);
         comments=new ArrayList<>();
         author.setOnClickListener(new ToUserPageListener());
         like.setOnClickListener(new View.OnClickListener() {
@@ -92,6 +94,7 @@ public class ViewPictureActivity extends GeneralActivity {
                 changeLike(view);
             }
         });
+        linearLayout = (LinearLayout)findViewById(R.id.linearLayout4);
 
         //评论的ArrayList 数组，把获得的评论放在这里
         String imageid = (String) intent.getExtras().get("id");
@@ -153,6 +156,7 @@ public class ViewPictureActivity extends GeneralActivity {
         comments.add(new Comment(getApplicationContext(), LoginState.username, comment));
         commentView.addView(comments.get(comments.size() - 1));
         comments.get(comments.size() - 1).textView1.setOnClickListener(new ToUserPageListener());
+        linearLayout.postInvalidate();
         Thread refresh = new Thread(new Refresh());
         refresh.start();
     }
@@ -267,6 +271,7 @@ public class ViewPictureActivity extends GeneralActivity {
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
                 }
+                scrollView.scrollTo(0,linearLayout.getMeasuredHeight());
                 commentView.postInvalidate();
                 Log.d("comment--->>", "refreshing");
                 Thread.currentThread().interrupt();

@@ -64,10 +64,13 @@ public class ChangePasswordActivity extends GeneralActivity {
     public void changePassword(View view){
         String oldPassword;
         String newPassword;
+        String newPassword2;
         EditText text1 = (EditText)findViewById(R.id.editText2);
         EditText text2 = (EditText)findViewById(R.id.editText3);
+        EditText text3 = (EditText)findViewById(R.id.editText4);
         oldPassword = text1.getText().toString();
         newPassword = text2.getText().toString();
+        newPassword2 = text3.getText().toString();
 
 
         String password = "11111111";//TODO 在这里获得原密码 此处作为示范
@@ -80,8 +83,18 @@ public class ChangePasswordActivity extends GeneralActivity {
                 text2.setError(getString(R.string.error_field_required));
                 return;
             }
+            if(newPassword2.isEmpty()){
+                text3.setError(getString(R.string.error_field_required));
+                return;
+            }
             if(oldPassword.equals(newPassword)){
                 text2.setError("新旧密码相同");
+                return;
+            }
+            if(!newPassword.equals(newPassword2)){
+                text1.setError(null);
+                text2.setError("两次输入的密码不一致");
+                text3.setError("两次输入的密码不一致");
                 return;
             }
             if(isPasswordValid(newPassword)){
