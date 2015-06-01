@@ -166,7 +166,7 @@ public class MainActivity extends Activity {
     public void imagedownload()
     {
         String picURL1 = "http://7.share.photo.xuite.net/angel890208/1719fd6/4701295/179671143_x.jpg";
-        ImageGet imageGet=new ImageGet((ImageView)squareView.findViewById(R.id.imageView6),picURL1,db);
+        ImageGet imageGet=new ImageGet((ImageView)squareView.findViewById(R.id.imageView1),picURL1,db);
     }
 
 
