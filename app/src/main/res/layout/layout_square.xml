@@ -16,7 +16,7 @@
             android:layout_height="fill_parent"
             android:layout_weight="1"
             android:id="@+id/imageView1"
-            android:src="@drawable/doge"
+
             android:adjustViewBounds="true"
             android:scaleType="centerCrop"
             android:onClick="toViewPictureActivity" />
@@ -26,7 +26,7 @@
             android:layout_height="fill_parent"
             android:layout_weight="1"
             android:id="@+id/imageView2"
-            android:src="@drawable/dogekid"
+
             android:adjustViewBounds="true"
             android:scaleType="centerCrop"
             android:onClick="toViewPictureActivity" />
@@ -44,7 +44,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:id="@+id/imageView3"
-            android:src="@drawable/beauty"
+
             android:adjustViewBounds="true"
             android:scaleType="centerCrop"
             android:onClick="toViewPictureActivity" />
@@ -54,7 +54,7 @@
             android:layout_height="fill_parent"
             android:layout_weight="1"
             android:id="@+id/imageView4"
-            android:src="@drawable/paddtion"
+
             android:adjustViewBounds="true"
             android:scaleType="centerCrop"
             android:onClick="toViewPictureActivity" />

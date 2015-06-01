@@ -39,7 +39,8 @@
                 android:maxLines="1" android:singleLine="true"
                 android:background="@drawable/textview_style3"
                 android:layout_marginLeft="25dp"
-                android:layout_marginRight="25dp"/>
+                android:layout_marginRight="25dp"
+                android:imeActionId="@+id/login"/>
 
             <RelativeLayout
                 android:layout_width="match_parent"
