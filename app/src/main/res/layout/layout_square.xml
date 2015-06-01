@@ -8,12 +8,12 @@
     <LinearLayout
         android:orientation="horizontal"
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="150dp"
         android:background="@color/背景蓝">
 
         <ImageView
             android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="fill_parent"
             android:layout_weight="1"
             android:id="@+id/imageView1"
             android:src="@drawable/doge"
@@ -23,10 +23,10 @@
 
         <ImageView
             android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="fill_parent"
             android:layout_weight="1"
             android:id="@+id/imageView2"
-            android:src="@drawable/doge"
+            android:src="@drawable/dogekid"
             android:adjustViewBounds="true"
             android:scaleType="centerCrop"
             android:onClick="toViewPictureActivity" />
@@ -35,7 +35,7 @@
     <LinearLayout
         android:orientation="horizontal"
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="150dp"
         android:background="@color/背景蓝"
         android:paddingTop="5dp">
 
@@ -44,17 +44,18 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:id="@+id/imageView3"
-            android:src="@drawable/doge"
+            android:src="@drawable/beauty"
             android:adjustViewBounds="true"
+            android:maxHeight="300dp"
             android:scaleType="centerCrop"
             android:onClick="toViewPictureActivity" />
 
         <ImageView
             android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="fill_parent"
             android:layout_weight="1"
             android:id="@+id/imageView4"
-            android:src="@drawable/doge"
+            android:src="@drawable/paddtion"
             android:adjustViewBounds="true"
             android:scaleType="centerCrop"
             android:onClick="toViewPictureActivity" />
