@@ -90,7 +90,7 @@ public class LoginActivity extends GeneralActivity implements LoaderCallbacks<Cu
 
         // Set up the login form.
         mEmailView = (AutoCompleteTextView) findViewById(R.id.email);
-        populateAutoComplete();
+        /*populateAutoComplete();
         mEmailView.setOnFocusChangeListener(new View.OnFocusChangeListener() {
 
             @Override
@@ -104,7 +104,7 @@ public class LoginActivity extends GeneralActivity implements LoaderCallbacks<Cu
                     }
                 }
             }
-        });
+        });*/
         mPasswordView = (EditText) findViewById(R.id.password);
         mPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
@@ -160,7 +160,7 @@ public class LoginActivity extends GeneralActivity implements LoaderCallbacks<Cu
 
             }
         });
-        autologin();
+        //autologin();
     }
 
 
