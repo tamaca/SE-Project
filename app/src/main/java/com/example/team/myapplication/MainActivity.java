@@ -1,6 +1,7 @@
 package com.example.team.myapplication;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
@@ -32,6 +33,22 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+class OverwriteAdapter extends SimpleAdapter {
+    // 颜色
+    private int[] colors = {R.color.白色,R.color.深灰色};
+
+    public OverwriteAdapter(Context context,
+                            List<? extends Map<String, ?>> data, int resource,
+                            String[] from, int[] to) {
+        super(context, data, resource, from, to);
+    }
+
+    public View getView(int position, View convertView, ViewGroup parent) {
+        View view = super.getView(position, convertView, parent);
+        view.setBackgroundResource(colors[position % 2]);
+        return view;
+    }
+}
 
 public class MainActivity extends Activity {
     private TabHost mTabHost;
@@ -155,7 +172,7 @@ public class MainActivity extends Activity {
             listItem.put("选项", items.get(i));
             listItems.add(listItem);
         }
-        SimpleAdapter simpleAdapter = new SimpleAdapter(this, listItems, R.layout.layout_simple_item, new String[]{"选项"}, new int[]{R.id.Option});
+        OverwriteAdapter simpleAdapter = new OverwriteAdapter(this, listItems, R.layout.layout_simple_item, new String[]{"选项"}, new int[]{R.id.Option});
         listView.setAdapter(simpleAdapter);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
