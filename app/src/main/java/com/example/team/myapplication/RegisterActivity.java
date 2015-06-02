@@ -35,7 +35,6 @@ public class RegisterActivity extends GeneralActivity {
     private View progressView;
     private View registerView;
     private DB db;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -46,7 +45,7 @@ public class RegisterActivity extends GeneralActivity {
         setContentView(R.layout.activity_register);
         getActionBar().setDisplayHomeAsUpEnabled(true);
 
-        db = new DB(this);
+        db=new DB(this);
         okButton = (Button) findViewById(R.id.register_ok);
         userName = (TextView) findViewById(R.id.register_user_name);
         eMail = (TextView) findViewById(R.id.register_email);
@@ -122,35 +121,13 @@ public class RegisterActivity extends GeneralActivity {
         }
     }
 
-    public void closeKeyboard() {
+    public void closeKeyboard(){
         View view = getWindow().peekDecorView();
         if (view != null) {
             InputMethodManager inputmanger = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
             inputmanger.hideSoftInputFromWindow(view.getWindowToken(), 0);
         }
     }
-<<<<<<< HEAD
-=======
-
-    public boolean isUserNameValid(String userName) {
-        //还要检查用户名是否唯一
-        return userName.length() >= 2 && userName.length() <= 20;
-    }
-
-    public boolean isPasswordValid(String password) {
-        //检查密码复杂度？？
-        return password.length() > 5 && password.length() <= 15;
-    }
-
-    private boolean isEmailValid(String email) {
-        return email.matches("^([a-zA-Z0-9_\\.\\-])+\\@(([a-zA-Z0-9\\-])+\\.)+([a-zA-Z0-9]{2,4})+$");
-    }
-
-    public boolean isPasswordSame(String password1, String password2) {
-
-        return password1.equals(password2);
-    }
->>>>>>> origin/WHR
 
     public void attemptRegister() {
 
@@ -245,18 +222,18 @@ public class RegisterActivity extends GeneralActivity {
                 String username = mUserName;
                 String Email = mEmail;
                 String Password = mPassword;
-                // String encrptname = AES.encrypt(username);
-                // String encrptEmail = AES.encrypt(Email);
-                // String encrptPassword = AES.encrypt(Password);
+               // String encrptname = AES.encrypt(username);
+               // String encrptEmail = AES.encrypt(Email);
+               // String encrptPassword = AES.encrypt(Password);
                 String url = "http://192.168.253.1/register/";
                 HashMap<String, String> map = new HashMap<String, String>();
-                map.put("username", username);
-                map.put("email", Email);
-                map.put("password", Password);
+                map.put("username",username);
+                map.put("email",Email);
+                map.put("password",Password);
                 //map.put("email", encrptEmail);
-                // map.put("password", encrptPassword);
-                //  map.put("username", encrptname);
-                JsonPost post = new JsonPost(map, url, 2, db);
+              // map.put("password", encrptPassword);
+              //  map.put("username", encrptname);
+                JsonPost post = new JsonPost(map, url, 2,db);
                 Thread.sleep(3000);
             } catch (Exception e) {
 
@@ -282,9 +259,9 @@ public class RegisterActivity extends GeneralActivity {
 
                 intent.putExtra("Email", mEmail);
                 intent.putExtra("UserName", mUserName);
-                intent.putExtra("Password", mPassword);
+                intent.putExtra("Password",mPassword);
 
-                RegisterActivity.this.setResult(RESULT_OK, intent);
+                RegisterActivity.this.setResult(RESULT_OK,intent);
                 RegisterActivity.this.finish();
 
             } else {
