@@ -29,10 +29,10 @@ public class DB extends SQLiteOpenHelper {
     private final static String M_LASTUSER_ID = "m_lastuser_id";
     private final static String M_LASTUSER_PASSWORD = "m_lastuser_password";
     //
-    private final static String M_IMAGE =   "m_image";
+    private final static String M_IMAGE = "m_image";
     private final static String M_IMAGE_IMAGEID = "m_image_imageid";
     private final static String M_IMAGE_USERID = "m_image_userid";
-    private final static String M_IMAGE_ISLIKE="m_image_islike";
+    private final static String M_IMAGE_ISLIKE = "m_image_islike";
     private final static String M_IMAGE_LIKENUMBER = "m_image_likenumber";
     private final static String M_IMAGE_UPDATEDATE = "m_image_updatedate";
     //
@@ -57,14 +57,17 @@ public class DB extends SQLiteOpenHelper {
         super(new CustomPathDatabaseContext(context, getDirPath()), DATABASE_NAME, null, DATABASE_VERSION);
         // super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
+
     /**
      * 获取db文件在sd卡的路径
+     *
      * @return
      */
-    private static String getDirPath(){
+    private static String getDirPath() {
         //TODO 这里返回存放db的文件夹的绝对路径
         return DATABASE_PATH;
     }
+
     @Override
     public void onOpen(SQLiteDatabase db) {
         super.onOpen(db);
@@ -80,14 +83,14 @@ public class DB extends SQLiteOpenHelper {
         String lastuser = "CREATE TABLE " + M_LASTUSER + " (" + M_LASTUSER_ID
                 + " TEXT primary key, " + M_LASTUSER_PASSWORD + " TEXT NOT NULL," + "FOREIGN KEY (M_LASTUSER_ID) REFERENCES M_USER(M_USER_ID));";
         String image = "CREATE TABLE " + M_IMAGE + " (" + M_IMAGE_IMAGEID
-                + " TEXT primary key, " + M_IMAGE_USERID + " TEXT NOT NULL, "+M_IMAGE_ISLIKE+"TEXT NOT NULL,"
+                + " TEXT primary key, " + M_IMAGE_USERID + " TEXT NOT NULL, " + M_IMAGE_ISLIKE + "TEXT NOT NULL,"
                 + M_IMAGE_LIKENUMBER + " TEXT NOT NULL," + M_IMAGE_UPDATEDATE + " DATETIME NOT NULL," + " FOREIGN KEY (M_IMAGE_USERID) REFERENCES M_USER(M_USER_ID) ON DELETE CASCADE);";
         String comment = "CREATE TABLE " + M_COMMENT + " (" + M_COMMENT_COMMENTID + " TEXT primary key, "
                 + M_COMMENT_USERID + " TEXT NOT NULL, " + M_COMMENT_IMAGEID + " TEXT NOT NULL, " + M_COMMENT_CONTENT + " TEXT NOT NULL,"
                 + M_COMMENT_COMMETNTDATE + " DATETIME NOT NULL," + "FOREIGN KEY (M_COMMENT_USERID) REFERENCES M_USER(M_USER_ID)  ON DELETE CASCADE, "
                 + "FOREIGN KEY (M_COMMENT_IMAGEID) REFERENCES M_IMAGE(M_IMAGE_IMAGEID) ON DELETE CASCADE);";
         String tag = "CREATE TABLE " + M_TAG + " (" + M_TAG_ID
-                + " TEXT primary key," + M_TAG_NAME + " TEXT NOT NULL, "+ M_TAG_IMAGEID + " TEXT NOT NULL,"
+                + " TEXT primary key," + M_TAG_NAME + " TEXT NOT NULL, " + M_TAG_IMAGEID + " TEXT NOT NULL,"
                 + "FOREIGN KEY (M_TAG_IMAGEID) REFERENCES M_IMAGE(M_IMAGE_IMAGEID) ON DELETE CASCADE);";
         String lobbyimage = "CREATE TABLE " + M_LOBBYIMAGE + " (" + M_LOBBYIMAGE_RANK + " TEXT primary key," + M_LOBBYIMAGE_IMAGEID
                 + " TEXT NOT NULL," + "FOREIGN KEY (M_LOBBYIMAGE_IMAGEID) REFERENCES M_IMAGE(M_IMAGE_IMAGEID)   ON DELETE CASCADE);";
@@ -98,12 +101,14 @@ public class DB extends SQLiteOpenHelper {
         db.execSQL(tag);
         db.execSQL(lobbyimage);
     }
+
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         String sql = "DROP TABLE IF EXISTS " + M_USER + M_LASTUSER + M_IMAGE + M_COMMENT + M_TAG + M_LOBBYIMAGE;
         db.execSQL(sql);
         onCreate(db);
     }
+
     public Cursor userselect() {
 
         SQLiteDatabase db = this.getReadableDatabase();
@@ -119,36 +124,38 @@ public class DB extends SQLiteOpenHelper {
         long row = db.insert(M_USER, null, cv);
         return row;
     }
-    public long userinsert(String id,String password) {
+
+    public long userinsert(String id, String password) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues cv = new ContentValues();
         cv.put(M_USER_ID, id);
-        cv.put(M_USER_PASSWORD,password);
+        cv.put(M_USER_PASSWORD, password);
         long row = db.insert(M_USER, null, cv);
         return row;
     }
+
     public void userdelete(String id) {
         SQLiteDatabase db = this.getWritableDatabase();
         String where = M_USER_ID + " = ?";
         String[] whereValue = {id};
         db.delete(M_USER, where, whereValue);
     }
-    public String getmUserPassword(String id)
-    {
-        String encryptid=AES.encrypt(id);
+
+    public String getmUserPassword(String id) {
+        String encryptid = AES.encrypt(id);
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor cur = db.rawQuery("select * from M_USER where M_USER_ID='" + encryptid.trim() + "'", null);
         if (cur.moveToFirst()) {
             String encryptpassword = cur.getString((cur.getColumnIndex("m_user_password")));
-            if(encryptpassword==null)
-            {
+            if (encryptpassword == null) {
                 return null;
             }
-            String password=AES.decrypt(encryptpassword);
+            String password = AES.decrypt(encryptpassword);
             return password;
         }
         return null;
     }
+
     private boolean usercheck(String id, SQLiteDatabase db) {
         Cursor cur = db.rawQuery("select * from M_USER where M_USER_ID='" + id.trim() + "'", null);
         if (cur.moveToFirst()) {
@@ -157,8 +164,8 @@ public class DB extends SQLiteOpenHelper {
             return false;
         }
     }
-    public boolean checkuser(String id)
-    {
+
+    public boolean checkuser(String id) {
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor cur = db.rawQuery("select * from M_USER where M_USER_ID='" + id.trim() + "'", null);
         if (cur.moveToFirst()) {
@@ -168,6 +175,7 @@ public class DB extends SQLiteOpenHelper {
             return false;
         }
     }
+
     public void userupdatepassword(String id, String newpassword) {
         SQLiteDatabase db = this.getWritableDatabase();
         String where = M_USER_ID + " = ?";
@@ -176,6 +184,7 @@ public class DB extends SQLiteOpenHelper {
         cv.put(M_USER_PASSWORD, newpassword);
         db.update(M_USER, cv, where, whereValue);
     }
+
     //Lastuser
     public Cursor lastuserselect() {
         SQLiteDatabase db = this.getReadableDatabase();
@@ -184,7 +193,7 @@ public class DB extends SQLiteOpenHelper {
         return cursor;
     }
 
-    public long lastuserinsert(String id,String password) {
+    public long lastuserinsert(String id, String password) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues cv = new ContentValues();
         cv.put(M_LASTUSER_ID, id);
@@ -194,7 +203,7 @@ public class DB extends SQLiteOpenHelper {
     }
 
     public void lastuserdelete() {
-        Cursor cursor=lastuserselect();
+        Cursor cursor = lastuserselect();
         if (cursor.moveToFirst()) {
             String id = cursor.getString(cursor.getColumnIndex("m_lastuser_id"));
             SQLiteDatabase db = this.getWritableDatabase();
@@ -209,8 +218,8 @@ public class DB extends SQLiteOpenHelper {
             }
         }
     }
-
-    public void lastuserupdateid(String newid,String newpassword) {
+//TODO:写软件工程说明书
+    public void lastuserupdateid(String newid, String newpassword) {
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor cur = db.rawQuery("select * from M_LASTUSER", null);
         if (cur.moveToFirst()) {
@@ -225,6 +234,36 @@ public class DB extends SQLiteOpenHelper {
             Log.e("errorbig", "Can't");
         }
     }
+
+    public void lastuserupdatepassword(String newpassword) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cur = db.rawQuery("select * from M_LASTUSER", null);
+        if (cur.moveToFirst()) {//
+            String id = cur.getString((cur.getColumnIndex("m_lastuser_id")));
+            String where = M_LASTUSER_ID + " = ?";
+            String[] whereValue = {id};
+            ContentValues cv = new ContentValues();
+            cv.put(M_LASTUSER_PASSWORD, newpassword);
+            db.update(M_LASTUSER, cv, where, whereValue);
+        } else {
+            Log.e("errorbig", "Can't");
+        }
+    }
+
+    public boolean checklastuserpassword() {
+        Cursor cursor = lastuserselect();
+        if (cursor.moveToFirst()) {
+            String password = cursor.getString(cursor.getColumnIndex("m_lastuser_password"));
+            if (password != null) {//可能会出错
+                return true;
+            } else {
+                return false;
+            }
+        } else {
+            return false;
+        }
+    }
+
     //Image
     public Cursor imageselect() {
 
@@ -234,12 +273,12 @@ public class DB extends SQLiteOpenHelper {
         return cursor;
     }
 
-    public long imageinsert(String imageid, String userid,String islike, String likenumber, Timestamp updatedate) {
+    public long imageinsert(String imageid, String userid, String islike, String likenumber, Timestamp updatedate) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues cv = new ContentValues();
         cv.put(M_IMAGE_IMAGEID, imageid);
         cv.put(M_IMAGE_USERID, userid);
-        cv.put(M_IMAGE_ISLIKE,islike);
+        cv.put(M_IMAGE_ISLIKE, islike);
         cv.put(M_IMAGE_LIKENUMBER, likenumber);
         cv.put(M_IMAGE_UPDATEDATE, new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(updatedate));
         long row = db.insert(M_IMAGE, null, cv);
@@ -252,8 +291,8 @@ public class DB extends SQLiteOpenHelper {
         String[] whereValue = {imageid};
         db.delete(M_IMAGE, where, whereValue);
     }
-    public void imageupdateislike(String imageid,String newislike)
-    {
+
+    public void imageupdateislike(String imageid, String newislike) {
         SQLiteDatabase db = this.getWritableDatabase();
         String where = M_IMAGE_IMAGEID + " = ?";
         String[] whereValue = {imageid};
@@ -261,6 +300,7 @@ public class DB extends SQLiteOpenHelper {
         cv.put(M_IMAGE_ISLIKE, newislike);
         db.update(M_IMAGE, cv, where, whereValue);
     }
+
     public void imageupdatelikenumber(String imageid, String newlikenumber) {
         SQLiteDatabase db = this.getWritableDatabase();
         String where = M_IMAGE_IMAGEID + " = ?";
@@ -269,6 +309,7 @@ public class DB extends SQLiteOpenHelper {
         cv.put(M_IMAGE_LIKENUMBER, newlikenumber);
         db.update(M_IMAGE, cv, where, whereValue);
     }
+
     public Cursor userimageselect(String userid) {
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor cur = db.rawQuery("select * from M_IMAGE where M_IMAGE_USERID='" + userid.trim() + "'", null);
