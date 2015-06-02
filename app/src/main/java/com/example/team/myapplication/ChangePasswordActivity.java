@@ -62,15 +62,18 @@ public class ChangePasswordActivity extends GeneralActivity {
 
     }
     public void changePassword(View view){
+        String email;
         String oldPassword;
         String newPassword;
         String newPassword2;
         EditText text1 = (EditText)findViewById(R.id.editText2);
         EditText text2 = (EditText)findViewById(R.id.editText3);
         EditText text3 = (EditText)findViewById(R.id.editText4);
+        EditText text4 = (EditText)findViewById(R.id.editText5);
         oldPassword = text1.getText().toString();
         newPassword = text2.getText().toString();
         newPassword2 = text3.getText().toString();
+        email = text3.getText().toString();
 
 
         String password = "11111111";//TODO 在这里获得原密码 此处作为示范
