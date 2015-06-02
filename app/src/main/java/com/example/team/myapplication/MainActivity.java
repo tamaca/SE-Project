@@ -3,6 +3,7 @@ package com.example.team.myapplication;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v4.view.PagerAdapter;
@@ -13,8 +14,10 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.SimpleAdapter;
 import android.widget.TabHost;
 import android.widget.TextView;
@@ -41,6 +44,11 @@ public class MainActivity extends Activity {
     private View userOptions;
     private ViewPager viewPager;
     private List <View>listOfViews;
+    private RelativeLayout mainLayout;
+    private RelativeLayout uploadPictureLayout;
+    private ImageView imageView;
+    private Button upload;
+    private Button cancel;
     private DB db=null;
     public static String getCurrentTag() {
         return currentTag;
@@ -72,7 +80,29 @@ public class MainActivity extends Activity {
         listView = (ListView)meView.findViewById(R.id.listView);
         loginView = meView.findViewById(R.id.login_button);
         userNameView = (TextView)meView.findViewById(R.id.user_name);
+        mainLayout = (RelativeLayout)findViewById(R.id.main_layout);
+        uploadPictureLayout = (RelativeLayout)findViewById(R.id.upload_picture_layout);
+        imageView = (ImageView)findViewById(R.id.imageView);
+        upload = (Button)findViewById(R.id.upload_button);
+        cancel = (Button)findViewById(R.id.cancel_button);
 
+        upload.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //TODO 获取imageView的图片然后上传.
+                imageView.setDrawingCacheEnabled(true);
+                Bitmap bitmap = imageView.getDrawingCache();
+                UploadPictureProgress uploadPictureProgress = new UploadPictureProgress(bitmap);
+                uploadPictureProgress.execute((Void)null);
+            }
+        });
+        cancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showUploadView(false);
+
+            }
+        });
 
         listOfViews.add(squareView);
         listOfViews.add(meView);
@@ -169,7 +199,10 @@ public class MainActivity extends Activity {
         ImageGet imageGet=new ImageGet((ImageView)squareView.findViewById(R.id.imageView1),picURL1,db);
     }
 
-
+    public void showUploadView(boolean show){
+        uploadPictureLayout.setVisibility(show ? View.VISIBLE : View.GONE);
+        mainLayout.setVisibility(show ? View.GONE : View.VISIBLE);
+    }
     @Override
     public void onResume(){
         super.onResume();
@@ -239,14 +272,12 @@ public class MainActivity extends Activity {
             onStop();
             startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
         }
-        /*CharSequence text = ((Button)view).getText();
-        Toast.makeText(this,text,Toast.LENGTH_SHORT).show();*/
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data)
     {
-        super.onActivityResult(requestCode,resultCode,data);
+        super.onActivityResult(requestCode, resultCode, data);
         if(resultCode == RESULT_OK){
             Bitmap image = (Bitmap)data.getExtras().get("data");
 
@@ -255,16 +286,10 @@ public class MainActivity extends Activity {
 
             switch (requestCode){
                 case REQUEST_IMAGE_CAPTURE:
-
-                    Toast.makeText(getApplicationContext(),"Picture is Taken", Toast.LENGTH_LONG).show();
-                    //startActivity(toEditPictureIntent);
-
+                    imageView.setImageBitmap(image);
+                    showUploadView(true);
+                    Toast.makeText(getApplicationContext(), "Picture is Taken", Toast.LENGTH_LONG).show();
                     break;
-
-                    //ImageView imgView = (ImageView)findViewById(R.id.imageView);
-                    //imgView.setImageBitmap(image);
-
-
             }
         }
         else{
@@ -272,14 +297,11 @@ public class MainActivity extends Activity {
         }
     }
 
-    public void toEditPictureActivity(View view){
-        Intent intent = new Intent(this,EditPictureActivity.class);
-        startActivity(intent);
-    }
+
     public void toViewPictureActivity(View view){
         Intent intent = new Intent(this,ViewPictureActivity.class);
-      //  view.setDrawingCacheEnabled(true);
-       // Bitmap bitmap = view.getDrawingCache();
+        //view.setDrawingCacheEnabled(true);
+        //Bitmap bitmap = view.getDrawingCache();
         String imageid=view.getContentDescription().toString();
         intent.putExtra("id",imageid);
         startActivity(intent);
@@ -311,6 +333,38 @@ public class MainActivity extends Activity {
         public void destroyItem(View container, int position, Object object) {
 
             ((ViewPager) container).removeView(listOfViews.get(position));
+        }
+    }
+
+    class UploadPictureProgress extends AsyncTask<Void,Void,Boolean>{
+
+        Bitmap bitmap;
+        public UploadPictureProgress(Bitmap bitmap){
+            this.bitmap = bitmap;
+        }
+        @Override
+        protected Boolean doInBackground(Void... params) {
+            try{
+                //在这里上传
+                Thread.sleep(1000);
+            }
+            catch (InterruptedException e){
+
+
+                return false;
+            }
+            return true;
+
+        }
+        @Override
+        protected void onPostExecute(Boolean success){
+            if(success){
+
+                showUploadView(false);
+            }
+            else {
+
+            }
         }
     }
 

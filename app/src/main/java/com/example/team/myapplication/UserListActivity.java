@@ -84,7 +84,7 @@ public class UserListActivity extends GeneralActivity {
 
         final List<Map<String,Object>> listItems = new ArrayList<Map<String, Object>>();
         if(type == MainActivity.friend_list){
-            //获得关注的人的名单，名单是Arraylist数组,放置到userName里
+            //获得关注的人的名单，名单是Arraylist<String>数组,放置到userName里
             //以下测试用
             userNames.add("好友1");
             userNames.add("好友2");
@@ -99,7 +99,7 @@ public class UserListActivity extends GeneralActivity {
 
         }
         if(type == MainActivity.blacklist){
-            //获得黑名单，名单是Arraylist数组,放置到userName里
+            //获得黑名单，名单是Arraylist<String>数组,放置到userName里
             //以下测试用
             userNames.add("黑1");
             userNames.add("黑2");
