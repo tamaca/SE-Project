@@ -229,6 +229,9 @@ public class JsonPost {
                 //  httpPost.setHeader("Content-Type", "application/x-www-form-urlencoded");
                 //  httpPost.setHeader("Accept", "application/json");
                 //  httpPost.setHeader("Content-type", "application/json");
+                httpPost.setHeader("Content-Type", "application/x-www-form-urlencoded");
+                httpPost.setHeader("Accept", "application/json");
+                httpPost.setHeader("Content-type", "application/json");
                 httpPost.setEntity(new UrlEncodedFormEntityHC4(nameValuePair, "UTF-8"));
                 try {
                     response = client.execute(httpPost);
@@ -269,14 +272,13 @@ public class JsonPost {
                 //登录
                 case 1: {
                     try {
-                        String id = jsonObject.getString("user_id");
-                        String password = jsonObject.getString("user_password");
-                        Log.v("id", "id=" + id);
-                        Log.v("afterpassword", "password" + password);
-                        dbsaveuser(this.jsonObject.getString("email"), this.jsonObject.getString("password"));
+                        String status = jsonObject.getString("status");
+                        if(status=="normal") {
+                            String _username=jsonObject.getString("username");
+                            dbsaveuser(_username, this.jsonObject.getString("password"));
+                        }
                         //这里写跳转代码
                         //loginActivity.showProgress(false);
-
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
