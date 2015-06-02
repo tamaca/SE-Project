@@ -10,6 +10,7 @@ import android.widget.ProgressBar;
 import android.widget.ScrollView;
 import android.widget.Toast;
 
+import com.example.team.myapplication.util.CheckValid;
 import com.example.team.myapplication.util.GeneralActivity;
 
 
@@ -52,10 +53,7 @@ public class ChangePasswordActivity extends GeneralActivity {
 
         return super.onOptionsItemSelected(item);
     }
-    private boolean isPasswordValid(String password) {
 
-        return password.length() > 5 && password.length() <= 15;
-    }
     public void showProgress(boolean show){
         progressBar.setVisibility(show?View.VISIBLE:View.GONE);
         scrollView.setVisibility(show?View.GONE:View.VISIBLE);
@@ -77,40 +75,51 @@ public class ChangePasswordActivity extends GeneralActivity {
 
 
         String password = "11111111";//TODO 在这里获得原密码 此处作为示范
+        if(!CheckValid.isEmailValid(email)){
+            text4.setError(getString(R.string.error_invalid_email));
+            text4.requestFocus();
+            return;
+        }
         if(oldPassword.isEmpty()){
             text1.setError(getString(R.string.error_field_required));
+            text1.requestFocus();
             return;
         }
         if(oldPassword.equals(password)){
             if(newPassword.isEmpty()){
                 text2.setError(getString(R.string.error_field_required));
+                text2.requestFocus();
                 return;
             }
             if(newPassword2.isEmpty()){
                 text3.setError(getString(R.string.error_field_required));
+                text3.requestFocus();
                 return;
             }
             if(oldPassword.equals(newPassword)){
                 text2.setError("新旧密码相同");
+                text2.requestFocus();
                 return;
             }
             if(!newPassword.equals(newPassword2)){
                 text1.setError(null);
-                text2.setError("两次输入的密码不一致");
                 text3.setError("两次输入的密码不一致");
+                text1.requestFocus();
                 return;
             }
-            if(isPasswordValid(newPassword)){
+            if(CheckValid.isPasswordValid(newPassword)){
                 showProgress(true);
                 ChangePasswordProgress changePasswordProgress = new ChangePasswordProgress(newPassword);
                 changePasswordProgress.execute((Void)null);
             }
             else{
                 text2.setError(getString(R.string.error_invalid_password));
+                text2.requestFocus();
             }
         }
         else {
             text1.setError(getString(R.string.password_not_same));
+            text1.requestFocus();
         }
 
 

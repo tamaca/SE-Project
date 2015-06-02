@@ -33,6 +33,7 @@ import android.widget.Toast;
 import com.example.team.myapplication.Database.DB;
 import com.example.team.myapplication.Network.AES;
 import com.example.team.myapplication.Network.JsonPost;
+import com.example.team.myapplication.util.CheckValid;
 import com.example.team.myapplication.util.GeneralActivity;
 
 import java.util.ArrayList;
@@ -222,7 +223,7 @@ public class LoginActivity extends GeneralActivity implements LoaderCallbacks<Cu
             focusView = mPasswordView;
             cancel = true;
         }
-        else if (!isPasswordValid(password)) {
+        else if (!CheckValid.isPasswordValid(password)) {
             mPasswordView.setError(getString(R.string.error_invalid_password));
             focusView = mPasswordView;
             cancel = true;
@@ -235,7 +236,7 @@ public class LoginActivity extends GeneralActivity implements LoaderCallbacks<Cu
             focusView = mEmailView;
             cancel = true;
 
-        } else if (!isEmailValid(email)) {
+        } else if (!CheckValid.isEmailValid(email)) {
             mEmailView.setError(getString(R.string.error_invalid_email));
             focusView = mEmailView;
             cancel = true;
@@ -253,17 +254,6 @@ public class LoginActivity extends GeneralActivity implements LoaderCallbacks<Cu
             mAuthTask = new UserLoginTask(email, password,1);
             mAuthTask.execute((Void) null);
         }
-    }
-
-
-    private boolean isEmailValid(String email) {
-
-        return email.matches("^([a-zA-Z0-9_\\.\\-])+\\@(([a-zA-Z0-9\\-])+\\.)+([a-zA-Z0-9]{2,4})+$");
-    }
-
-    private boolean isPasswordValid(String password) {
-
-        return password.length() > 5 && password.length() <= 15;
     }
 
     /**
