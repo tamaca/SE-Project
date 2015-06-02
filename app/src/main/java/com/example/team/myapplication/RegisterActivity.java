@@ -19,7 +19,6 @@ import android.widget.Toast;
 
 import com.example.team.myapplication.Database.DB;
 import com.example.team.myapplication.Network.JsonPost;
-import com.example.team.myapplication.util.CheckValid;
 import com.example.team.myapplication.util.GeneralActivity;
 
 import java.util.HashMap;
@@ -35,6 +34,7 @@ public class RegisterActivity extends GeneralActivity {
     private View progressView;
     private View registerView;
     private DB db;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -45,7 +45,7 @@ public class RegisterActivity extends GeneralActivity {
         setContentView(R.layout.activity_register);
         getActionBar().setDisplayHomeAsUpEnabled(true);
 
-        db=new DB(this);
+        db = new DB(this);
         okButton = (Button) findViewById(R.id.register_ok);
         userName = (TextView) findViewById(R.id.register_user_name);
         eMail = (TextView) findViewById(R.id.register_email);
@@ -121,12 +121,31 @@ public class RegisterActivity extends GeneralActivity {
         }
     }
 
-    public void closeKeyboard(){
+    public void closeKeyboard() {
         View view = getWindow().peekDecorView();
         if (view != null) {
             InputMethodManager inputmanger = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
             inputmanger.hideSoftInputFromWindow(view.getWindowToken(), 0);
         }
+    }
+
+    public boolean isUserNameValid(String userName) {
+        //还要检查用户名是否唯一
+        return userName.length() >= 2 && userName.length() <= 20;
+    }
+
+    public boolean isPasswordValid(String password) {
+        //检查密码复杂度？？
+        return password.length() > 5 && password.length() <= 15;
+    }
+
+    private boolean isEmailValid(String email) {
+        return email.matches("^([a-zA-Z0-9_\\.\\-])+\\@(([a-zA-Z0-9\\-])+\\.)+([a-zA-Z0-9]{2,4})+$");
+    }
+
+    public boolean isPasswordSame(String password1, String password2) {
+
+        return password1.equals(password2);
     }
 
     public void attemptRegister() {
@@ -151,7 +170,7 @@ public class RegisterActivity extends GeneralActivity {
             userName.setError(getString(R.string.error_field_required));
             cancel = true;
             focusView = userName;
-        } else if (!CheckValid.isUserNameValid(user_name)) {
+        } else if (!isUserNameValid(user_name)) {
             userName.setError(getString(R.string.user_name_invalid));
             cancel = true;
             focusView = userName;
@@ -161,7 +180,7 @@ public class RegisterActivity extends GeneralActivity {
             eMail.setError(getString(R.string.error_field_required));
             focusView = eMail;
             cancel = true;
-        } else if (!CheckValid.isEmailValid(email)) {
+        } else if (!isEmailValid(email)) {
             eMail.setError(getString(R.string.error_invalid_email));
             focusView = eMail;
             cancel = true;
@@ -171,7 +190,7 @@ public class RegisterActivity extends GeneralActivity {
             firstPassword.setError(getString(R.string.error_field_required));
             focusView = firstPassword;
             cancel = true;
-        } else if (!CheckValid.isPasswordValid(password_1)) {
+        } else if (!isPasswordValid(password_1)) {
             firstPassword.setError(getString(R.string.error_invalid_password));
             focusView = firstPassword;
             cancel = true;
@@ -182,7 +201,7 @@ public class RegisterActivity extends GeneralActivity {
                 cancel = true;
 
             }
-            if (!password_1.equals(password_2)) {
+            if (!isPasswordSame(password_1, password_2)) {
                 secondPassword.setError(getString(R.string.password_not_same));
                 focusView = secondPassword;
                 cancel = true;
@@ -222,18 +241,18 @@ public class RegisterActivity extends GeneralActivity {
                 String username = mUserName;
                 String Email = mEmail;
                 String Password = mPassword;
-               // String encrptname = AES.encrypt(username);
-               // String encrptEmail = AES.encrypt(Email);
-               // String encrptPassword = AES.encrypt(Password);
+                // String encrptname = AES.encrypt(username);
+                // String encrptEmail = AES.encrypt(Email);
+                // String encrptPassword = AES.encrypt(Password);
                 String url = "http://192.168.253.1/register/";
                 HashMap<String, String> map = new HashMap<String, String>();
-                map.put("username",username);
-                map.put("email",Email);
-                map.put("password",Password);
+                map.put("username", username);
+                map.put("email", Email);
+                map.put("password", Password);
                 //map.put("email", encrptEmail);
-              // map.put("password", encrptPassword);
-              //  map.put("username", encrptname);
-                JsonPost post = new JsonPost(map, url, 2,db);
+                // map.put("password", encrptPassword);
+                //  map.put("username", encrptname);
+                JsonPost post = new JsonPost(map, url, 2, db);
                 Thread.sleep(3000);
             } catch (Exception e) {
 
@@ -259,9 +278,9 @@ public class RegisterActivity extends GeneralActivity {
 
                 intent.putExtra("Email", mEmail);
                 intent.putExtra("UserName", mUserName);
-                intent.putExtra("Password",mPassword);
+                intent.putExtra("Password", mPassword);
 
-                RegisterActivity.this.setResult(RESULT_OK,intent);
+                RegisterActivity.this.setResult(RESULT_OK, intent);
                 RegisterActivity.this.finish();
 
             } else {
