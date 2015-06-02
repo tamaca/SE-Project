@@ -60,7 +60,7 @@ public class JsonPost {
 
     }
 
-    //登录
+    //注册、修改密码
     public JsonPost(HashMap<String, String> map, String url, int type, DB db) {
         this.url = url;
         this.type = type;
@@ -128,8 +128,8 @@ public class JsonPost {
         String imageid = commentmap.get("imageid");
         Timestamp updatetime = new Timestamp(System.currentTimeMillis());
         for (int i = 1; i <= commentnum; i++) {
-            updatetime.valueOf(commentmap.get("updatedate" + String.valueOf(i-1)));
-            db.commentinsert(commentmap.get("commentid" + String.valueOf(i-1)), commentmap.get("userid" + String.valueOf(i-1)), imageid, commentmap.get("commentid" + String.valueOf(i-1)), updatetime);
+            updatetime.valueOf(commentmap.get("updatedate" + String.valueOf(i - 1)));
+            db.commentinsert(commentmap.get("commentid" + String.valueOf(i - 1)), commentmap.get("userid" + String.valueOf(i - 1)), imageid, commentmap.get("commentid" + String.valueOf(i - 1)), updatetime);
         }
     }
 
@@ -273,8 +273,8 @@ public class JsonPost {
                 case 1: {
                     try {
                         String status = jsonObject.getString("status");
-                        if(status=="normal") {
-                            String _username=jsonObject.getString("username");
+                        if (status == "normal") {
+                            String _username = jsonObject.getString("username");
                             dbsaveuser(_username, this.jsonObject.getString("password"));
                         }
                         //这里写跳转代码
@@ -311,6 +311,21 @@ public class JsonPost {
                     //图片的评论以JSON格式收取
                     getImageInformation(jsonObject);
                     break;
+                }
+                //修改密码
+                case 5: {
+                    try {
+                        String status = jsonObject.getString("status");
+                        if(status=="normal")
+                        {
+                          if(db.checklastuserpassword())//有可能出错
+                          {
+                              db.lastuserupdatepassword(map.get("password"));
+                          }
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
                 }
                 default:
                     return;
