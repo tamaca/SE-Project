@@ -128,8 +128,8 @@ public class JsonPost {
         String imageid = commentmap.get("imageid");
         Timestamp updatetime = new Timestamp(System.currentTimeMillis());
         for (int i = 1; i <= commentnum; i++) {
-            updatetime.valueOf(commentmap.get("updatedate" + String.valueOf(i)));
-            db.commentinsert(commentmap.get("commentid" + String.valueOf(i)), commentmap.get("userid" + String.valueOf(i)), imageid, commentmap.get("commentid" + String.valueOf(i)), updatetime);
+            updatetime.valueOf(commentmap.get("updatedate" + String.valueOf(i-1)));
+            db.commentinsert(commentmap.get("commentid" + String.valueOf(i-1)), commentmap.get("userid" + String.valueOf(i-1)), imageid, commentmap.get("commentid" + String.valueOf(i-1)), updatetime);
         }
     }
 
@@ -158,16 +158,12 @@ public class JsonPost {
             }
             //原图位置
             view.getImgview().setContentDescription(originImageurl);
-            //TODO 获取上传者
             //String _author = "The Hammer";
             view.getAuthor().setText(_author);
-            //TODO 获取赞的数量和该用户是否已经赞
             Boolean isLike = (_isLike.equals("true"));//测试用, false 代表没有赞过
             view.getLike().setText(isLike ? "取消赞\n" : "赞\n" + "(" + _like + ")");
             view.getCommentView().postInvalidate();
-            //TODO 获取该图片的上传时间
             view.getUploadTime().setText(_updateTime);
-            //TODO 获取评论
             //String commenter1 = "sxy";
             //String comment1 = "评论在这里（5毛一条，括号里不要复制）";
             for (int i = 1; i <= commentnum; i++) {
