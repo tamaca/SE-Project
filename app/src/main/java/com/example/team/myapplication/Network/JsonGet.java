@@ -41,6 +41,17 @@ public class JsonGet {
         }
     }
 
+    public JsonGet(String url, DB db) {
+        this.url = url;
+        this.db = db;
+        try {
+            Get get = new Get();
+            get.execute();
+        } catch (Exception e) {
+            e.toString();
+        }
+    }
+
     private class Get extends AsyncTask<Void, Void, JSONObject> {
         CloseableHttpClient client = HttpClients.custom().useSystemProperties().build();
         HttpGetHC4 httpget = new HttpGetHC4(url);
@@ -85,29 +96,35 @@ public class JsonGet {
                 String status = jsonObject.getString("status");
                 if (status.equals("normal")) {
                     String url = "http://192.168.253.1/media/";
-                    ImageView imageView1 = (ImageView) view.findViewById(R.id.imageView1);
-                    ImageView imageView2 = (ImageView) view.findViewById(R.id.imageView2);
-                    ImageView imageView3 = (ImageView) view.findViewById(R.id.imageView3);
-                    ImageView imageView4 = (ImageView) view.findViewById(R.id.imageView4);
-                    String image1_small = url + jsonObject.getString("image0_small");
-                    String image2_small = url + jsonObject.getString("image1_small");
-                    String image3_small = url + jsonObject.getString("image2_small");
-                    String image4_small = url + jsonObject.getString("image3_small");
-                    String image1_big = url + jsonObject.getString("image0_big");
-                    String image2_big = url + jsonObject.getString("image1_big");
-                    String image3_big = url + jsonObject.getString("image2_big");
-                    String image4_big = url + jsonObject.getString("image3_big");
-                    ImageGet imageGet1 = new ImageGet(imageView1, image1_small, db,"small");
-                    ImageGet imageGet2 = new ImageGet(imageView2, image2_small, db,"small");
-                    ImageGet imageGet3 = new ImageGet(imageView3, image3_small, db,"small");
-                    ImageGet imageGet4 = new ImageGet(imageView4, image4_small, db,"small");
-                    imageView1.setContentDescription(image1_big);
-                    imageView2.setContentDescription(image2_big);
-                    imageView3.setContentDescription(image3_big);
-                    imageView4.setContentDescription(image4_big);
-                    //TODO ´Ë´¦ÐèÒª¼ÓÈë±¾µØÊý¾Ý¿â
+                    String image_small[] = new String[4];
+                    String image_big[] = new String[4];
+                    for (int i = 0; i <= 3; i++) {
+                        image_small[i] = url + jsonObject.getString("image" + i + "_small");
+                        image_big[i] = url + jsonObject.getString("image" + i + "_big");
+                    }
+                    if (view != null){
+                        ImageView imageView1 = (ImageView) view.findViewById(R.id.imageView1);
+                        ImageView imageView2 = (ImageView) view.findViewById(R.id.imageView2);
+                        ImageView imageView3 = (ImageView) view.findViewById(R.id.imageView3);
+                        ImageView imageView4 = (ImageView) view.findViewById(R.id.imageView4);
+                        ImageGet imageGet1 = new ImageGet(imageView1, image_small[0], db, "small");
+                        ImageGet imageGet2 = new ImageGet(imageView2, image_small[1], db, "small");
+                        ImageGet imageGet3 = new ImageGet(imageView3, image_small[2], db, "small");
+                        ImageGet imageGet4 = new ImageGet(imageView4, image_small[3], db, "small");
+                        imageView1.setContentDescription(image_big[0]);
+                        imageView2.setContentDescription(image_big[1]);
+                        imageView3.setContentDescription(image_big[2]);
+                        imageView4.setContentDescription(image_big[3]);
+                    }
+                    else {
+                        ImageGet imageGet6 = new ImageGet(null, image_small[0], db, "small");
+                        ImageGet imageGet7 = new ImageGet(null, image_small[1], db, "small");
+                        ImageGet imageGet8 = new ImageGet(null, image_small[2], db, "small");
+                        ImageGet imageGet9 = new ImageGet(null, image_small[3], db, "small");
+                    }
+                    //TODO æ­¤å¤„éœ€è¦åŠ å…¥æœ¬åœ°æ•°æ®åº“
                 }
-                //ÕâÀïÐ´Ìø×ª´úÂë
+                //è¿™é‡Œå†™è·³è½¬ä»£ç 
                 //loginActivity.showProgress(false);
             } catch (JSONException e) {
                 e.printStackTrace();
