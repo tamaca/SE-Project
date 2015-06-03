@@ -102,7 +102,7 @@ public class ImageGet {
                     String name1 = mCursor.getString((mCursor.getColumnIndex("m_image_imageid")));
                 }*/
                 imageView.setImageBitmap(bitmap);
-                imageView.setContentDescription(imageId);
+                //imageView.setContentDescription(imageId);
             }
         }
 
@@ -154,7 +154,7 @@ public class ImageGet {
                     if (this == bitmapDownloaderTask) {
                         mLoadImageAsyncTaskHashSet.remove(this);
                         imageView.setImageBitmap(bitmap);
-                        imageView.setContentDescription(imageId);
+                       // imageView.setContentDescription(imageId);
                         mLruCacheImageLoader.addBitmapToLruCache(imageUrl, bitmap);
                        /* long time = System.currentTimeMillis();
                         Timestamp tsTemp = new Timestamp(time);

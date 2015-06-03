@@ -25,6 +25,8 @@ import android.widget.Toast;
 import com.example.team.myapplication.Cache.Localstorage;
 import com.example.team.myapplication.Database.DB;
 import com.example.team.myapplication.Network.ImageGet;
+import com.example.team.myapplication.Network.JsonGet;
+import com.example.team.myapplication.Network.JsonPost;
 import com.example.team.myapplication.util.OverwriteAdapter;
 
 import java.util.ArrayList;
@@ -196,8 +198,10 @@ public class MainActivity extends Activity {
 
     public void imagedownload()
     {
-        String picURL1 = "http://7.share.photo.xuite.net/angel890208/1719fd6/4701295/179671143_x.jpg";
-        ImageGet imageGet=new ImageGet((ImageView)squareView.findViewById(R.id.imageView1),picURL1,db);
+        String picURL1 = "http://192.168.253.1/square_page/1/";
+        JsonGet jsonGet=new JsonGet(picURL1,db,squareView);
+        //String picURL1 = "http://192.168.253.1/square_page/1/";
+        //ImageGet imageGet=new ImageGet((ImageView)squareView.findViewById(R.id.imageView1),picURL1,db);
     }
 
     public void showUploadView(boolean show){
@@ -303,8 +307,8 @@ public class MainActivity extends Activity {
         Intent intent = new Intent(this,ViewPictureActivity.class);
         //view.setDrawingCacheEnabled(true);
         //Bitmap bitmap = view.getDrawingCache();
-        String imageid=view.getContentDescription().toString();
-        intent.putExtra("id",imageid);
+        String bigurl=view.getContentDescription().toString();
+        intent.putExtra("bigurl",bigurl);
         startActivity(intent);
     }
     public void toUserListActivity(View view, int x){
