@@ -118,7 +118,7 @@ public class ChangePasswordActivity extends GeneralActivity {
         }
         if (isPasswordValid(newPassword)) {
             showProgress(true);
-            ChangePasswordProgress changePasswordProgress = new ChangePasswordProgress(newPassword);
+            ChangePasswordProgress changePasswordProgress = new ChangePasswordProgress(oldPassword,newPassword,email);
             changePasswordProgress.execute((Void) null);
         } else {
             text2.setError(getString(R.string.error_invalid_password));
@@ -131,7 +131,7 @@ public class ChangePasswordActivity extends GeneralActivity {
         private String oldPassword ;
         private String newPassword ;
         private String email;
-        public ChangePasswordProgress(String password) {
+        public ChangePasswordProgress(String oldPassword,String newPassword,String email) {
             this.oldPassword = oldPassword;
             this.newPassword=newPassword;
             this.email=email;
@@ -140,15 +140,13 @@ public class ChangePasswordActivity extends GeneralActivity {
         @Override
         protected Boolean doInBackground(Void... voids) {
             try {
-                String url = "http://192.168.253.1/register/";
+                String url = "http://192.168.253.1/password_change/Kev2in/";
                 HashMap<String, String> map = new HashMap<String, String>();
-                map.put("email",this.email);
-                map.put("username", this.username);
-                map.put("oldpassword", this.oldPassword);
-                map.put("newpassword", this.newPassword);
+                map.put("email",email);
+                map.put("old_password",oldPassword);
+                map.put("new_password", newPassword);
                 JsonPost post = new JsonPost(map,url,5,db);
                 Thread.sleep(1000);
-
             } catch (Exception e) {
                 return false;
             }
