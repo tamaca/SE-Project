@@ -6,6 +6,7 @@ import android.widget.ImageView;
 
 import com.example.team.myapplication.Database.DB;
 import com.example.team.myapplication.R;
+import com.example.team.myapplication.ViewPictureActivity;
 
 import org.apache.http4.client.methods.CloseableHttpResponse;
 import org.apache.http4.client.methods.HttpGetHC4;
@@ -17,6 +18,8 @@ import org.json.JSONObject;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
+import java.util.HashMap;
 
 /**
  * Created by coco on 2015/6/3.
@@ -102,9 +105,9 @@ public class JsonGet {
                     imageView2.setContentDescription(image2_big);
                     imageView3.setContentDescription(image3_big);
                     imageView4.setContentDescription(image4_big);
-
+                    //TODO 此处需要加入本地数据库
                 }
-
+                //这里写跳转代码
                 //loginActivity.showProgress(false);
             } catch (JSONException e) {
                 e.printStackTrace();

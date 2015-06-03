@@ -25,7 +25,10 @@ import android.widget.Toast;
 
 import com.example.team.myapplication.Cache.Localstorage;
 import com.example.team.myapplication.Database.DB;
+import com.example.team.myapplication.Network.ImageGet;
 import com.example.team.myapplication.Network.JsonGet;
+import com.example.team.myapplication.Network.JsonPost;
+import com.example.team.myapplication.util.OverwriteAdapter;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -39,7 +42,6 @@ public class MainActivity extends Activity {
     public final static int blacklist = 2;
     public View squareView;
     public View meView;
-    public View searchView;
     private View loginView;
     private View userOptions;
     private ViewPager viewPager;
@@ -73,7 +75,6 @@ public class MainActivity extends Activity {
         //变量初始化
         squareView = LayoutInflater.from(MainActivity.this).inflate(R.layout.layout_square, null);
         meView = LayoutInflater.from(MainActivity.this).inflate(R.layout.layout_me, null);
-        searchView = LayoutInflater.from(MainActivity.this).inflate(R.layout.activity_search, null);
         userOptions = meView.findViewById(R.id.user_options);
         mTabHost = (TabHost)findViewById(R.id.tabHost2);
         viewPager = (ViewPager)findViewById(R.id.viewPager);
@@ -104,10 +105,9 @@ public class MainActivity extends Activity {
 
             }
         });
-        listOfViews.add(searchView);
+
         listOfViews.add(squareView);
         listOfViews.add(meView);
-
         viewPager.setAdapter(new MyPagerAdapter());
         viewPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
@@ -127,26 +127,29 @@ public class MainActivity extends Activity {
         });
 
         mTabHost.setup();
-        mTabHost.addTab(mTabHost.newTabSpec("tab1").setIndicator("搜索").setContent(R.id.linearLayout));
-        mTabHost.addTab(mTabHost.newTabSpec("tab2").setIndicator("广场").setContent(R.id.linearLayout));
-        mTabHost.addTab(mTabHost.newTabSpec("tab3").setIndicator("我").setContent(R.id.linearLayout));
+        mTabHost.addTab(mTabHost.newTabSpec("tab1").setIndicator("广场").setContent(R.id.linearLayout));
+        mTabHost.addTab(mTabHost.newTabSpec("tab2").setIndicator("我").setContent(R.id.linearLayout));
         mTabHost.setOnTabChangedListener(new TabHost.OnTabChangeListener() {
             @Override
             public void onTabChanged(String tabId) {
                 viewPager.setCurrentItem(mTabHost.getCurrentTab());
             }
         });
-        mTabHost.setCurrentTab(1);
+
 
         ArrayList<String> items = new ArrayList<String>();
         //0
-        items.add("关注的人");
+        items.add("搜索");
         //1
-        items.add("黑名单");
+        items.add("关注的人");
         //2
-        items.add("修改密码");
+        items.add("黑名单");
         //3
+        items.add("修改密码");
+        //4
         items.add("注销");
+        //5
+
 
         final List<Map<String, Object>> listItems = new ArrayList<Map<String, Object>>();
         for (int i = 0; i < items.size(); i++) {
@@ -161,17 +164,22 @@ public class MainActivity extends Activity {
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
                 switch (position) {
                     case 0:
-                        toUserListActivity(listView, friend_list);
+                        toSearchActivity(listView);
+
                         break;
                     case 1:
-                        toUserListActivity(listView, blacklist);
+                        toUserListActivity(listView, friend_list);
 
                         break;
                     case 2:
-                        toChangePasswordActivity(listView);
+                        toUserListActivity(listView, blacklist);
 
                         break;
                     case 3:
+                        toChangePasswordActivity(listView);
+                        break;
+                    case 4:
+                        //
                         logout();
                         break;
                 }

@@ -15,8 +15,7 @@
             android:id="@+id/login_button"
             android:src="@drawable/head"
             android:onClick="toLoginActivity"
-            android:visibility="gone"
-            android:background="@color/背景蓝"/>
+            android:visibility="gone" />
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
