@@ -192,11 +192,12 @@ public class MainActivity extends Activity {
         //imageview
 
     }
-
     public void imagedownload()
     {
         String picURL1 = "http://192.168.253.1/square_page/1/";
-        JsonGet jsonGet=new JsonGet(picURL1,db,squareView);
+        String picURL2="http://192.168.253.1/square_page/2/";
+        JsonGet jsonGet1=new JsonGet(picURL1,db,squareView);
+        JsonGet jsonGet2=new JsonGet(picURL2,db);
         //String picURL1 = "http://192.168.253.1/square_page/1/";
         //ImageGet imageGet=new ImageGet((ImageView)squareView.findViewById(R.id.imageView1),picURL1,db);
     }

@@ -51,22 +51,21 @@ public class ImageGet {
     }
 
     //三级缓存获取机制
-    public void Load(String imageUrl, String type) {
+    public void Load(String imageUrl,String type) {
         imageView = imageViewWeakReference.get();
-        Bitmap bitmap = mLruCacheImageLoader.getBitmapFromLruCache(imageUrl);//从缓存获取图片
+        Bitmap bitmap = mLruCacheImageLoader.getBitmapFromLruCache(imageUrl);
         if (bitmap == null) {
-            String filePath = Localstorage.getImageFilePath(imageUrl, type);
+            String filePath = Localstorage.getImageFilePath(imageUrl,type);
             File imageFile = new File(filePath);
-            //从手机存储目录获取图片
-            if (type.equals("origin") || !imageFile.exists()) {
-                //从服务器上下载图片
+            if (!type.equals("origin")&&!imageFile.exists()) {
                 if (cancelPotentialDownload(imageUrl, imageView)) {
-                    BitmapDownloaderTask bitmapDownloaderTask = new BitmapDownloaderTask(imageView, filePath, type);
+                    BitmapDownloaderTask bitmapDownloaderTask = new BitmapDownloaderTask(imageView, filePath,type);
                     downloadDrawable = new DownloadDrawable(bitmapDownloaderTask);
                     bitmapDownloaderTask.execute(imageUrl);
                 }
-            } else if (filePath != null) {
-                bitmap = Localstorage.getBitmapFromSDCard(filePath, imageView.getLayoutParams().width);
+            }
+            if (filePath != null && imageView != null) {
+                bitmap = Localstorage.getBitmapFromSDCard(filePath, imageView.getWidth());
                 if (bitmap != null) {
                     BitmapShowInCache bitmapShowInCache = new BitmapShowInCache();
                     bitmapShowInCache.execute(bitmap);
@@ -74,10 +73,11 @@ public class ImageGet {
                 }
             }
         } else {
-            BitmapShowInCache bitmapShowInCache = new BitmapShowInCache();
-            bitmapShowInCache.execute(bitmap);
+            if (imageView != null) {
+                BitmapShowInCache bitmapShowInCache = new BitmapShowInCache();
+                bitmapShowInCache.execute(bitmap);
+            }
         }
-
     }
 
     //异步操作类    将缓存或内存中的图片显示
@@ -127,7 +127,9 @@ public class ImageGet {
         @Override
         protected void onPreExecute() {
             try {
-                imageView.setImageDrawable(downloadDrawable);
+                if (imageView != null) {
+                    imageView.setImageDrawable(downloadDrawable);
+                }
             } catch (Exception e) {
                 Log.v("error", e.toString());
                 Log.v("error", e.toString());
@@ -141,53 +143,41 @@ public class ImageGet {
 
         @Override
         protected void onPostExecute(Bitmap bitmap) {
-            if (isCancelled()) {
-                bitmap = null;
-            }
-            if (bitmap == null) {
-                try {
-                    throw new Exception();
-                } catch (Exception e) {
-                    e.printStackTrace();
+            if (bitmap != null) {
+                if (isCancelled()) {
+                    bitmap = null;
                 }
-                return;
-            }
-            if (imageViewWeakReference != null) {
                 ImageView imageView = imageViewWeakReference.get();
                 String filePath = filepathWeakReference.get();
                 if (imageView != null) {
                     BitmapDownloaderTask bitmapDownloaderTask = getBitmapDownloader(imageView);
                     if (this == bitmapDownloaderTask) {
-                        mLoadImageAsyncTaskHashSet.remove(this);
                         imageView.setImageBitmap(bitmap);
-                        // imageView.setContentDescription(imageId);
-                        mLruCacheImageLoader.addBitmapToLruCache(imageUrl, bitmap);
-                       /* long time = System.currentTimeMillis();
-                        Timestamp tsTemp = new Timestamp(time);
-                        db.imageinsert(imageId, "me", "500", tsTemp);*/
-                        if (!type.equals("origin")) {
-                            try {
-                                File imageFile = new File(filePath);
-                                if (!imageFile.getParentFile().exists()) {
-                                    imageFile.getParentFile().mkdirs();
-                                }
-                                if (!imageFile.exists()) {
-                                    imageFile.createNewFile();
-                                }
-                                FileOutputStream fileOutputStream = new FileOutputStream(imageFile);
-                                bitmap.compress(Bitmap.CompressFormat.PNG, 100, fileOutputStream);
-                                fileOutputStream.flush();
-                                fileOutputStream.close();
-                                // imageView.setImageBitmap(bitmap);
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            }
-                        }
-                        //   progress.setVisibility(View.INVISIBLE);
                     }
                 }
+                try {
+                    mLoadImageAsyncTaskHashSet.remove(this);
+                    if (!type.equals("origin")) {
+                        File imageFile = new File(filePath);
+                        if (!imageFile.getParentFile().exists()) {
+                            imageFile.getParentFile().mkdirs();
+                        }
+                        if (!imageFile.exists()) {
+                            imageFile.createNewFile();
+                        }
+                        FileOutputStream fileOutputStream = new FileOutputStream(imageFile);
+                        bitmap.compress(Bitmap.CompressFormat.PNG, 100, fileOutputStream);
+                        fileOutputStream.flush();
+                        fileOutputStream.close();
+                        // imageView.setImageBitmap(bitmap);
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                //   progress.setVisibility(View.INVISIBLE);
             }
         }
+    }
        /* @Override
         protected void onPostExecute(Bitmap bitmap) {
             super.onPostExecute(bitmap);
@@ -196,7 +186,6 @@ public class ImageGet {
                 imageView.setImageBitmap(bitmap);
             }
         }*/
-    }
 
     //下载图片的静态类
     static Bitmap downloadBitmap(String url) {
@@ -253,6 +242,7 @@ public class ImageGet {
         public BitmapDownloaderTask getBitmapDownloaderTask() {
             return bitmapDownloaderTaskWeakReference.get();
         }
+
     }
 
     //当一个新的下载的时候，停止这个图片对应的所有可能的下载进程
