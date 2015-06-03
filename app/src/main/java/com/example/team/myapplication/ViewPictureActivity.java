@@ -99,7 +99,7 @@ public class ViewPictureActivity extends GeneralActivity {
 
         //评论的ArrayList 数组，把获得的评论放在这里
         String bigurl = (String) intent.getExtras().get("bigurl");
-        ImageGet imageGet=new ImageGet(imgview,bigurl,db);
+        ImageGet imageGet=new ImageGet(imgview,bigurl,db,"big");
        // getImageInformation(imageid);
 
     }

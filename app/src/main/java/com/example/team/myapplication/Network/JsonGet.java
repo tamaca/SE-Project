@@ -97,10 +97,10 @@ public class JsonGet {
                     String image2_big = url + jsonObject.getString("image1_big");
                     String image3_big = url + jsonObject.getString("image2_big");
                     String image4_big = url + jsonObject.getString("image3_big");
-                    ImageGet imageGet1 = new ImageGet(imageView1, image1_small, db);
-                    ImageGet imageGet2 = new ImageGet(imageView2, image2_small, db);
-                    ImageGet imageGet3 = new ImageGet(imageView3, image3_small, db);
-                    ImageGet imageGet4 = new ImageGet(imageView4, image4_small, db);
+                    ImageGet imageGet1 = new ImageGet(imageView1, image1_small, db,"small");
+                    ImageGet imageGet2 = new ImageGet(imageView2, image2_small, db,"small");
+                    ImageGet imageGet3 = new ImageGet(imageView3, image3_small, db,"small");
+                    ImageGet imageGet4 = new ImageGet(imageView4, image4_small, db,"small");
                     imageView1.setContentDescription(image1_big);
                     imageView2.setContentDescription(image2_big);
                     imageView3.setContentDescription(image3_big);

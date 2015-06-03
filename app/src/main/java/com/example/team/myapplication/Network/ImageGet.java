@@ -39,21 +39,23 @@ public class ImageGet {
     private String imageUrl;
     private String imageId;
     private DB db;
-    public ImageGet(ImageView imageView, String imageUrl,DB db) {
+    private String type;
+    public ImageGet(ImageView imageView, String imageUrl,DB db,String type) {
         imageViewWeakReference = new WeakReference<ImageView>(imageView);
         mLoadImageAsyncTaskHashSet = new HashSet<BitmapDownloaderTask>();
         this.imageUrl = imageUrl;
         this.db=db;
+        this.type=type;
         imageId=Localstorage.getImagesId(imageUrl);
         mLruCacheImageLoader = LruCacheImageLoader.getLruCacheImageLoaderInstance();
-        Load(imageUrl);
+        Load(imageUrl,type);
     }
    //三级缓存获取机制
-    public void Load(String imageUrl) {
+    public void Load(String imageUrl,String type) {
         imageView = imageViewWeakReference.get();
         Bitmap bitmap = mLruCacheImageLoader.getBitmapFromLruCache(imageUrl);//从缓存获取图片
         if (bitmap == null) {
-            String filePath = Localstorage.getImageFilePath(imageUrl);
+            String filePath = Localstorage.getImageFilePath(imageUrl,type);
             File imageFile = new File(filePath);
             //从手机存储目录获取图片
             if (!imageFile.exists()) {
