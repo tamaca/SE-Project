@@ -137,7 +137,7 @@ public class UserListActivity extends GeneralActivity {
 
     class reSimpleAdapter2 extends SimpleAdapter {
         // 颜色
-        private int[] colors = { R.color.灰色,R.color.深灰色 };
+        private int[] colors = { R.color.灰色1,R.color.灰色2 };
 
         public reSimpleAdapter2(Context context,
                                 List<? extends Map<String, ?>> data, int resource,

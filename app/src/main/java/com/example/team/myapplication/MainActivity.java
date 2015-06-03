@@ -18,6 +18,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
+import android.widget.SimpleAdapter;
 import android.widget.TabHost;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -31,8 +32,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-
 
 public class MainActivity extends Activity {
     private TabHost mTabHost;
@@ -156,7 +155,7 @@ public class MainActivity extends Activity {
             listItem.put("选项", items.get(i));
             listItems.add(listItem);
         }
-        OverwriteAdapter simpleAdapter = new OverwriteAdapter(this, listItems, R.layout.layout_simple_item, new String[]{"选项"}, new int[]{R.id.Option});
+        SimpleAdapter simpleAdapter = new SimpleAdapter(this, listItems, R.layout.layout_simple_item, new String[]{"选项"}, new int[]{R.id.Option});
         listView.setAdapter(simpleAdapter);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -181,8 +180,6 @@ public class MainActivity extends Activity {
                         //
                         logout();
                         break;
-
-
                 }
             }
         });

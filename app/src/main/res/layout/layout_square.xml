@@ -16,7 +16,6 @@
             android:layout_height="fill_parent"
             android:layout_weight="1"
             android:id="@+id/imageView1"
-            android:src="@drawable/doge"
             android:adjustViewBounds="true"
             android:scaleType="centerCrop"
             android:onClick="toViewPictureActivity" />
@@ -51,7 +50,6 @@
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
             android:layout_weight="1"
-            android:src="@drawable/doge"
             android:id="@+id/imageView4"
             android:adjustViewBounds="true"
             android:scaleType="centerCrop"
