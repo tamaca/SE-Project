@@ -51,15 +51,15 @@ public class ImageGet {
     }
 
     //三级缓存获取机制
-    public void Load(String imageUrl,String type) {
+    public void Load(String imageUrl, String type) {
         imageView = imageViewWeakReference.get();
         Bitmap bitmap = mLruCacheImageLoader.getBitmapFromLruCache(imageUrl);
         if (bitmap == null) {
-            String filePath = Localstorage.getImageFilePath(imageUrl,type);
+            String filePath = Localstorage.getImageFilePath(imageUrl, type);
             File imageFile = new File(filePath);
-            if (!type.equals("origin")&&!imageFile.exists()) {
+            if (!type.equals("origin") && !imageFile.exists()) {
                 if (cancelPotentialDownload(imageUrl, imageView)) {
-                    BitmapDownloaderTask bitmapDownloaderTask = new BitmapDownloaderTask(imageView, filePath,type);
+                    BitmapDownloaderTask bitmapDownloaderTask = new BitmapDownloaderTask(imageView, filePath, type);
                     downloadDrawable = new DownloadDrawable(bitmapDownloaderTask);
                     bitmapDownloaderTask.execute(imageUrl);
                 }

@@ -78,12 +78,15 @@ public class JsonGet {
                     e.printStackTrace();
                 }
             } catch (IOException e) {
+                //TODO:网络通信错误
                 e.printStackTrace();
             } finally {
                 try {
-                    response.close();
+                    if (response != null) {
+                        response.close();
+                    }
                     client.close();
-                } catch (IOException e) {
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
@@ -92,42 +95,51 @@ public class JsonGet {
 
         @Override
         protected void onPostExecute(JSONObject jsonObject) {
-            try {
-                String status = jsonObject.getString("status");
-                if (status.equals("normal")) {
-                    String url = "http://192.168.253.1/media/";
-                    String image_small[] = new String[4];
-                    String image_big[] = new String[4];
-                    for (int i = 0; i <= 3; i++) {
-                        image_small[i] = url + jsonObject.getString("image" + i + "_small");
-                        image_big[i] = url + jsonObject.getString("image" + i + "_big");
+            if (jsonObject != null) {
+                try {
+                    String status = jsonObject.getString("status");
+                    if (status.equals("normal")) {
+                        String url = "http://192.168.253.1/media/";
+                        String image_small[] = new String[4];
+                        String image_big[] = new String[4];
+                        for (int i = 0; i <= 3; i++) {
+                            image_small[i] = url + jsonObject.getString("image" + i + "_small");
+                            image_big[i] = url + jsonObject.getString("image" + i + "_big");
+                        }
+                        if (view != null) {
+                            ImageView imageView1 = (ImageView) view.findViewById(R.id.imageView1);
+                            ImageView imageView2 = (ImageView) view.findViewById(R.id.imageView2);
+                            ImageView imageView3 = (ImageView) view.findViewById(R.id.imageView3);
+                            ImageView imageView4 = (ImageView) view.findViewById(R.id.imageView4);
+                            ImageGet imageGet1 = new ImageGet(imageView1, image_small[0], db, "small");
+                            ImageGet imageGet2 = new ImageGet(imageView2, image_small[1], db, "small");
+                            ImageGet imageGet3 = new ImageGet(imageView3, image_small[2], db, "small");
+                            ImageGet imageGet4 = new ImageGet(imageView4, image_small[3], db, "small");
+                            imageView1.setContentDescription(image_big[0]);
+                            imageView2.setContentDescription(image_big[1]);
+                            imageView3.setContentDescription(image_big[2]);
+                            imageView4.setContentDescription(image_big[3]);
+                        } else {
+                            ImageGet imageGet6 = new ImageGet(null, image_small[0], db, "small");
+                            ImageGet imageGet7 = new ImageGet(null, image_small[1], db, "small");
+                            ImageGet imageGet8 = new ImageGet(null, image_small[2], db, "small");
+                            ImageGet imageGet9 = new ImageGet(null, image_small[3], db, "small");
+                        }
+                        //TODO 此处需要加入本地数据库
                     }
-                    if (view != null){
-                        ImageView imageView1 = (ImageView) view.findViewById(R.id.imageView1);
-                        ImageView imageView2 = (ImageView) view.findViewById(R.id.imageView2);
-                        ImageView imageView3 = (ImageView) view.findViewById(R.id.imageView3);
-                        ImageView imageView4 = (ImageView) view.findViewById(R.id.imageView4);
-                        ImageGet imageGet1 = new ImageGet(imageView1, image_small[0], db, "small");
-                        ImageGet imageGet2 = new ImageGet(imageView2, image_small[1], db, "small");
-                        ImageGet imageGet3 = new ImageGet(imageView3, image_small[2], db, "small");
-                        ImageGet imageGet4 = new ImageGet(imageView4, image_small[3], db, "small");
-                        imageView1.setContentDescription(image_big[0]);
-                        imageView2.setContentDescription(image_big[1]);
-                        imageView3.setContentDescription(image_big[2]);
-                        imageView4.setContentDescription(image_big[3]);
+                    else
+                    {
+                        //TODO:接收信息错误
                     }
-                    else {
-                        ImageGet imageGet6 = new ImageGet(null, image_small[0], db, "small");
-                        ImageGet imageGet7 = new ImageGet(null, image_small[1], db, "small");
-                        ImageGet imageGet8 = new ImageGet(null, image_small[2], db, "small");
-                        ImageGet imageGet9 = new ImageGet(null, image_small[3], db, "small");
-                    }
-                    //TODO 此处需要加入本地数据库
+                    //这里写跳转代码
+                    //loginActivity.showProgress(false);
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
-                //这里写跳转代码
-                //loginActivity.showProgress(false);
-            } catch (JSONException e) {
-                e.printStackTrace();
+            }
+            else
+            {
+                //TODO:接收信息错误
             }
         }
     }
