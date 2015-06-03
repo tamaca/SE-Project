@@ -226,15 +226,13 @@ public class JsonPost {
                     .toString()));
             CloseableHttpResponse response = null;
             try {
-                //  httpPost.setHeader("Content-Type", "application/x-www-form-urlencoded");
-                //  httpPost.setHeader("Accept", "application/json");
-                //  httpPost.setHeader("Content-type", "application/json");
-                httpPost.setHeader("Content-Type", "application/x-www-form-urlencoded");
-                httpPost.setHeader("Accept", "application/json");
-                httpPost.setHeader("Content-type", "application/json");
+                  httpPost.setHeader("Content-Type", "application/x-www-form-urlencoded");
+                  httpPost.setHeader("Accept", "application/json");
+                  httpPost.setHeader("Content-type", "application/json");
                 httpPost.setEntity(new UrlEncodedFormEntityHC4(nameValuePair, "UTF-8"));
                 try {
                     response = client.execute(httpPost);
+                    int a=response.getStatusLine().getStatusCode();
                     StringBuilder builder = new StringBuilder();
                     BufferedReader reader = new BufferedReader(new InputStreamReader(
                             response.getEntity().getContent()));
@@ -316,13 +314,16 @@ public class JsonPost {
                 case 5: {
                     try {
                         String status = jsonObject.getString("status");
-                        if(status=="normal")
+                      //  String email=jsonObject.getString("email");
+                       // String oldpassword=jsonObject.getString("oldpassword");
+                        //String newpassword=jsonObject.getString("newpassword");
+                        /*if(status=="normal")
                         {
                           if(db.checklastuserpassword())//有可能出错
                           {
                               db.lastuserupdatepassword(map.get("password"));
                           }
-                        }
+                        }*/
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
