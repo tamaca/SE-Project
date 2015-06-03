@@ -105,8 +105,6 @@
                             android:background="@drawable/button_style1"
                             android:onClick="toPictureActivity"/>
 
-
-
                     </LinearLayout>
                 </RelativeLayout>
 
@@ -118,7 +116,6 @@
                     android:layout_marginLeft="25dp"
                     android:layout_marginRight="25dp"
                     android:layout_marginTop="10dp">
-
 
                 </LinearLayout>
 
