@@ -1,7 +1,6 @@
 package com.example.team.myapplication;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
@@ -19,7 +18,6 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
-import android.widget.SimpleAdapter;
 import android.widget.TabHost;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -27,28 +25,14 @@ import android.widget.Toast;
 import com.example.team.myapplication.Cache.Localstorage;
 import com.example.team.myapplication.Database.DB;
 import com.example.team.myapplication.Network.ImageGet;
+import com.example.team.myapplication.util.OverwriteAdapter;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-class OverwriteAdapter extends SimpleAdapter {
-    // 颜色
-    private int[] colors = {R.color.白色,R.color.深灰色};
 
-    public OverwriteAdapter(Context context,
-                            List<? extends Map<String, ?>> data, int resource,
-                            String[] from, int[] to) {
-        super(context, data, resource, from, to);
-    }
-
-    public View getView(int position, View convertView, ViewGroup parent) {
-        View view = super.getView(position, convertView, parent);
-        view.setBackgroundResource(colors[position % 2]);
-        return view;
-    }
-}
 
 public class MainActivity extends Activity {
     private TabHost mTabHost;

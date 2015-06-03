@@ -13,7 +13,6 @@ public class CheckValid {
         return email.matches("^([a-zA-Z0-9_\\.\\-])+\\@(([a-zA-Z0-9\\-])+\\.)+([a-zA-Z0-9]{2,4})+$");
     }
     static public boolean isUserNameValid(String userName) {
-        //还要检查用户名是否唯一
         return userName.length() >= 2 && userName.length() <= 20;
     }
 
