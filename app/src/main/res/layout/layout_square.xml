@@ -16,6 +16,7 @@
             android:layout_height="fill_parent"
             android:layout_weight="1"
             android:id="@+id/imageView1"
+            android:src="@drawable/doge"
             android:adjustViewBounds="true"
             android:scaleType="centerCrop"
             android:onClick="toViewPictureActivity" />
@@ -33,7 +34,7 @@
     <LinearLayout
         android:orientation="horizontal"
         android:layout_width="fill_parent"
-        android:layout_height="150dp"
+        android:layout_height="160dp"
         android:background="@color/背景蓝"
         android:paddingTop="5dp">
 
@@ -50,6 +51,7 @@
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
             android:layout_weight="1"
+            android:src="@drawable/doge"
             android:id="@+id/imageView4"
             android:adjustViewBounds="true"
             android:scaleType="centerCrop"
