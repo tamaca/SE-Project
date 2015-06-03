@@ -19,6 +19,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.team.myapplication.Database.DB;
+import com.example.team.myapplication.Network.ImageGet;
 import com.example.team.myapplication.Network.JsonPost;
 import com.example.team.myapplication.Network.NetworkState;
 import com.example.team.myapplication.util.Comment;
@@ -97,8 +98,9 @@ public class ViewPictureActivity extends GeneralActivity {
         linearLayout = (LinearLayout)findViewById(R.id.linearLayout4);
 
         //评论的ArrayList 数组，把获得的评论放在这里
-        String imageid = (String) intent.getExtras().get("id");
-        getImageInformation(imageid);
+        String bigurl = (String) intent.getExtras().get("bigurl");
+        ImageGet imageGet=new ImageGet(imgview,bigurl,db);
+       // getImageInformation(imageid);
 
     }
 

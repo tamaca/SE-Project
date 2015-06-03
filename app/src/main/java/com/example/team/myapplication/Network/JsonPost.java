@@ -232,7 +232,6 @@ public class JsonPost {
                 httpPost.setEntity(new UrlEncodedFormEntityHC4(nameValuePair, "UTF-8"));
                 try {
                     response = client.execute(httpPost);
-                    int a=response.getStatusLine().getStatusCode();
                     StringBuilder builder = new StringBuilder();
                     BufferedReader reader = new BufferedReader(new InputStreamReader(
                             response.getEntity().getContent()));
@@ -271,7 +270,7 @@ public class JsonPost {
                 case 1: {
                     try {
                         String status = jsonObject.getString("status");
-                        if (status == "normal") {
+                        if (status.equals("normal")) {
                             String _username = jsonObject.getString("username");
                             dbsaveuser(_username, this.jsonObject.getString("password"));
                         }
@@ -317,7 +316,7 @@ public class JsonPost {
                       //  String email=jsonObject.getString("email");
                        // String oldpassword=jsonObject.getString("oldpassword");
                         //String newpassword=jsonObject.getString("newpassword");
-                        /*if(status=="normal")
+                        /*if(status.equal("normal"))
                         {
                           if(db.checklastuserpassword())//有可能出错
                           {

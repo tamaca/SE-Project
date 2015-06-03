@@ -33,9 +33,12 @@
                 android:gravity="center_vertical">
 
                 <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent"
                     android:id="@+id/imageView8"
+                    android:adjustViewBounds="true"
+                    android:maxHeight="320dp"
+                    android:scaleType="centerCrop"
                     android:layout_gravity="center_horizontal|top"
                     android:contentDescription="@string/OK"
                     android:layout_marginTop="10dp"/>
