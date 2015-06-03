@@ -18,40 +18,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-class reSimpleAdapter1 extends SimpleAdapter {
-    // 颜色
-    private int[] colors = { R.color.白色,R.color.黄色 };
 
-    public reSimpleAdapter1(Context context,
-                            List<? extends Map<String, ?>> data, int resource,
-                            String[] from, int[] to) {
-        super(context, data, resource, from, to);
-    }
-
-    public View getView(int position, View convertView, ViewGroup parent) {
-        View view = super.getView(position, convertView, parent);
-        view.setBackgroundResource(colors[position % 2]);
-        return view;
-    }
-}
-
-
-class reSimpleAdapter2 extends SimpleAdapter {
-    // 颜色
-    private int[] colors = { R.color.灰色,R.color.深灰色 };
-
-    public reSimpleAdapter2(Context context,
-                            List<? extends Map<String, ?>> data, int resource,
-                            String[] from, int[] to) {
-        super(context, data, resource, from, to);
-    }
-
-    public View getView(int position, View convertView, ViewGroup parent) {
-        View view = super.getView(position, convertView, parent);
-        view.setBackgroundResource(colors[position % 2]);
-        return view;
-    }
-}
 
 public class UserListActivity extends GeneralActivity {
     private ListView listView;
@@ -148,6 +115,40 @@ public class UserListActivity extends GeneralActivity {
             }
             reSimpleAdapter2 simpleAdapter = new reSimpleAdapter2(this, listItems,R.layout.layout_user_name,new String[] {"用户名"},new int[] {R.id.Names});
             listView.setAdapter(simpleAdapter);
+        }
+    }
+    class reSimpleAdapter1 extends SimpleAdapter {
+        // 颜色
+        private int[] colors = { R.color.白色,R.color.黄色 };
+
+        public reSimpleAdapter1(Context context,
+                                List<? extends Map<String, ?>> data, int resource,
+                                String[] from, int[] to) {
+            super(context, data, resource, from, to);
+        }
+
+        public View getView(int position, View convertView, ViewGroup parent) {
+            View view = super.getView(position, convertView, parent);
+            view.setBackgroundResource(colors[position % 2]);
+            return view;
+        }
+    }
+
+
+    class reSimpleAdapter2 extends SimpleAdapter {
+        // 颜色
+        private int[] colors = { R.color.灰色,R.color.深灰色 };
+
+        public reSimpleAdapter2(Context context,
+                                List<? extends Map<String, ?>> data, int resource,
+                                String[] from, int[] to) {
+            super(context, data, resource, from, to);
+        }
+
+        public View getView(int position, View convertView, ViewGroup parent) {
+            View view = super.getView(position, convertView, parent);
+            view.setBackgroundResource(colors[position % 2]);
+            return view;
         }
     }
 }
