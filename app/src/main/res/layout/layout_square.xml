@@ -34,8 +34,7 @@
         android:orientation="horizontal"
         android:layout_width="fill_parent"
         android:layout_height="160dp"
-        android:background="@color/背景蓝"
-        android:paddingTop="5dp">
+        android:background="@color/背景蓝">
 
         <ImageView
             android:layout_width="fill_parent"

@@ -119,7 +119,7 @@ public class UserListActivity extends GeneralActivity {
     }
     class reSimpleAdapter1 extends SimpleAdapter {
         // 颜色
-        private int[] colors = { R.color.白色,R.color.黄色 };
+        private int[] colors = { R.color.白色,R.color.纯白色 };
 
         public reSimpleAdapter1(Context context,
                                 List<? extends Map<String, ?>> data, int resource,
@@ -137,7 +137,7 @@ public class UserListActivity extends GeneralActivity {
 
     class reSimpleAdapter2 extends SimpleAdapter {
         // 颜色
-        private int[] colors = { R.color.灰色1,R.color.灰色2 };
+        private int[] colors = { R.color.浅灰色,R.color.中灰色 };
 
         public reSimpleAdapter2(Context context,
                                 List<? extends Map<String, ?>> data, int resource,

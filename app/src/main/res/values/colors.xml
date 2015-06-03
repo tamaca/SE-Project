@@ -13,12 +13,12 @@
     <color name="蓝色">#0000FF</color>
     <color name="橘红色">#FF4500</color>
     <color name="红色">#FF0000</color>
-    <color name="灰色1">#D3D3D3</color>
-    <color name="灰色2">#CCCCCC</color>
+    <color name="浅灰色">#D3D3D3</color>
+    <color name="中灰色">#CCCCCC</color>
+    <color name="深灰色">#999999</color>
     <color name="象牙黑">#292421</color>
     <color name="纯白色">#FFFFFF</color>
     <color name="白色">#F0F0F0</color>
     <color name="天依蓝">#66CCFF</color>
     <color name="背景蓝">#F0F8FF</color>
-    <color name="深灰色">#999999</color>
 </resources>
