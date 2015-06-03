@@ -39,29 +39,29 @@ public class ImageGet {
     private String imageUrl;
     private String imageId;
     private DB db;
-    private String type;
-    public ImageGet(ImageView imageView, String imageUrl,DB db,String type) {
+
+    public ImageGet(ImageView imageView, String imageUrl, DB db, String type) {
         imageViewWeakReference = new WeakReference<ImageView>(imageView);
         mLoadImageAsyncTaskHashSet = new HashSet<BitmapDownloaderTask>();
         this.imageUrl = imageUrl;
-        this.db=db;
-        this.type=type;
-        imageId=Localstorage.getImagesId(imageUrl);
+        this.db = db;
+        imageId = Localstorage.getImagesId(imageUrl);
         mLruCacheImageLoader = LruCacheImageLoader.getLruCacheImageLoaderInstance();
-        Load(imageUrl,type);
+        Load(imageUrl, type);
     }
-   //三级缓存获取机制
-    public void Load(String imageUrl,String type) {
+
+    //三级缓存获取机制
+    public void Load(String imageUrl, String type) {
         imageView = imageViewWeakReference.get();
         Bitmap bitmap = mLruCacheImageLoader.getBitmapFromLruCache(imageUrl);//从缓存获取图片
         if (bitmap == null) {
-            String filePath = Localstorage.getImageFilePath(imageUrl,type);
+            String filePath = Localstorage.getImageFilePath(imageUrl, type);
             File imageFile = new File(filePath);
             //从手机存储目录获取图片
-            if (!imageFile.exists()) {
+            if (type.equals("origin") || !imageFile.exists()) {
                 //从服务器上下载图片
                 if (cancelPotentialDownload(imageUrl, imageView)) {
-                    BitmapDownloaderTask bitmapDownloaderTask = new BitmapDownloaderTask(imageView, filePath);
+                    BitmapDownloaderTask bitmapDownloaderTask = new BitmapDownloaderTask(imageView, filePath, type);
                     downloadDrawable = new DownloadDrawable(bitmapDownloaderTask);
                     bitmapDownloaderTask.execute(imageUrl);
                 }
@@ -79,6 +79,7 @@ public class ImageGet {
         }
 
     }
+
     //异步操作类    将缓存或内存中的图片显示
     private class BitmapShowInCache extends AsyncTask<Bitmap, Void, Bitmap> {
 
@@ -109,15 +110,18 @@ public class ImageGet {
         }
 
     }
+
     //异步操作类  从服务器上获取图片显示
     private class BitmapDownloaderTask extends AsyncTask<String, Void, Bitmap> {
         private String url = imageUrl;
         private final WeakReference<ImageView> imageViewWeakReference;
         private final WeakReference<String> filepathWeakReference;
+        private String type;
 
-        public BitmapDownloaderTask(ImageView imageView, String filepath) {
+        public BitmapDownloaderTask(ImageView imageView, String filepath, String type) {
             imageViewWeakReference = new WeakReference<ImageView>(imageView);
             filepathWeakReference = new WeakReference<String>(filepath);
+            this.type = type;
         }
 
         @Override
@@ -132,7 +136,7 @@ public class ImageGet {
 
         @Override
         protected Bitmap doInBackground(String... params) {
-                return downloadBitmap(params[0]);
+            return downloadBitmap(params[0]);
         }
 
         @Override
@@ -156,26 +160,28 @@ public class ImageGet {
                     if (this == bitmapDownloaderTask) {
                         mLoadImageAsyncTaskHashSet.remove(this);
                         imageView.setImageBitmap(bitmap);
-                       // imageView.setContentDescription(imageId);
+                        // imageView.setContentDescription(imageId);
                         mLruCacheImageLoader.addBitmapToLruCache(imageUrl, bitmap);
                        /* long time = System.currentTimeMillis();
                         Timestamp tsTemp = new Timestamp(time);
                         db.imageinsert(imageId, "me", "500", tsTemp);*/
-                        try {
-                            File imageFile = new File(filePath);
-                            if (!imageFile.getParentFile().exists()) {
-                                imageFile.getParentFile().mkdirs();
+                        if (!type.equals("origin")) {
+                            try {
+                                File imageFile = new File(filePath);
+                                if (!imageFile.getParentFile().exists()) {
+                                    imageFile.getParentFile().mkdirs();
+                                }
+                                if (!imageFile.exists()) {
+                                    imageFile.createNewFile();
+                                }
+                                FileOutputStream fileOutputStream = new FileOutputStream(imageFile);
+                                bitmap.compress(Bitmap.CompressFormat.PNG, 100, fileOutputStream);
+                                fileOutputStream.flush();
+                                fileOutputStream.close();
+                                // imageView.setImageBitmap(bitmap);
+                            } catch (IOException e) {
+                                e.printStackTrace();
                             }
-                            if (!imageFile.exists()) {
-                                imageFile.createNewFile();
-                            }
-                            FileOutputStream fileOutputStream = new FileOutputStream(imageFile);
-                            bitmap.compress(Bitmap.CompressFormat.PNG, 100, fileOutputStream);
-                            fileOutputStream.flush();
-                            fileOutputStream.close();
-                            // imageView.setImageBitmap(bitmap);
-                        } catch (IOException e) {
-                            e.printStackTrace();
                         }
                         //   progress.setVisibility(View.INVISIBLE);
                     }
@@ -191,6 +197,7 @@ public class ImageGet {
             }
         }*/
     }
+
     //下载图片的静态类
     static Bitmap downloadBitmap(String url) {
         CloseableHttpClient httpclient = HttpClientBuilder.create()
@@ -199,7 +206,7 @@ public class ImageGet {
         HttpGetHC4 httpget = new HttpGetHC4(url);
         try {
             CloseableHttpResponse resp = httpclient.execute(httpget);
-            int Status=resp.getStatusLine().getStatusCode();
+            int Status = resp.getStatusLine().getStatusCode();
             final HttpEntity entity = resp.getEntity();
             if (entity != null) {
                 InputStream in = null;
@@ -211,8 +218,7 @@ public class ImageGet {
                     if (in != null) {
                         in.close();
                     }
-                    if(resp!=null)
-                    {
+                    if (resp != null) {
                         resp.close();
                     }
                     entity.consumeContent();
@@ -234,6 +240,7 @@ public class ImageGet {
         }
         return null;
     }
+
     //需要记录下载的次序，保证最后一次启动请求的图片被有效地展现出来
     static class DownloadDrawable extends ColorDrawable {
         private final WeakReference<BitmapDownloaderTask> bitmapDownloaderTaskWeakReference;
@@ -247,6 +254,7 @@ public class ImageGet {
             return bitmapDownloaderTaskWeakReference.get();
         }
     }
+
     //当一个新的下载的时候，停止这个图片对应的所有可能的下载进程
     private static boolean cancelPotentialDownload(String url, ImageView imageView) {
         BitmapDownloaderTask bitmapDownloaderTask = getBitmapDownloader(imageView);
