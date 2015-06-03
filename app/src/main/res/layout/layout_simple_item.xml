@@ -12,5 +12,5 @@
         android:textSize="20sp"
         android:textColor="@color/象牙黑"
         android:id="@+id/Option"
-        android:text="aaaaaaaaaa" />
+        android:background="@drawable/textview_list1" />
 </LinearLayout>
