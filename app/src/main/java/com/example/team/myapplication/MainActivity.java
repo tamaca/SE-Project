@@ -45,16 +45,18 @@ public class MainActivity extends Activity {
     private View loginView;
     private View userOptions;
     private ViewPager viewPager;
-    private List <View>listOfViews;
+    private List<View> listOfViews;
     private RelativeLayout mainLayout;
     private RelativeLayout uploadPictureLayout;
     private ImageView imageView;
     private Button upload;
     private Button cancel;
-    private DB db=null;
+    private DB db = null;
+
     public static String getCurrentTag() {
         return currentTag;
     }
+
     private TextView userNameView;
 
     public static void setCurrentTag(String currentTag) {
@@ -69,24 +71,24 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         //Localstroage
         Localstorage.setpath(this);
-        db=new DB(this);
+        db = new DB(this);
         //
         setContentView(R.layout.activity_main);
         //变量初始化
         squareView = LayoutInflater.from(MainActivity.this).inflate(R.layout.layout_square, null);
         meView = LayoutInflater.from(MainActivity.this).inflate(R.layout.layout_me, null);
         userOptions = meView.findViewById(R.id.user_options);
-        mTabHost = (TabHost)findViewById(R.id.tabHost2);
-        viewPager = (ViewPager)findViewById(R.id.viewPager);
+        mTabHost = (TabHost) findViewById(R.id.tabHost2);
+        viewPager = (ViewPager) findViewById(R.id.viewPager);
         listOfViews = new ArrayList<>();
-        listView = (ListView)meView.findViewById(R.id.listView);
+        listView = (ListView) meView.findViewById(R.id.listView);
         loginView = meView.findViewById(R.id.login_button);
-        userNameView = (TextView)meView.findViewById(R.id.user_name);
-        mainLayout = (RelativeLayout)findViewById(R.id.main_layout);
-        uploadPictureLayout = (RelativeLayout)findViewById(R.id.upload_picture_layout);
-        imageView = (ImageView)findViewById(R.id.imageView);
-        upload = (Button)findViewById(R.id.upload_button);
-        cancel = (Button)findViewById(R.id.cancel_button);
+        userNameView = (TextView) meView.findViewById(R.id.user_name);
+        mainLayout = (RelativeLayout) findViewById(R.id.main_layout);
+        uploadPictureLayout = (RelativeLayout) findViewById(R.id.upload_picture_layout);
+        imageView = (ImageView) findViewById(R.id.imageView);
+        upload = (Button) findViewById(R.id.upload_button);
+        cancel = (Button) findViewById(R.id.cancel_button);
 
         upload.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -95,7 +97,7 @@ public class MainActivity extends Activity {
                 imageView.setDrawingCacheEnabled(true);
                 Bitmap bitmap = imageView.getDrawingCache();
                 UploadPictureProgress uploadPictureProgress = new UploadPictureProgress(bitmap);
-                uploadPictureProgress.execute((Void)null);
+                uploadPictureProgress.execute((Void) null);
             }
         });
         cancel.setOnClickListener(new View.OnClickListener() {
@@ -192,39 +194,43 @@ public class MainActivity extends Activity {
         //imageview
 
     }
-    public void imagedownload()
-    {
+
+    public void imagedownload() {
         String picURL1 = "http://192.168.253.1/square_page/1/";
-        String picURL2="http://192.168.253.1/square_page/2/";
-        JsonGet jsonGet1=new JsonGet(picURL1,db,squareView);
-        JsonGet jsonGet2=new JsonGet(picURL2,db);
+        String picURL2 = "http://192.168.253.1/square_page/2/";
+        JsonGet jsonGet1 = new JsonGet(picURL1, db, squareView);
+        JsonGet jsonGet2 = new JsonGet(picURL2, db);
         //String picURL1 = "http://192.168.253.1/square_page/1/";
         //ImageGet imageGet=new ImageGet((ImageView)squareView.findViewById(R.id.imageView1),picURL1,db);
     }
 
-    public void showUploadView(boolean show){
+    public void showUploadView(boolean show) {
         uploadPictureLayout.setVisibility(show ? View.VISIBLE : View.GONE);
         mainLayout.setVisibility(show ? View.GONE : View.VISIBLE);
     }
+
     @Override
-    public void onResume(){
+    public void onResume() {
         super.onResume();
         changeView(LoginState.getLogined());
     }
-    public void logout(){
+
+    public void logout() {
         LoginState.setLogined(false, "guest");
         changeView(LoginState.logined);
-        
+
     }
-    public void changeView(boolean isLogined){
+
+    public void changeView(boolean isLogined) {
         loginView.setVisibility(isLogined ? View.GONE : View.VISIBLE);
         userOptions.setVisibility(isLogined ? View.VISIBLE : View.GONE);
         userNameView.setVisibility(isLogined ? View.VISIBLE : View.GONE);
         userNameView.setText(LoginState.username);
 
     }
+
     public void toLoginActivity(View view) {
-        Intent intent = new Intent(this,LoginActivity.class);
+        Intent intent = new Intent(this, LoginActivity.class);
         startActivity(intent);
     }
 
@@ -251,22 +257,23 @@ public class MainActivity extends Activity {
         return super.onOptionsItemSelected(item);
     }
 
-    public void toSearchActivity(View view){
+    public void toSearchActivity(View view) {
         Intent intent = new Intent(this, SearchActivity.class);
         startActivity(intent);
         /*CharSequence text = ((Button)view).getText();
         Toast.makeText(this, text, Toast.LENGTH_SHORT).show();*/
     }
 
-    public void toPictureActivity(View view){
+    public void toPictureActivity(View view) {
         Intent intent = new Intent(this, PictureActivity.class);
         startActivity(intent);
     }
 
-    public void toChangePasswordActivity(View view){
-        Intent intent = new Intent(this,ChangePasswordActivity.class);
+    public void toChangePasswordActivity(View view) {
+        Intent intent = new Intent(this, ChangePasswordActivity.class);
         startActivity(intent);
     }
+
     static final int REQUEST_IMAGE_CAPTURE = 1;
 
     public void dispatchTakePictureIntent(View view) {
@@ -278,40 +285,45 @@ public class MainActivity extends Activity {
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data)
-    {
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if(resultCode == RESULT_OK){
-            Bitmap image = (Bitmap)data.getExtras().get("data");
+        if (resultCode == RESULT_OK) {
+            Bitmap image = (Bitmap) data.getExtras().get("data");
 
-            Intent toEditPictureIntent = new Intent(MainActivity.this,EditPictureActivity.class);
-            toEditPictureIntent.putExtra("picture",image);
+            Intent toEditPictureIntent = new Intent(MainActivity.this, EditPictureActivity.class);
+            toEditPictureIntent.putExtra("picture", image);
 
-            switch (requestCode){
+            switch (requestCode) {
                 case REQUEST_IMAGE_CAPTURE:
                     imageView.setImageBitmap(image);
                     showUploadView(true);
                     Toast.makeText(getApplicationContext(), "Picture is Taken", Toast.LENGTH_LONG).show();
                     break;
             }
-        }
-        else{
-            Toast.makeText(getApplicationContext(),"Picture is not Taken",Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(getApplicationContext(), "Picture is not Taken", Toast.LENGTH_SHORT).show();
         }
     }
 
 
-    public void toViewPictureActivity(View view){
-        Intent intent = new Intent(this,ViewPictureActivity.class);
-        //view.setDrawingCacheEnabled(true);
-        //Bitmap bitmap = view.getDrawingCache();
-        String bigurl=view.getContentDescription().toString();
-        intent.putExtra("bigurl",bigurl);
-        startActivity(intent);
+    public void toViewPictureActivity(View view) {
+        if (((ImageView) view).getDrawable() != null) {
+            Intent intent = new Intent(this, ViewPictureActivity.class);
+            //view.setDrawingCacheEnabled(true);
+            //Bitmap bitmap = view.getDrawingCache();
+            String bigurl = view.getContentDescription().toString();
+            intent.putExtra("bigurl", bigurl);
+            startActivity(intent);
+        }
+        else
+        {
+            //TODO imageview图片为空 错误处理
+        }
     }
-    public void toUserListActivity(View view, int x){
 
-        Intent intent = new Intent(this,UserListActivity.class);
+    public void toUserListActivity(View view, int x) {
+
+        Intent intent = new Intent(this, UserListActivity.class);
         intent.putExtra("message", x);
         startActivity(intent);
     }
@@ -327,11 +339,13 @@ public class MainActivity extends Activity {
         public boolean isViewFromObject(View view, Object object) {
             return view == object;
         }
+
         @Override
         public Object instantiateItem(ViewGroup container, int position) {
             ((ViewPager) container).addView(listOfViews.get(position));
             return listOfViews.get(position);
         }
+
         @Override
         public void destroyItem(View container, int position, Object object) {
 
@@ -339,19 +353,20 @@ public class MainActivity extends Activity {
         }
     }
 
-    class UploadPictureProgress extends AsyncTask<Void,Void,Boolean>{
+    class UploadPictureProgress extends AsyncTask<Void, Void, Boolean> {
 
         Bitmap bitmap;
-        public UploadPictureProgress(Bitmap bitmap){
+
+        public UploadPictureProgress(Bitmap bitmap) {
             this.bitmap = bitmap;
         }
+
         @Override
         protected Boolean doInBackground(Void... params) {
-            try{
+            try {
                 //在这里上传
                 Thread.sleep(1000);
-            }
-            catch (InterruptedException e){
+            } catch (InterruptedException e) {
 
 
                 return false;
@@ -359,13 +374,13 @@ public class MainActivity extends Activity {
             return true;
 
         }
+
         @Override
-        protected void onPostExecute(Boolean success){
-            if(success){
+        protected void onPostExecute(Boolean success) {
+            if (success) {
 
                 showUploadView(false);
-            }
-            else {
+            } else {
 
             }
         }
