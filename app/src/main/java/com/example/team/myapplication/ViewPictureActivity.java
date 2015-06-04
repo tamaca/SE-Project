@@ -84,24 +84,23 @@ public class ViewPictureActivity extends GeneralActivity {
         commentView = (LinearLayout) findViewById(R.id.comment_view);
         progressBar = (ProgressBar) findViewById(R.id.progressBar);
         author = (TextView) findViewById(R.id.author);
-        like = (Button) findViewById(R.id.like_button);
+       // like = (Button) findViewById(R.id.like_button);
         uploadTime = (TextView) findViewById(R.id.upload_time);
         scrollView = (ScrollView)findViewById(R.id.scrollView);
         comments=new ArrayList<>();
         author.setOnClickListener(new ToUserPageListener());
-        like.setOnClickListener(new View.OnClickListener() {
+      /*  like.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 changeLike(view);
             }
-        });
+        });*/
         linearLayout = (LinearLayout)findViewById(R.id.linearLayout4);
 
         //评论的ArrayList 数组，把获得的评论放在这里
         String bigurl = (String) intent.getExtras().get("bigurl");
         ImageGet imageGet=new ImageGet(imgview,bigurl,db,"big");
        // getImageInformation(imageid);
-
     }
 
 

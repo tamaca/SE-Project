@@ -198,12 +198,12 @@ public class MainActivity extends Activity {
     public void imagedownload() {
         String picURL1 = "http://192.168.253.1/square_page/1/";
         String picURL2 = "http://192.168.253.1/square_page/2/";
-        DownloadPictrueProgress downloadPictrueProgress1=new DownloadPictrueProgress(picURL1,db,squareView);
-        DownloadPictrueProgress downloadPictrueProgress2=new DownloadPictrueProgress(picURL2,db);
+        DownloadPictrueProgress downloadPictrueProgress1 = new DownloadPictrueProgress(picURL1, db, squareView);
+        DownloadPictrueProgress downloadPictrueProgress2 = new DownloadPictrueProgress(picURL2, db);
         downloadPictrueProgress1.execute();
         downloadPictrueProgress2.execute();
-      //  JsonGet jsonGet1 = new JsonGet(picURL1, db, squareView);
-       // JsonGet jsonGet2 = new JsonGet(picURL2, db);
+        //  JsonGet jsonGet1 = new JsonGet(picURL1, db, squareView);
+        // JsonGet jsonGet2 = new JsonGet(picURL2, db);
         //String picURL1 = "http://192.168.253.1/square_page/1/";
         //ImageGet imageGet=new ImageGet((ImageView)squareView.findViewById(R.id.imageView1),picURL1,db);
     }
@@ -409,7 +409,6 @@ public class MainActivity extends Activity {
         protected Boolean doInBackground(Void... params) {
             try {
                 JsonGet jsonGet = new JsonGet(url, db, view);
-                Thread.sleep(3000);
             } catch (Exception e) {
                 return false;
             }
@@ -419,11 +418,11 @@ public class MainActivity extends Activity {
         @Override
         protected void onPostExecute(final Boolean success) {
 
-            if (success) {
-                finish();
-            } else {
-                //TODO: 大厅获取图片错误
-                Toast.makeText(getApplicationContext(), "ERROR!", Toast.LENGTH_SHORT).show();
+            if (!success) {
+                {
+                    //TODO: 大厅获取图片错误
+                    Toast.makeText(getApplicationContext(), "ERROR!", Toast.LENGTH_SHORT).show();
+                }
             }
         }
     }

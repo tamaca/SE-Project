@@ -43,35 +43,35 @@ public class JsonPost {
 
     //多种处理方式
     //登录
-    public JsonPost(HashMap<String, String> map, String url, int type, boolean autoLogin, boolean rememPassword, DB db) throws Exception{
+    public JsonPost(HashMap<String, String> map, String url, int type, boolean autoLogin, boolean rememPassword, DB db) throws Exception {
         this.url = url;
         this.type = type;
         this.autoLogin = autoLogin;
         this.rememPassword = rememPassword;
         this.db = db;
         Post post = new Post(map);
-        JSONObject jsonObject=post.PostToServer();
+        JSONObject jsonObject = post.PostToServer();
         post.PostExecute(jsonObject);
     }
 
     //注册、修改密码
-    public JsonPost(HashMap<String, String> map, String url, int type, DB db)throws Exception {
+    public JsonPost(HashMap<String, String> map, String url, int type, DB db) throws Exception {
         this.url = url;
         this.type = type;
         this.db = db;
         Post post = new Post(map);
-        JSONObject jsonObject=post.PostToServer();
+        JSONObject jsonObject = post.PostToServer();
         post.PostExecute(jsonObject);
     }
 
     //图片信息获取
-    public JsonPost(HashMap<String, String> map, String url, int type, DB db, ViewPictureActivity view)throws Exception {
+    public JsonPost(HashMap<String, String> map, String url, int type, DB db, ViewPictureActivity view) throws Exception {
         this.url = url;
         this.type = type;
         this.db = db;
         this.view = view;
         Post post = new Post(map);
-        JSONObject jsonObject=post.PostToServer();
+        JSONObject jsonObject = post.PostToServer();
         post.PostExecute(jsonObject);
     }
 
@@ -282,5 +282,18 @@ public class JsonPost {
                     return;
             }
         }
+    }
+
+    //异常类
+    class packageException extends Exception {
+    }
+
+    class postException extends Exception {
+    }
+
+    class nullException extends Exception {
+    }
+
+    class executeException extends Exception {
     }
 }
