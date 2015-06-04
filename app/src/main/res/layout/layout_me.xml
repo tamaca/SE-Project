@@ -3,7 +3,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:paddingTop="20dp"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:background="@color/背景蓝">
 
     <LinearLayout
         android:id="@+id/linearLayout3"
@@ -32,7 +33,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_gravity="left"
-                android:layout_weight="0.8">
+                android:layout_weight="0.4">
 
                 <Button
                     android:layout_width="fill_parent"
@@ -41,8 +42,12 @@
                     android:layout_marginLeft="20dp"
                     android:layout_marginRight="10dp"
                     android:layout_marginBottom="10dp"
-                    android:text="我的主页"
-                    android:id="@+id/button1" />
+                    android:text="我的图片"
+                    android:textColor="@drawable/button_me_text"
+                    android:id="@+id/button1"
+                    android:onClick="toUserPageActivity"
+                    android:drawableTop="@drawable/userpage"
+                    android:background="@drawable/button_userpage"/>
 
                 <Button
                     android:layout_width="fill_parent"
@@ -51,8 +56,11 @@
                     android:layout_marginLeft="20dp"
                     android:layout_marginRight="10dp"
                     android:layout_marginBottom="10dp"
-                    android:text="动态"
-                    android:id="@+id/button2" />
+                    android:text="Ta的动态"
+                    android:textColor="@drawable/button_me_text"
+                    android:id="@+id/button2"
+                    android:drawableTop="@drawable/moments"
+                    android:background="@color/背景蓝"/>
             </LinearLayout>
 
             <LinearLayout
@@ -75,8 +83,10 @@
                         android:layout_marginRight="20dp"
                         android:layout_marginBottom="10dp"
                         android:text="关注的人"
+                        android:textColor="@drawable/button_me_text"
                         android:id="@+id/button3"
-                        android:longClickable="false" />
+                        android:drawableTop="@drawable/userlist"
+                        android:background="@color/背景蓝"/>
 
                     <Button
                         android:layout_width="fill_parent"
@@ -86,7 +96,10 @@
                         android:layout_marginRight="20dp"
                         android:layout_marginBottom="10dp"
                         android:text="黑名单"
-                        android:id="@+id/button4" />
+                        android:textColor="@drawable/button_me_text"
+                        android:id="@+id/button4"
+                        android:drawableTop="@drawable/blacklist"
+                        android:background="@color/背景蓝"/>
                 </LinearLayout>
 
                 <LinearLayout
@@ -100,7 +113,9 @@
                         android:layout_height="fill_parent"
                         android:layout_weight="1"
                         android:layout_marginBottom="10dp"
-                        android:id="@+id/imageButton2" />
+                        android:id="@+id/imageButton2"
+                        android:src="@drawable/logout"
+                        android:background="@color/背景蓝"/>
 
                     <ImageButton
                         android:layout_width="0dp"
@@ -108,7 +123,9 @@
                         android:layout_weight="1"
                         android:layout_marginRight="20dp"
                         android:layout_marginBottom="10dp"
-                        android:id="@+id/imageButton3" />
+                        android:id="@+id/imageButton3"
+                        android:src="@drawable/re_password"
+                        android:background="@color/背景蓝"/>
                 </LinearLayout>
             </LinearLayout>
         </LinearLayout>
@@ -119,6 +136,7 @@
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_weight="1">
+        android:layout_weight="1"
+        android:background="@color/背景蓝">
     </LinearLayout>
 </LinearLayout>

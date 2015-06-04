@@ -66,7 +66,7 @@
                         android:layout_height="wrap_content"
                         android:textAppearance="?android:attr/textAppearanceLarge"
                         android:text="@string/upload_time"
-                        android:textColor="@color/浅灰色"
+                        android:textColor="@color/中灰色"
                         android:textSize="20sp"
                         android:id="@+id/upload_time"
                         android:layout_toRightOf="@+id/author"
@@ -100,8 +100,9 @@
                             android:text="3万+"
                             android:id="@+id/textView5"
                             android:layout_marginRight="30dp"
-                            android:textColor="@color/天依蓝"
-                            android:layout_marginLeft="10dp" />
+                            android:textColor="@color/中灰色"
+                            android:layout_marginLeft="10dp"
+                            android:background="@drawable/textview_list1"/>
 
                         <Button
                             android:layout_width="wrap_content"

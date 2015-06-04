@@ -2,6 +2,7 @@ package com.example.team.myapplication;
 
 import android.app.ActionBar;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -98,6 +99,16 @@ public class UserListActivity extends GeneralActivity {
             //以下测试用
             userNames.add("好友1");
             userNames.add("好友2");
+            userNames.add("好友3");
+            userNames.add("好友4");
+            userNames.add("好友5");
+            userNames.add("好友6");
+            userNames.add("好友7");
+            userNames.add("好友8");
+            userNames.add("好友9");
+            userNames.add("好友10");
+            userNames.add("好友11");
+            userNames.add("好友12");
             //以上---
             for(int i = 0;i<userNames.size();i++){
                 Map<String,Object> listItem = new HashMap<String, Object>();
@@ -109,6 +120,7 @@ public class UserListActivity extends GeneralActivity {
             listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                    view.setBackgroundColor(getResources().getColor(R.color.天依蓝));
                     String name = ((TextView)view.findViewById(R.id.Names)).getText().toString();
                     toUserPageActivity(view,name);
                 }
@@ -120,6 +132,16 @@ public class UserListActivity extends GeneralActivity {
             //以下测试用
             userNames.add("黑1");
             userNames.add("黑2");
+            userNames.add("黑3");
+            userNames.add("黑4");
+            userNames.add("黑5");
+            userNames.add("黑6");
+            userNames.add("黑7");
+            userNames.add("黑8");
+            userNames.add("黑9");
+            userNames.add("黑10");
+            userNames.add("黑11");
+            userNames.add("黑12");
             //以上---
             for(int i = 0;i<userNames.size();i++){
                 Map<String,Object> listItem = new HashMap<String, Object>();
@@ -131,6 +153,7 @@ public class UserListActivity extends GeneralActivity {
             listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                    view.setBackgroundColor(getResources().getColor(R.color.中灰色));
                     String name = ((TextView) view.findViewById(R.id.Names)).getText().toString();
                     toUserPageActivity(view, name);
                 }
