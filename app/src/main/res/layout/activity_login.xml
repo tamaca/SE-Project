@@ -24,9 +24,10 @@
         <LinearLayout android:id="@+id/email_login_form" android:layout_width="match_parent"
             android:layout_height="wrap_content" android:orientation="vertical">
 
-            <AutoCompleteTextView android:id="@+id/email" android:layout_width="match_parent"
-                android:layout_height="wrap_content" android:hint="@string/prompt_email"
-                android:inputType="textEmailAddress" android:maxLines="1"
+            <AutoCompleteTextView android:id="@+id/name_in_login" android:layout_width="match_parent"
+                android:layout_height="wrap_content" android:hint="@string/user_name"
+                android:inputType="text"
+                android:maxLines="1"
                 android:singleLine="true"
                 android:background="@drawable/textview_style1"
                 android:layout_marginLeft="25dp"

@@ -14,7 +14,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.text.TextUtils;
-import android.view.GestureDetector;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -57,8 +56,7 @@ public class LoginActivity extends GeneralActivity implements LoaderCallbacks<Cu
      */
     private UserLoginTask mAuthTask = null;
 
-    // UI references.
-    private AutoCompleteTextView mEmailView;
+    private AutoCompleteTextView mUserNameView;
     private EditText mPasswordView;
     private View mProgressView;
     private View mLoginFormView;
@@ -67,7 +65,6 @@ public class LoginActivity extends GeneralActivity implements LoaderCallbacks<Cu
     private DB db = new DB(this);
     private final static int SIGN_IN = 1;
     Toast toast;
-    private GestureDetector gestureDetector;
 
 
     @Override
@@ -87,22 +84,7 @@ public class LoginActivity extends GeneralActivity implements LoaderCallbacks<Cu
 
 
         // Set up the login form.
-        mEmailView = (AutoCompleteTextView) findViewById(R.id.email);
-        /*populateAutoComplete();
-        mEmailView.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                if (mEmailView.hasFocus() == false) {
-                    String email = mEmailView.getText().toString();
-                    String password;
-                    password = db.getmUserPassword(email);
-                    if (password != null) {
-                        mPasswordView.setText(password);
-                    }
-                }
-            }
-        });*/
+        mUserNameView = (AutoCompleteTextView) findViewById(R.id.name_in_login);
         mPasswordView = (EditText) findViewById(R.id.password);
         mPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
@@ -203,11 +185,11 @@ public class LoginActivity extends GeneralActivity implements LoaderCallbacks<Cu
         }
 
         // Reset errors.
-        mEmailView.setError(null);
+        mUserNameView.setError(null);
         mPasswordView.setError(null);
 
         // Store values at the time of the login attempt.
-        String email = mEmailView.getText().toString();
+        String userName = mUserNameView.getText().toString();
         String password = mPasswordView.getText().toString();
 
         boolean cancel = false;
@@ -226,14 +208,14 @@ public class LoginActivity extends GeneralActivity implements LoaderCallbacks<Cu
         }
 
         // Check for a valid email address.
-        if (TextUtils.isEmpty(email)) {
-            mEmailView.setError(getString(R.string.error_field_required));
-            focusView = mEmailView;
+        if (TextUtils.isEmpty(userName)) {
+            mUserNameView.setError(getString(R.string.error_field_required));
+            focusView = mUserNameView;
             cancel = true;
 
-        } else if (!CheckValid.isEmailValid(email)) {
-            mEmailView.setError(getString(R.string.error_invalid_email));
-            focusView = mEmailView;
+        } else if (!CheckValid.isUserNameValid(userName)) {
+            mUserNameView.setError(getString(R.string.user_name_invalid));
+            focusView = mUserNameView;
             cancel = true;
 
         }
@@ -246,7 +228,7 @@ public class LoginActivity extends GeneralActivity implements LoaderCallbacks<Cu
             // Show a progress spinner, and kick off a background task to
             // perform the user login attempt.
             showProgress(true);
-            mAuthTask = new UserLoginTask(email, password, 1);
+            mAuthTask = new UserLoginTask(userName, password, 1);
             mAuthTask.execute((Void) null);
         }
     }
@@ -338,7 +320,7 @@ public class LoginActivity extends GeneralActivity implements LoaderCallbacks<Cu
                 new ArrayAdapter<String>(LoginActivity.this,
                         android.R.layout.simple_dropdown_item_1line, emailAddressCollection);
 
-        mEmailView.setAdapter(adapter);
+        mUserNameView.setAdapter(adapter);
     }
 
     @Override
@@ -371,42 +353,10 @@ public class LoginActivity extends GeneralActivity implements LoaderCallbacks<Cu
     public void toRegisterActivity(View view) {
 
         Intent intent = new Intent(this, RegisterActivity.class);
-        startActivityForResult(intent, SIGN_IN);
+        startActivity(intent);
 
     }
 
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-
-        if (resultCode == RESULT_OK) {
-            switch (requestCode) {
-                case SIGN_IN:
-                    /*showProgress(true);
-                    String userName = data.getExtras().get("UserName").toString();
-                    String email = data.getExtras().get("Email").toString();
-                    String password = data.getExtras().get("Password").toString();*/
-
-                    /*Toast.makeText(getApplicationContext(),"email: "+email+"\n"+"password: " +password+
-                            "\n"+"userName: "+userName,Toast.LENGTH_LONG).show();
-                    LoginState.setLogined(true,userName);
-
-                    //Toast.makeText(getApplicationContext(),"isLogin?"+LoginState.getLogined(),Toast.LENGTH_SHORT).show();
-                    if (mAuthTask != null) {
-                        return;
-                    }
-                    mAuthTask = new UserLoginTask(email,password,2);
-                    mAuthTask.execute((Void) null);*/
-
-                    break;
-
-            }
-        }
-        /*else if(resultCode == RESULT_CANCELED) {
-            //finish();
-        }*/
-    }
 
     /**
      * Represents an asynchronous login/registration task used to authenticate
@@ -414,12 +364,12 @@ public class LoginActivity extends GeneralActivity implements LoaderCallbacks<Cu
      */
     public class UserLoginTask extends AsyncTask<Void, Void, Boolean> {
 
-        private final String mEmail;
+        private final String mUserName;
         private final String mPassword;
         private int type;
 
-        UserLoginTask(String email, String password, int type) {
-            mEmail = email;
+        UserLoginTask(String name, String password, int type) {
+            mUserName = name;
             mPassword = password;
             this.type = type;
         }
@@ -433,17 +383,18 @@ public class LoginActivity extends GeneralActivity implements LoaderCallbacks<Cu
                 String encryptEmail = "";
                 String encryptPassword = "";
                 if (1 == type) {
-                    encryptEmail = AES.encrypt(mEmail);
+                    encryptEmail = AES.encrypt(mUserName);
                     encryptPassword = AES.encrypt(mPassword);
 
                 } else if (2 == type) {
-                    encryptEmail = mEmail;
+                    encryptEmail = mUserName;
                     encryptPassword = mPassword;
                 } else {
                     try {
                         throw new Exception("参数错误");
                     } catch (Exception e) {
                         e.printStackTrace();
+
                     }
                 }
                 String url = "http://192.168.137.1/php2/index.php";
@@ -458,7 +409,7 @@ public class LoginActivity extends GeneralActivity implements LoaderCallbacks<Cu
 
             for (String credential : DUMMY_CREDENTIALS) {
                 String[] pieces = credential.split(":");
-                if (pieces[0].equals(mEmail)) {
+                if (pieces[0].equals(mUserName)) {
                     // Account exists, return true if the password matches.
                     return pieces[1].equals(mPassword);
                 }
@@ -473,7 +424,7 @@ public class LoginActivity extends GeneralActivity implements LoaderCallbacks<Cu
 
             if (success) {
                 Toast.makeText(getApplicationContext(), "Login successfully!", Toast.LENGTH_SHORT).show();
-                LoginState.setLogined(true, mEmail);
+                LoginState.setLogined(true, mUserName);
                 finish();
             } else {
                 mPasswordView.setError(getString(R.string.error_incorrect_password));
