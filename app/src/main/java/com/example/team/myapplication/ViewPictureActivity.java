@@ -98,7 +98,7 @@ public class ViewPictureActivity extends GeneralActivity {
         linearLayout = (LinearLayout) findViewById(R.id.linearLayout4);
         likeText = (TextView) findViewById(R.id.textView5);
         ////////
-        
+
         comments = new ArrayList<>();
         author.setOnClickListener(new ToUserPageListener());
         like.setOnClickListener(new View.OnClickListener() {
@@ -219,7 +219,11 @@ public class ViewPictureActivity extends GeneralActivity {
             likeNumber--;
             //TODO 上传取消赞
             like.setBackgroundResource(R.drawable.like);
-            likeText.setText(likeNumber < 10000 ? String.valueOf(likeNumber) : likeNumber / 10000 + "万+");
+            if (likeNumber == 0) {
+                likeText.setText(null);
+            } else {
+                likeText.setText(likeNumber < 10000 ? String.valueOf(likeNumber) : likeNumber / 10000 + "万+");
+            }
         }
         isLike = !isLike;
     }
