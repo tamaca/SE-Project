@@ -29,7 +29,7 @@ public class JsonGet {
     DB db;
     private View view;
 
-    public JsonGet(String url, DB db, View view)throws Exception{
+    public JsonGet(String url, DB db, View view) throws Exception {
         this.url = url;
         this.db = db;
         this.view = view;
@@ -38,7 +38,7 @@ public class JsonGet {
         get.PostExecute(jsonObject);
     }
 
-    public JsonGet(String url, DB db) throws Exception{
+    public JsonGet(String url, DB db) throws Exception {
         this.url = url;
         this.db = db;
         Get get = new Get();
@@ -51,24 +51,28 @@ public class JsonGet {
         HttpGetHC4 httpget = new HttpGetHC4(url);
 
         protected JSONObject GetFromServer() throws Exception {
-            CloseableHttpResponse response = null;
-            httpget.setHeader("Content-Type", "application/x-www-form-urlencoded");
-            httpget.setHeader("Accept", "application/json");
-            httpget.setHeader("Content-type", "application/json");
-            response = client.execute(httpget);
-            int a = response.getStatusLine().getStatusCode();
-            StringBuilder builder = new StringBuilder();
-            BufferedReader reader = new BufferedReader(new InputStreamReader(
-                    response.getEntity().getContent()));
-            for (String s = reader.readLine(); s != null; s = reader.readLine()) {
-                builder.append(s);
+            try {
+                CloseableHttpResponse response = null;
+                httpget.setHeader("Content-Type", "application/x-www-form-urlencoded");
+                httpget.setHeader("Accept", "application/json");
+                httpget.setHeader("Content-type", "application/json");
+                response = client.execute(httpget);
+                int a = response.getStatusLine().getStatusCode();
+                StringBuilder builder = new StringBuilder();
+                BufferedReader reader = new BufferedReader(new InputStreamReader(
+                        response.getEntity().getContent()));
+                for (String s = reader.readLine(); s != null; s = reader.readLine()) {
+                    builder.append(s);
+                }
+                JSONObject jsonObject1 = new JSONObject(builder.toString());
+                if (response != null) {
+                    response.close();
+                }
+                client.close();
+                return jsonObject1;
+            } catch (Exception e) {
+                throw new getException();
             }
-            JSONObject jsonObject1 = new JSONObject(builder.toString());
-            if (response != null) {
-                response.close();
-            }
-            client.close();
-            return jsonObject1;
         }
 
         protected void PostExecute(JSONObject jsonObject) throws Exception {
@@ -103,15 +107,28 @@ public class JsonGet {
                     }
                     //TODO 此处需要加入本地数据库
                 } else {
-                    throw new Exception();
+                    throw new executeException();
                     //TODO:接收信息错误
                 }
                 //这里写跳转代码
                 //loginActivity.showProgress(false);
             } else {
                 //TODO:接收信息错误
-                throw new Exception();
+                throw new nullException();
             }
         }
+    }
+    //异常类
+
+    class getException extends Exception {
+        public String name = "get";
+    }
+
+    class nullException extends Exception {
+        public String name = "null";
+    }
+
+    class executeException extends Exception {
+        public String name = "execute";
     }
 }
