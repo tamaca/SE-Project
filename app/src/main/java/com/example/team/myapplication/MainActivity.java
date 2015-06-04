@@ -198,8 +198,12 @@ public class MainActivity extends Activity {
     public void imagedownload() {
         String picURL1 = "http://192.168.253.1/square_page/1/";
         String picURL2 = "http://192.168.253.1/square_page/2/";
-        JsonGet jsonGet1 = new JsonGet(picURL1, db, squareView);
-        JsonGet jsonGet2 = new JsonGet(picURL2, db);
+        DownloadPictrueProgress downloadPictrueProgress1=new DownloadPictrueProgress(picURL1,db,squareView);
+        DownloadPictrueProgress downloadPictrueProgress2=new DownloadPictrueProgress(picURL2,db);
+        downloadPictrueProgress1.execute();
+        downloadPictrueProgress2.execute();
+      //  JsonGet jsonGet1 = new JsonGet(picURL1, db, squareView);
+       // JsonGet jsonGet2 = new JsonGet(picURL2, db);
         //String picURL1 = "http://192.168.253.1/square_page/1/";
         //ImageGet imageGet=new ImageGet((ImageView)squareView.findViewById(R.id.imageView1),picURL1,db);
     }
@@ -314,9 +318,7 @@ public class MainActivity extends Activity {
             String bigurl = view.getContentDescription().toString();
             intent.putExtra("bigurl", bigurl);
             startActivity(intent);
-        }
-        else
-        {
+        } else {
             //TODO imageview图片为空 错误处理
         }
     }
@@ -386,4 +388,43 @@ public class MainActivity extends Activity {
         }
     }
 
+    public class DownloadPictrueProgress extends AsyncTask<Void, Void, Boolean> {
+
+        private String url;
+        private View view;
+        private DB db;
+
+        DownloadPictrueProgress(String url, DB db, View view) {
+            this.url = url;
+            this.view = view;
+            this.db = db;
+        }
+
+        DownloadPictrueProgress(String url, DB db) {
+            this.url = url;
+            this.db = db;
+        }
+
+        @Override
+        protected Boolean doInBackground(Void... params) {
+            try {
+                JsonGet jsonGet = new JsonGet(url, db, view);
+                Thread.sleep(3000);
+            } catch (Exception e) {
+                return false;
+            }
+            return true;
+        }
+
+        @Override
+        protected void onPostExecute(final Boolean success) {
+
+            if (success) {
+                finish();
+            } else {
+                //TODO: 大厅获取图片错误
+                Toast.makeText(getApplicationContext(), "ERROR!", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
 }

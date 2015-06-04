@@ -29,117 +29,88 @@ public class JsonGet {
     DB db;
     private View view;
 
-    public JsonGet(String url, DB db, View view) {
+    public JsonGet(String url, DB db, View view)throws Exception{
         this.url = url;
         this.db = db;
         this.view = view;
-        try {
-            Get get = new Get();
-            get.execute();
-        } catch (Exception e) {
-            e.toString();
-        }
+        Get get = new Get();
+        JSONObject jsonObject = get.GetFromServer();
+        get.PostExecute(jsonObject);
     }
 
-    public JsonGet(String url, DB db) {
+    public JsonGet(String url, DB db) throws Exception{
         this.url = url;
         this.db = db;
-        try {
-            Get get = new Get();
-            get.execute();
-        } catch (Exception e) {
-            e.toString();
-        }
+        Get get = new Get();
+        JSONObject jsonObject = get.GetFromServer();
+        get.PostExecute(jsonObject);
     }
 
-    private class Get extends AsyncTask<Void, Void, JSONObject> {
+    private class Get {
         CloseableHttpClient client = HttpClients.custom().useSystemProperties().build();
         HttpGetHC4 httpget = new HttpGetHC4(url);
 
-        @Override
-        protected JSONObject doInBackground(Void... params) {
+        protected JSONObject GetFromServer() throws Exception {
             CloseableHttpResponse response = null;
             httpget.setHeader("Content-Type", "application/x-www-form-urlencoded");
             httpget.setHeader("Accept", "application/json");
             httpget.setHeader("Content-type", "application/json");
-            try {
-                response = client.execute(httpget);
-                int a = response.getStatusLine().getStatusCode();
-                StringBuilder builder = new StringBuilder();
-                BufferedReader reader = new BufferedReader(new InputStreamReader(
-                        response.getEntity().getContent()));
-                for (String s = reader.readLine(); s != null; s = reader.readLine()) {
-                    builder.append(s);
-                }
-                try {
-                    JSONObject jsonObject1 = new JSONObject(builder.toString());
-                    return jsonObject1;
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            } catch (IOException e) {
-                //TODO:网络通信错误
-                e.printStackTrace();
-            } finally {
-                try {
-                    if (response != null) {
-                        response.close();
-                    }
-                    client.close();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+            response = client.execute(httpget);
+            int a = response.getStatusLine().getStatusCode();
+            StringBuilder builder = new StringBuilder();
+            BufferedReader reader = new BufferedReader(new InputStreamReader(
+                    response.getEntity().getContent()));
+            for (String s = reader.readLine(); s != null; s = reader.readLine()) {
+                builder.append(s);
             }
-            return null;
+            JSONObject jsonObject1 = new JSONObject(builder.toString());
+            if (response != null) {
+                response.close();
+            }
+            client.close();
+            return jsonObject1;
         }
 
-        @Override
-        protected void onPostExecute(JSONObject jsonObject) {
+        protected void PostExecute(JSONObject jsonObject) throws Exception {
             if (jsonObject != null) {
-                try {
-                    String status = jsonObject.getString("status");
-                    if (status.equals("normal")) {
-                        String url = "http://192.168.253.1/media/";
-                        String image_small[] = new String[4];
-                        String image_big[] = new String[4];
-                        for (int i = 0; i <= 3; i++) {
-                            image_small[i] = url + jsonObject.getString("image" + i + "_small");
-                            image_big[i] = url + jsonObject.getString("image" + i + "_big");
-                        }
-                        if (view != null) {
-                            ImageView imageView1 = (ImageView) view.findViewById(R.id.imageView1);
-                            ImageView imageView2 = (ImageView) view.findViewById(R.id.imageView2);
-                            ImageView imageView3 = (ImageView) view.findViewById(R.id.imageView3);
-                            ImageView imageView4 = (ImageView) view.findViewById(R.id.imageView4);
-                            ImageGet imageGet1 = new ImageGet(imageView1, image_small[0], db, "small");
-                            ImageGet imageGet2 = new ImageGet(imageView2, image_small[1], db, "small");
-                            ImageGet imageGet3 = new ImageGet(imageView3, image_small[2], db, "small");
-                            ImageGet imageGet4 = new ImageGet(imageView4, image_small[3], db, "small");
-                            imageView1.setContentDescription(image_big[0]);
-                            imageView2.setContentDescription(image_big[1]);
-                            imageView3.setContentDescription(image_big[2]);
-                            imageView4.setContentDescription(image_big[3]);
-                        } else {
-                            ImageGet imageGet6 = new ImageGet(null, image_small[0], db, "small");
-                            ImageGet imageGet7 = new ImageGet(null, image_small[1], db, "small");
-                            ImageGet imageGet8 = new ImageGet(null, image_small[2], db, "small");
-                            ImageGet imageGet9 = new ImageGet(null, image_small[3], db, "small");
-                        }
-                        //TODO 此处需要加入本地数据库
+                String status = jsonObject.getString("status");
+                if (status.equals("normal")) {
+                    String url = "http://192.168.253.1/media/";
+                    String image_small[] = new String[4];
+                    String image_big[] = new String[4];
+                    for (int i = 0; i <= 3; i++) {
+                        image_small[i] = url + jsonObject.getString("image" + i + "_small");
+                        image_big[i] = url + jsonObject.getString("image" + i + "_big");
                     }
-                    else
-                    {
-                        //TODO:接收信息错误
+                    if (view != null) {
+                        ImageView imageView1 = (ImageView) view.findViewById(R.id.imageView1);
+                        ImageView imageView2 = (ImageView) view.findViewById(R.id.imageView2);
+                        ImageView imageView3 = (ImageView) view.findViewById(R.id.imageView3);
+                        ImageView imageView4 = (ImageView) view.findViewById(R.id.imageView4);
+                        ImageGet imageGet1 = new ImageGet(imageView1, image_small[0], db, "small");
+                        ImageGet imageGet2 = new ImageGet(imageView2, image_small[1], db, "small");
+                        ImageGet imageGet3 = new ImageGet(imageView3, image_small[2], db, "small");
+                        ImageGet imageGet4 = new ImageGet(imageView4, image_small[3], db, "small");
+                        imageView1.setContentDescription(image_big[0]);
+                        imageView2.setContentDescription(image_big[1]);
+                        imageView3.setContentDescription(image_big[2]);
+                        imageView4.setContentDescription(image_big[3]);
+                    } else {
+                        ImageGet imageGet6 = new ImageGet(null, image_small[0], db, "small");
+                        ImageGet imageGet7 = new ImageGet(null, image_small[1], db, "small");
+                        ImageGet imageGet8 = new ImageGet(null, image_small[2], db, "small");
+                        ImageGet imageGet9 = new ImageGet(null, image_small[3], db, "small");
                     }
-                    //这里写跳转代码
-                    //loginActivity.showProgress(false);
-                } catch (Exception e) {
-                    e.printStackTrace();
+                    //TODO 此处需要加入本地数据库
+                } else {
+                    throw new Exception();
+                    //TODO:接收信息错误
                 }
-            }
-            else
-            {
+                //这里写跳转代码
+                //loginActivity.showProgress(false);
+            } else {
                 //TODO:接收信息错误
+                throw new Exception();
             }
         }
     }

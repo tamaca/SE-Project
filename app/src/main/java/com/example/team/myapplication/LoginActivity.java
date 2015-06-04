@@ -474,7 +474,6 @@ public class LoginActivity extends GeneralActivity implements LoaderCallbacks<Cu
             if (success) {
                 Toast.makeText(getApplicationContext(), "Login successfully!", Toast.LENGTH_SHORT).show();
                 LoginState.setLogined(true, mEmail);
-
                 finish();
             } else {
                 mPasswordView.setError(getString(R.string.error_incorrect_password));
