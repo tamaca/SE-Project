@@ -39,52 +39,40 @@ public class JsonPost {
     boolean autoLogin;
     boolean rememPassword;
     private DB db;
-    private LoginActivity loginActivity;
     private ViewPictureActivity view;
 
     //多种处理方式
     //登录
-    public JsonPost(HashMap<String, String> map, String url, int type, boolean autoLogin, boolean rememPassword, DB db) {
+    public JsonPost(HashMap<String, String> map, String url, int type, boolean autoLogin, boolean rememPassword, DB db) throws Exception{
         this.url = url;
         this.type = type;
         this.autoLogin = autoLogin;
         this.rememPassword = rememPassword;
         this.db = db;
-        this.loginActivity = loginActivity;
-        try {
-            Post post = new Post();
-            post.execute(map);
-        } catch (Exception e) {
-            e.toString();
-        }
-
+        Post post = new Post(map);
+        JSONObject jsonObject=post.PostToServer();
+        post.PostExecute(jsonObject);
     }
 
     //注册、修改密码
-    public JsonPost(HashMap<String, String> map, String url, int type, DB db) {
+    public JsonPost(HashMap<String, String> map, String url, int type, DB db)throws Exception {
         this.url = url;
         this.type = type;
         this.db = db;
-        try {
-            Post post = new Post();
-            post.execute(map);
-        } catch (Exception e) {
-            e.toString();
-        }
+        Post post = new Post(map);
+        JSONObject jsonObject=post.PostToServer();
+        post.PostExecute(jsonObject);
     }
 
     //图片信息获取
-    public JsonPost(HashMap<String, String> map, String url, int type, DB db, ViewPictureActivity view) {
+    public JsonPost(HashMap<String, String> map, String url, int type, DB db, ViewPictureActivity view)throws Exception {
         this.url = url;
         this.type = type;
         this.db = db;
         this.view = view;
-        try {
-            Post post = new Post();
-            post.execute(map);
-        } catch (Exception e) {
-            e.toString();
-        }
+        Post post = new Post(map);
+        JSONObject jsonObject=post.PostToServer();
+        post.PostExecute(jsonObject);
     }
 
     //数据库储存用户
@@ -134,72 +122,68 @@ public class JsonPost {
     }
 
     //UI处理图片信息
-    public void getImageInformation(JSONObject info) {
-        try {
-            String imageId = info.getString("imageid");
-            String originImageurl = info.getString("origin");
-            String _author = info.getString("author");
-            String _like = info.getString("like");
-            String _isLike = info.getString("islike");
-            String _updateTime = info.getString("updatetime");
-            String _commentnum = info.getString("commentnum");
-            String _comment = info.getString("comment");
-            int commentnum = Integer.parseInt(_commentnum);
-            JSONObject commentJson = new JSONObject(_comment);
-            String commenter[] = new String[6];
-            String comment[] = new String[6];
-            String commentid[] = new String[6];
-            String updatedate[] = new String[6];
-            for (int i = 1; i <= commentnum; i++) {
-                commenter[i - 1] = commentJson.getString("name" + String.valueOf(i));
-                comment[i - 1] = commentJson.getString("comment" + String.valueOf(i));
-                commentid[i - 1] = commentJson.getString("commentid" + String.valueOf(i));
-                updatedate[i - 1] = commentJson.getString("updatedate" + String.valueOf(i));
-            }
-            //原图位置
-            view.getImgview().setContentDescription(originImageurl);
-            //String _author = "The Hammer";
-            view.getAuthor().setText(_author);
-            Boolean isLike = (_isLike.equals("true"));//测试用, false 代表没有赞过
-            view.getLike().setText(isLike ? "取消赞\n" : "赞\n" + "(" + _like + ")");
-            view.getCommentView().postInvalidate();
-            view.getUploadTime().setText(_updateTime);
-            //String commenter1 = "sxy";
-            //String comment1 = "评论在这里（5毛一条，括号里不要复制）";
-            for (int i = 1; i <= commentnum; i++) {
-                view.getComments().add(new Comment(view.getApplicationContext(), commenter[i - 1], comment[i - 1]));
-            }
-            for (int i = 0; i < view.getComments().size(); i++) {
-                view.getCommentView().addView(view.getComments().get(i));
-                view.getComments().get(i).textView1.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        view.toUserPageActivity(v);
-                    }
-                });
-            }
-            HashMap<String, String> image = new HashMap<String, String>();
-            image.put("imageid", imageId);
-            image.put("userid", _author);
-            image.put("islike", _isLike);
-            image.put("likenumber", _like);
-            image.put("updatetime", _updateTime);
-            dbimagesave(image);
-            HashMap<String, String> commentmap = new HashMap<String, String>();
-            commentmap.put("imageid", imageId);
-            commentmap.put("commentnum", _commentnum);
-            for (int i = 1; i <= commentnum; i++) {
-                commentmap.put("commentid" + String.valueOf(i), commentid[i - 1]);
-                commentmap.put("userid" + String.valueOf(i), commenter[i - 1]);
-                commentmap.put("context" + String.valueOf(i), commentid[i - 1]);
-                commentmap.put("updatedate" + String.valueOf(i), updatedate[i - 1]);
-            }
-        } catch (JSONException e) {
-            e.printStackTrace();
+    private void getImageInformation(JSONObject info) throws Exception {
+        String imageId = info.getString("imageid");
+        String originImageurl = info.getString("origin");
+        String _author = info.getString("author");
+        String _like = info.getString("like");
+        String _isLike = info.getString("islike");
+        String _updateTime = info.getString("updatetime");
+        String _commentnum = info.getString("commentnum");
+        String _comment = info.getString("comment");
+        int commentnum = Integer.parseInt(_commentnum);
+        JSONObject commentJson = new JSONObject(_comment);
+        String commenter[] = new String[6];
+        String comment[] = new String[6];
+        String commentid[] = new String[6];
+        String updatedate[] = new String[6];
+        for (int i = 1; i <= commentnum; i++) {
+            commenter[i - 1] = commentJson.getString("name" + String.valueOf(i));
+            comment[i - 1] = commentJson.getString("comment" + String.valueOf(i));
+            commentid[i - 1] = commentJson.getString("commentid" + String.valueOf(i));
+            updatedate[i - 1] = commentJson.getString("updatedate" + String.valueOf(i));
+        }
+        //原图位置
+        view.getImgview().setContentDescription(originImageurl);
+        //String _author = "The Hammer";
+        view.getAuthor().setText(_author);
+        Boolean isLike = (_isLike.equals("true"));//测试用, false 代表没有赞过
+        view.getLike().setText(isLike ? "取消赞\n" : "赞\n" + "(" + _like + ")");
+        view.getCommentView().postInvalidate();
+        view.getUploadTime().setText(_updateTime);
+        //String commenter1 = "sxy";
+        //String comment1 = "评论在这里（5毛一条，括号里不要复制）";
+        for (int i = 1; i <= commentnum; i++) {
+            view.getComments().add(new Comment(view.getApplicationContext(), commenter[i - 1], comment[i - 1]));
+        }
+        for (int i = 0; i < view.getComments().size(); i++) {
+            view.getCommentView().addView(view.getComments().get(i));
+            view.getComments().get(i).textView1.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    view.toUserPageActivity(v);
+                }
+            });
+        }
+        HashMap<String, String> image = new HashMap<String, String>();
+        image.put("imageid", imageId);
+        image.put("userid", _author);
+        image.put("islike", _isLike);
+        image.put("likenumber", _like);
+        image.put("updatetime", _updateTime);
+        dbimagesave(image);
+        HashMap<String, String> commentmap = new HashMap<String, String>();
+        commentmap.put("imageid", imageId);
+        commentmap.put("commentnum", _commentnum);
+        for (int i = 1; i <= commentnum; i++) {
+            commentmap.put("commentid" + String.valueOf(i), commentid[i - 1]);
+            commentmap.put("userid" + String.valueOf(i), commenter[i - 1]);
+            commentmap.put("context" + String.valueOf(i), commentid[i - 1]);
+            commentmap.put("updatedate" + String.valueOf(i), updatedate[i - 1]);
         }
     }
 
-    private class Post extends AsyncTask<HashMap<String, String>, Void, JSONObject> {
+    private class Post {
         //  HttpClient client = new DefaultHttpClient();
         CloseableHttpClient client = HttpClients.custom().useSystemProperties().build();
         //HttpPost httpPost = new HttpPost(url);
@@ -208,105 +192,69 @@ public class JsonPost {
         List<NameValuePair> nameValuePair = new ArrayList<NameValuePair>();
         HashMap<String, String> map;
 
-        @Override
-        protected JSONObject doInBackground(HashMap<String, String>... params) {
-            map = params[0];
+        Post(HashMap<String, String> map) {
+            this.map = map;
+        }
+
+        protected JSONObject PostToServer() throws Exception {
             Iterator iter = map.entrySet().iterator();
-            try {
-                while (iter.hasNext()) {
-                    Map.Entry entry = (Map.Entry) iter.next();
-                    String key = (String) entry.getKey();
-                    String val = (String) entry.getValue();
-                    jsonObject.put(key, val);
-                }
-            } catch (JSONException e) {
-                e.printStackTrace();
+            while (iter.hasNext()) {
+                Map.Entry entry = (Map.Entry) iter.next();
+                String key = (String) entry.getKey();
+                String val = (String) entry.getValue();
+                jsonObject.put(key, val);
             }
             nameValuePair.add(new BasicNameValuePair("jsonString", jsonObject
                     .toString()));
-            CloseableHttpResponse response = null;
-            try {
-                httpPost.setHeader("Content-Type", "application/x-www-form-urlencoded");
-                httpPost.setHeader("Accept", "application/json");
-                httpPost.setHeader("Content-type", "application/json");
-                httpPost.setEntity(new UrlEncodedFormEntityHC4(nameValuePair, "UTF-8"));
-                try {
-                    response = client.execute(httpPost);
-                    StringBuilder builder = new StringBuilder();
-                    BufferedReader reader = new BufferedReader(new InputStreamReader(
-                            response.getEntity().getContent()));
-                    for (String s = reader.readLine(); s != null; s = reader.readLine()) {
-                        builder.append(s);
-                    }
-                    try {
-                        JSONObject jsonObject1 = new JSONObject(builder.toString());
-                        return jsonObject1;
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                } catch (IOException e) {
-                    //TODO:网络通信错误
-                    e.printStackTrace();
-                }
-
-            } catch (UnsupportedEncodingException e) {
-                e.printStackTrace();
-            } finally {
-                try {
-                    if (response != null) {
-                        response.close();
-                    }
-                    client.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+            CloseableHttpResponse response;
+            httpPost.setHeader("Content-Type", "application/x-www-form-urlencoded");
+            httpPost.setHeader("Accept", "application/json");
+            httpPost.setHeader("Content-type", "application/json");
+            httpPost.setEntity(new UrlEncodedFormEntityHC4(nameValuePair, "UTF-8"));
+            response = client.execute(httpPost);
+            StringBuilder builder = new StringBuilder();
+            BufferedReader reader = new BufferedReader(new InputStreamReader(
+                    response.getEntity().getContent()));
+            for (String s = reader.readLine(); s != null; s = reader.readLine()) {
+                builder.append(s);
             }
-            return null;
+            JSONObject jsonObject1 = new JSONObject(builder.toString());
+            if (response != null) {
+                response.close();
+            }
+            client.close();
+            return jsonObject1;
         }
 
-        @Override
-        protected void onPostExecute(JSONObject jsonObject) {
-            if(jsonObject==null)
-            {
+        protected void PostExecute(JSONObject jsonObject) throws Exception {
+            if (jsonObject == null) {
+                throw new Exception();
                 //TODO:网络通信错误
             }
-            super.onPostExecute(jsonObject);
             switch (type) {
                 //多种处理方式
                 //登录
                 case 1: {
-                    try {
-                        String status = jsonObject.getString("status");
-                        if (status.equals("normal")) {
-                            String _username = jsonObject.getString("username");
-                            dbsaveuser(_username, this.jsonObject.getString("password"));
-                        }
-                        //这里写跳转代码
-                        //loginActivity.showProgress(false);
-                    } catch (JSONException e) {
-                        e.printStackTrace();
+                    String status = jsonObject.getString("status");
+                    if (status.equals("normal")) {
+                        String _username = jsonObject.getString("username");
+                        dbsaveuser(_username, this.jsonObject.getString("password"));
                     }
+                    //这里写跳转代码
+                    //loginActivity.showProgress(false);
                     break;
                 }
                 //注册
                 case 2: {
-                    try {
-                        String status = jsonObject.getString("status");
-                        Log.v("status", "status=" + status);
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
+                    String status = jsonObject.getString("status");
+                    Log.v("status", "status=" + status);
                     break;
                 }
                 //提交评论
                 case 3: {
-                    try {
-                        String username = jsonObject.getString("user_name");
-                        String content = jsonObject.getString("user_content");
-                        Log.v("content", "content" + content);
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
+                    String username = jsonObject.getString("user_name");
+                    String content = jsonObject.getString("user_content");
+                    Log.v("content", "content" + content);
                     break;
                 }
                 //获取图片信息
@@ -318,11 +266,10 @@ public class JsonPost {
                 }
                 //修改密码
                 case 5: {
-                    try {
-                        String status = jsonObject.getString("status");
-                        //  String email=jsonObject.getString("email");
-                        // String oldpassword=jsonObject.getString("oldpassword");
-                        //String newpassword=jsonObject.getString("newpassword");
+                    String status = jsonObject.getString("status");
+                    //  String email=jsonObject.getString("email");
+                    // String oldpassword=jsonObject.getString("oldpassword");
+                    //String newpassword=jsonObject.getString("newpassword");
                         /*if(status.equal("normal"))
                         {
                           if(db.checklastuserpassword())//有可能出错
@@ -330,9 +277,6 @@ public class JsonPost {
                               db.lastuserupdatepassword(map.get("password"));
                           }
                         }*/
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
                 }
                 default:
                     return;

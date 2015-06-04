@@ -163,12 +163,12 @@ public class ViewPictureActivity extends GeneralActivity {
         refresh.start();
     }
 
-    public void getImageInformation(String imageid) {
+    /*public void getImageInformation(String imageid) {
         String url = "http://192.168.137.1/php23/index.php";
         HashMap<String, String> map = new HashMap<String, String>();
         map.put("imageid", imageid);
         JsonPost post = new JsonPost(map, url, 4, db, this);
-    }
+    }*/
 
   /*  public void getImageInformation() {
         //TODO 获取上传者

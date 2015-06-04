@@ -48,7 +48,6 @@ public class LoginActivity extends GeneralActivity implements LoaderCallbacks<Cu
 
     /**
      * A dummy authentication store containing known user names and passwords.
-     *
      */
     private static final String[] DUMMY_CREDENTIALS = new String[]{
             "foo@example.com:hello", "bar@example.com:world"
@@ -71,7 +70,6 @@ public class LoginActivity extends GeneralActivity implements LoaderCallbacks<Cu
     private GestureDetector gestureDetector;
 
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -83,8 +81,7 @@ public class LoginActivity extends GeneralActivity implements LoaderCallbacks<Cu
         try {
             //noinspection ConstantConditions
             getActionBar().setDisplayHomeAsUpEnabled(true);
-        }
-        catch(NullPointerException e) {
+        } catch (NullPointerException e) {
             //
         }
 
@@ -135,8 +132,8 @@ public class LoginActivity extends GeneralActivity implements LoaderCallbacks<Cu
                 toRegisterActivity(view);
             }
         });
-        autoLogin = (CheckBox)findViewById(R.id.auto_login);
-        rememPassword = (CheckBox)findViewById(R.id.remember_password);
+        autoLogin = (CheckBox) findViewById(R.id.auto_login);
+        rememPassword = (CheckBox) findViewById(R.id.remember_password);
         toast = new Toast(getApplicationContext());
         autoLogin.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -144,11 +141,10 @@ public class LoginActivity extends GeneralActivity implements LoaderCallbacks<Cu
                 //b为真，表示自动登录打勾
 
 
-                if(b){
+                if (b) {
                     rememPassword.setChecked(true);
                     rememPassword.setEnabled(false);
-                }
-                else{
+                } else {
                     rememPassword.setChecked(false);
                     rememPassword.setEnabled(true);
                 }
@@ -165,32 +161,32 @@ public class LoginActivity extends GeneralActivity implements LoaderCallbacks<Cu
     }
 
 
-    public void testLogin(View view){
-        LoginState.setLogined(true,"test");
-        Toast.makeText(getApplicationContext(),"isLogin?"+LoginState.getLogined(),Toast.LENGTH_SHORT).show();
-        if(LoginState.getLogined())
-        {
-            Toast.makeText(getApplicationContext(),"Username"+LoginState.username,Toast.LENGTH_SHORT).show();
+    public void testLogin(View view) {
+        LoginState.setLogined(true, "test");
+        Toast.makeText(getApplicationContext(), "isLogin?" + LoginState.getLogined(), Toast.LENGTH_SHORT).show();
+        if (LoginState.getLogined()) {
+            Toast.makeText(getApplicationContext(), "Username" + LoginState.username, Toast.LENGTH_SHORT).show();
         }
         showProgress(true);
         finish();
 
 
-
     }
+
     private void autologin() {
-        Cursor cursor= db.lastuserselect();
+        Cursor cursor = db.lastuserselect();
         if (cursor.moveToFirst()) {
             String encryptid = cursor.getString(cursor.getColumnIndex("m_lastuser_id"));
-            String encryptpassword=cursor.getString(cursor.getColumnIndex("m_lastuser_password"));
+            String encryptpassword = cursor.getString(cursor.getColumnIndex("m_lastuser_password"));
             if (mAuthTask != null) {
                 return;
             }
             showProgress(true);
-            mAuthTask = new UserLoginTask(encryptid, encryptpassword,2);
+            mAuthTask = new UserLoginTask(encryptid, encryptpassword, 2);
             mAuthTask.execute((Void) null);
         }
     }
+
     private void populateAutoComplete() {
         getLoaderManager().initLoader(0, null, this);
     }
@@ -218,12 +214,11 @@ public class LoginActivity extends GeneralActivity implements LoaderCallbacks<Cu
         View focusView = null;
 
         // Check for a valid password, if the user entered one.
-        if(password.isEmpty()){
+        if (password.isEmpty()) {
             mPasswordView.setError(getString(R.string.error_field_required));
             focusView = mPasswordView;
             cancel = true;
-        }
-        else if (!CheckValid.isPasswordValid(password)) {
+        } else if (!CheckValid.isPasswordValid(password)) {
             mPasswordView.setError(getString(R.string.error_invalid_password));
             focusView = mPasswordView;
             cancel = true;
@@ -251,7 +246,7 @@ public class LoginActivity extends GeneralActivity implements LoaderCallbacks<Cu
             // Show a progress spinner, and kick off a background task to
             // perform the user login attempt.
             showProgress(true);
-            mAuthTask = new UserLoginTask(email, password,1);
+            mAuthTask = new UserLoginTask(email, password, 1);
             mAuthTask.execute((Void) null);
         }
     }
@@ -361,7 +356,7 @@ public class LoginActivity extends GeneralActivity implements LoaderCallbacks<Cu
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        switch (id){
+        switch (id) {
             case android.R.id.home:
                 finish();
                 return true;
@@ -373,20 +368,19 @@ public class LoginActivity extends GeneralActivity implements LoaderCallbacks<Cu
         return super.onOptionsItemSelected(item);
     }
 
-    public void toRegisterActivity(View view){
+    public void toRegisterActivity(View view) {
 
-        Intent intent = new Intent(this,RegisterActivity.class);
+        Intent intent = new Intent(this, RegisterActivity.class);
         startActivityForResult(intent, SIGN_IN);
 
     }
+
     @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data){
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
 
-
-
-        if(resultCode == RESULT_OK) {
+        if (resultCode == RESULT_OK) {
             switch (requestCode) {
                 case SIGN_IN:
                     /*showProgress(true);
@@ -423,10 +417,11 @@ public class LoginActivity extends GeneralActivity implements LoaderCallbacks<Cu
         private final String mEmail;
         private final String mPassword;
         private int type;
-        UserLoginTask(String email, String password,int type) {
+
+        UserLoginTask(String email, String password, int type) {
             mEmail = email;
             mPassword = password;
-            this.type=type;
+            this.type = type;
         }
 
 
@@ -435,20 +430,16 @@ public class LoginActivity extends GeneralActivity implements LoaderCallbacks<Cu
 
 
             try {
-                String encryptEmail="";
-                String encryptPassword="";
-                if(1==type) {
+                String encryptEmail = "";
+                String encryptPassword = "";
+                if (1 == type) {
                     encryptEmail = AES.encrypt(mEmail);
                     encryptPassword = AES.encrypt(mPassword);
 
-                }
-                else if(2==type)
-                {
-                    encryptEmail=mEmail;
-                    encryptPassword=mPassword;
-                }
-                else
-                {
+                } else if (2 == type) {
+                    encryptEmail = mEmail;
+                    encryptPassword = mPassword;
+                } else {
                     try {
                         throw new Exception("参数错误");
                     } catch (Exception e) {
@@ -472,8 +463,6 @@ public class LoginActivity extends GeneralActivity implements LoaderCallbacks<Cu
                     return pieces[1].equals(mPassword);
                 }
             }
-
-
             return true;
         }
 
@@ -483,9 +472,9 @@ public class LoginActivity extends GeneralActivity implements LoaderCallbacks<Cu
             showProgress(false);
 
             if (success) {
-                Toast.makeText(getApplicationContext(),"Login successfully!",Toast.LENGTH_SHORT).show();
-                LoginState.setLogined(true,mEmail);
-                
+                Toast.makeText(getApplicationContext(), "Login successfully!", Toast.LENGTH_SHORT).show();
+                LoginState.setLogined(true, mEmail);
+
                 finish();
             } else {
                 mPasswordView.setError(getString(R.string.error_incorrect_password));
