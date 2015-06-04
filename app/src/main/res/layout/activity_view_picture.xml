@@ -89,11 +89,19 @@
                             android:layout_weight="1"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:layout_marginRight="50dp"
-                            android:layout_marginEnd="50dp"
                             android:id="@+id/like_button"
                             android:background="@drawable/like"
                             android:scaleType="centerInside"/>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textAppearance="?android:attr/textAppearanceMedium"
+                            android:text="3万+"
+                            android:id="@+id/textView5"
+                            android:layout_marginRight="30dp"
+                            android:textColor="@color/天依蓝"
+                            android:layout_marginLeft="10dp" />
 
                         <Button
                             android:layout_width="wrap_content"

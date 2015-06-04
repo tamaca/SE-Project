@@ -1,11 +1,9 @@
 package com.example.team.myapplication.Network;
 
-import android.os.AsyncTask;
 import android.util.Log;
 import android.view.View;
 
 import com.example.team.myapplication.Database.DB;
-import com.example.team.myapplication.LoginActivity;
 import com.example.team.myapplication.ViewPictureActivity;
 import com.example.team.myapplication.util.Comment;
 
@@ -16,13 +14,10 @@ import org.apache.http4.client.methods.CloseableHttpResponse;
 import org.apache.http4.client.methods.HttpPostHC4;
 import org.apache.http4.impl.client.CloseableHttpClient;
 import org.apache.http4.impl.client.HttpClients;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -148,7 +143,7 @@ public class JsonPost {
         //String _author = "The Hammer";
         view.getAuthor().setText(_author);
         Boolean isLike = (_isLike.equals("true"));//测试用, false 代表没有赞过
-        view.getLike().setText(isLike ? "取消赞\n" : "赞\n" + "(" + _like + ")");
+        view.getLikeText().setText(Integer.parseInt(_like) < 10000 ? _like : Integer.parseInt(_like) / 10000 + "万+");
         view.getCommentView().postInvalidate();
         view.getUploadTime().setText(_updateTime);
         //String commenter1 = "sxy";

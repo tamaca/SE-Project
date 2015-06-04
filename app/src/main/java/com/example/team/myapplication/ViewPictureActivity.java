@@ -9,8 +9,8 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
@@ -20,13 +20,11 @@ import android.widget.Toast;
 
 import com.example.team.myapplication.Database.DB;
 import com.example.team.myapplication.Network.ImageGet;
-import com.example.team.myapplication.Network.JsonPost;
 import com.example.team.myapplication.Network.NetworkState;
 import com.example.team.myapplication.util.Comment;
 import com.example.team.myapplication.util.GeneralActivity;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 
@@ -41,14 +39,19 @@ public class ViewPictureActivity extends GeneralActivity {
     private TextView uploadTime;
     private DB db = new DB(this);
     private int likeNumber;
-    private Button like;
+    private ImageButton like;
+
+
+    private TextView likeText;
     private boolean isLike = false;
     private ScrollView scrollView;
     private LinearLayout linearLayout;
+
     //
     public ImageView getImgview() {
         return imgview;
     }
+
     public List<Comment> getComments() {
         return comments;
     }
@@ -65,9 +68,14 @@ public class ViewPictureActivity extends GeneralActivity {
         return uploadTime;
     }
 
-    public Button getLike() {
+    public ImageButton getLike() {
         return like;
     }
+
+    public TextView getLikeText() {
+        return likeText;
+    }
+
 
     @Override
 
@@ -77,30 +85,32 @@ public class ViewPictureActivity extends GeneralActivity {
         Intent intent = getIntent();
 
         setContentView(R.layout.activity_view_picture);
-        imgview = (ImageView) findViewById(R.id.imageView8);
-
         getActionBar().setDisplayHomeAsUpEnabled(true);
+        //变量初始化
+        imgview = (ImageView) findViewById(R.id.imageView8);
         editText = (EditText) findViewById(R.id.comment_text);
         commentView = (LinearLayout) findViewById(R.id.comment_view);
         progressBar = (ProgressBar) findViewById(R.id.progressBar);
         author = (TextView) findViewById(R.id.author);
-       // like = (Button) findViewById(R.id.like_button);
+        like = (ImageButton) findViewById(R.id.like_button);
         uploadTime = (TextView) findViewById(R.id.upload_time);
-        scrollView = (ScrollView)findViewById(R.id.scrollView);
-        comments=new ArrayList<>();
+        scrollView = (ScrollView) findViewById(R.id.scrollView);
+        linearLayout = (LinearLayout) findViewById(R.id.linearLayout4);
+        likeText = (TextView) findViewById(R.id.textView5);
+        ////////
+        
+        comments = new ArrayList<>();
         author.setOnClickListener(new ToUserPageListener());
-      /*  like.setOnClickListener(new View.OnClickListener() {
+        like.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 changeLike(view);
             }
-        });*/
-        linearLayout = (LinearLayout)findViewById(R.id.linearLayout4);
+        });
 
-        //评论的ArrayList 数组，把获得的评论放在这里
         String bigurl = (String) intent.getExtras().get("bigurl");
-        ImageGet imageGet=new ImageGet(imgview,bigurl,db,"big");
-       // getImageInformation(imageid);
+        ImageGet imageGet = new ImageGet(imgview, bigurl, db, "big");
+        // getImageInformation(imageid);
     }
 
 
@@ -169,32 +179,32 @@ public class ViewPictureActivity extends GeneralActivity {
         JsonPost post = new JsonPost(map, url, 4, db, this);
     }*/
 
-  /*  public void getImageInformation() {
-        //TODO 获取上传者
-        String _author = "The Hammer";
-        author.setText(_author);
+    /*  public void getImageInformation() {
+          //TODO 获取上传者
+          String _author = "The Hammer";
+          author.setText(_author);
 
-        //TODO 获取赞的数量和该用户是否已经赞
-        isLike = false;//测试用, false 代表没有赞过
-        likeNumber = 999;//测试用
-        like.setText(isLike ? "取消赞\n" : "赞\n" + "(" + likeNumber + ")");
+          //TODO 获取赞的数量和该用户是否已经赞
+          isLike = false;//测试用, false 代表没有赞过
+          likeNumber = 999;//测试用
+          like.setText(isLike ? "取消赞\n" : "赞\n" + "(" + likeNumber + ")");
 
-        //TODO 获取该图片的上传时间
-        String _uploadTime = "2月1日";
-        uploadTime.setText(_uploadTime);
+          //TODO 获取该图片的上传时间
+          String _uploadTime = "2月1日";
+          uploadTime.setText(_uploadTime);
 
-        //TODO 获取评论
-        String commenter = "sxy";
-        String comment = "评论在这里（5毛一条，括号里不要复制）";
-        comments.add(new Comment(getApplicationContext(),
-                commenter, comment));
+          //TODO 获取评论
+          String commenter = "sxy";
+          String comment = "评论在这里（5毛一条，括号里不要复制）";
+          comments.add(new Comment(getApplicationContext(),
+                  commenter, comment));
 
-        for (int i = 0; i < comments.size(); i++) {
-            commentView.addView(comments.get(i));
-            comments.get(i).textView1.setOnClickListener(new ToUserPageListener());
-        }
-    }
-*/
+          for (int i = 0; i < comments.size(); i++) {
+              commentView.addView(comments.get(i));
+              comments.get(i).textView1.setOnClickListener(new ToUserPageListener());
+          }
+      }
+  */
     public void changeLike(View view) {
         onLikeChange(isLike);
     }
@@ -203,11 +213,13 @@ public class ViewPictureActivity extends GeneralActivity {
         if (!zan) {
             likeNumber++;
             //TODO 上传赞
-            like.setText("取消赞\n" + "(" + likeNumber + ")");
+            like.setBackgroundResource(R.drawable.liked);
+            likeText.setText(likeNumber < 10000 ? String.valueOf(likeNumber) : likeNumber / 10000 + "万+");
         } else {
             likeNumber--;
             //TODO 上传取消赞
-            like.setText("赞\n" + "(" + likeNumber + ")");
+            like.setBackgroundResource(R.drawable.like);
+            likeText.setText(likeNumber < 10000 ? String.valueOf(likeNumber) : likeNumber / 10000 + "万+");
         }
         isLike = !isLike;
     }
@@ -272,7 +284,7 @@ public class ViewPictureActivity extends GeneralActivity {
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
                 }
-                scrollView.scrollTo(0,linearLayout.getMeasuredHeight());
+                scrollView.scrollTo(0, linearLayout.getMeasuredHeight());
                 commentView.postInvalidate();
                 Log.d("comment--->>", "refreshing");
                 Thread.currentThread().interrupt();
