@@ -197,79 +197,88 @@ public class JsonPost {
         }
 
         protected JSONObject PostToServer() throws Exception {
-            Iterator iter = map.entrySet().iterator();
-            while (iter.hasNext()) {
-                Map.Entry entry = (Map.Entry) iter.next();
-                String key = (String) entry.getKey();
-                String val = (String) entry.getValue();
-                jsonObject.put(key, val);
+            try {
+                Iterator iter = map.entrySet().iterator();
+                while (iter.hasNext()) {
+                    Map.Entry entry = (Map.Entry) iter.next();
+                    String key = (String) entry.getKey();
+                    String val = (String) entry.getValue();
+                    jsonObject.put(key, val);
+                }
+                nameValuePair.add(new BasicNameValuePair("jsonString", jsonObject
+                        .toString()));
+            } catch (Exception e) {
+                throw new packageException();
             }
-            nameValuePair.add(new BasicNameValuePair("jsonString", jsonObject
-                    .toString()));
-            CloseableHttpResponse response;
-            httpPost.setHeader("Content-Type", "application/x-www-form-urlencoded");
-            httpPost.setHeader("Accept", "application/json");
-            httpPost.setHeader("Content-type", "application/json");
-            httpPost.setEntity(new UrlEncodedFormEntityHC4(nameValuePair, "UTF-8"));
-            response = client.execute(httpPost);
-            StringBuilder builder = new StringBuilder();
-            BufferedReader reader = new BufferedReader(new InputStreamReader(
-                    response.getEntity().getContent()));
-            for (String s = reader.readLine(); s != null; s = reader.readLine()) {
-                builder.append(s);
+            try {
+                CloseableHttpResponse response;
+                httpPost.setHeader("Content-Type", "application/x-www-form-urlencoded");
+                httpPost.setHeader("Accept", "application/json");
+                httpPost.setHeader("Content-type", "application/json");
+                httpPost.setEntity(new UrlEncodedFormEntityHC4(nameValuePair, "UTF-8"));
+                response = client.execute(httpPost);
+                StringBuilder builder = new StringBuilder();
+                BufferedReader reader = new BufferedReader(new InputStreamReader(
+                        response.getEntity().getContent()));
+                for (String s = reader.readLine(); s != null; s = reader.readLine()) {
+                    builder.append(s);
+                }
+                JSONObject jsonObject1 = new JSONObject(builder.toString());
+                if (response != null) {
+                    response.close();
+                }
+                client.close();
+                return jsonObject1;
+            } catch (Exception e) {
+                throw new postException();
             }
-            JSONObject jsonObject1 = new JSONObject(builder.toString());
-            if (response != null) {
-                response.close();
-            }
-            client.close();
-            return jsonObject1;
         }
 
         protected void PostExecute(JSONObject jsonObject) throws Exception {
             if (jsonObject == null) {
-                throw new Exception();
+                throw new nullException();
                 //TODO:网络通信错误
             }
-            switch (type) {
-                //多种处理方式
-                //登录
-                case 1: {
-                    String status = jsonObject.getString("status");
-                    if (status.equals("normal")) {
-                        String _username = jsonObject.getString("username");
-                        dbsaveuser(_username, this.jsonObject.getString("password"));
+            try {
+                switch (type) {
+                    //多种处理方式
+                    //登录
+                    case 1: {
+                        String status = jsonObject.getString("status");
+                        if (status.equals("normal")) {
+                            String _username = jsonObject.getString("username");
+                            dbsaveuser(_username, this.jsonObject.getString("password"));
+                        }
+                        //这里写跳转代码
+                        //loginActivity.showProgress(false);
+                        break;
                     }
-                    //这里写跳转代码
-                    //loginActivity.showProgress(false);
-                    break;
-                }
-                //注册
-                case 2: {
-                    String status = jsonObject.getString("status");
-                    Log.v("status", "status=" + status);
-                    break;
-                }
-                //提交评论
-                case 3: {
-                    String username = jsonObject.getString("user_name");
-                    String content = jsonObject.getString("user_content");
-                    Log.v("content", "content" + content);
-                    break;
-                }
-                //获取图片信息
-                case 4: {
-                    //直接获取原图的URL
-                    //图片的评论以JSON格式收取
-                    getImageInformation(jsonObject);
-                    break;
-                }
-                //修改密码
-                case 5: {
-                    String status = jsonObject.getString("status");
-                    //  String email=jsonObject.getString("email");
-                    // String oldpassword=jsonObject.getString("oldpassword");
-                    //String newpassword=jsonObject.getString("newpassword");
+                    //注册
+                    case 2: {
+                        String status = jsonObject.getString("status");
+                        Log.v("status", "status=" + status);
+                        break;
+                    }
+                    //提交评论
+                    case 3: {
+                        String username = jsonObject.getString("user_name");
+                        String content = jsonObject.getString("user_content");
+                        Log.v("content", "content" + content);
+                        break;
+                    }
+                    //获取图片信息
+                    case 4: {
+                        //直接获取原图的URL
+                        //图片的评论以JSON格式收取
+                        getImageInformation(jsonObject);
+                        break;
+                    }
+                    //修改密码
+                    case 5: {
+                        String status = jsonObject.getString("status");
+                        //  String email=jsonObject.getString("email");
+                        // String oldpassword=jsonObject.getString("oldpassword");
+                        //String newpassword=jsonObject.getString("newpassword");
                         /*if(status.equal("normal"))
                         {
                           if(db.checklastuserpassword())//有可能出错
@@ -277,23 +286,30 @@ public class JsonPost {
                               db.lastuserupdatepassword(map.get("password"));
                           }
                         }*/
+                    }
+                    default:
+                        return;
                 }
-                default:
-                    return;
+            } catch (Exception e) {
+                throw new executeException();
             }
         }
     }
 
     //异常类
     class packageException extends Exception {
+        public String name = "package";
     }
 
     class postException extends Exception {
+        public String name = "post";
     }
 
     class nullException extends Exception {
+        public String name = "null";
     }
 
     class executeException extends Exception {
+        public String name = "execute";
     }
 }
