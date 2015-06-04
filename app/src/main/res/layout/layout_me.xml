@@ -24,7 +24,6 @@
             android:textStyle="bold"
             android:textSize="30sp"
             android:textColor="@color/象牙黑"
-            android:textSize="30sp"
             android:onClick="toUserPageActivity"/>
 
         <RelativeLayout
