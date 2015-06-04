@@ -52,6 +52,7 @@ public class MainActivity extends Activity {
     private Button cancel;
     private DB db = null;
     private ImageButton camera;
+    private Toast toast = null;
 
     public static String getCurrentTag() {
         return currentTag;
@@ -95,7 +96,8 @@ public class MainActivity extends Activity {
         upload.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //TODO 获取imageView的图片然后上传.
+                //上传图片开始。
+                //此处获得的bitMap并不大
                 imageView.setDrawingCacheEnabled(true);
                 Bitmap bitmap = imageView.getDrawingCache();
                 UploadPictureProgress uploadPictureProgress = new UploadPictureProgress(bitmap);
@@ -200,10 +202,10 @@ public class MainActivity extends Activity {
     public void imagedownload() {
         String picURL1 = "http://192.168.253.1/square_page/1/";
         String picURL2 = "http://192.168.253.1/square_page/2/";
-        DownloadPictrueProgress downloadPictrueProgress1 = new DownloadPictrueProgress(picURL1, db, squareView);
-        DownloadPictrueProgress downloadPictrueProgress2 = new DownloadPictrueProgress(picURL2, db);
-        downloadPictrueProgress1.execute();
-        downloadPictrueProgress2.execute();
+        DownloadPictureProgress downloadPictureProgress1 = new DownloadPictureProgress(picURL1, db, squareView);
+        DownloadPictureProgress downloadPictureProgress2 = new DownloadPictureProgress(picURL2, db);
+        downloadPictureProgress1.execute();
+        downloadPictureProgress2.execute();
         //  JsonGet jsonGet1 = new JsonGet(picURL1, db, squareView);
         // JsonGet jsonGet2 = new JsonGet(picURL2, db);
         //String picURL1 = "http://192.168.253.1/square_page/1/";
@@ -326,7 +328,14 @@ public class MainActivity extends Activity {
             intent.putExtra("bigurl", bigurl);
             startActivity(intent);
         } else {
-            //TODO imageview图片为空 错误处理
+            if(toast == null){
+                toast = Toast.makeText(getApplicationContext(),"图片出错",Toast.LENGTH_LONG);
+                toast.show();
+            }else{
+                toast.cancel();
+                toast = Toast.makeText(getApplicationContext(),"图片出错",Toast.LENGTH_LONG);
+                toast.show();
+            }
         }
     }
 
@@ -373,7 +382,7 @@ public class MainActivity extends Activity {
         @Override
         protected Boolean doInBackground(Void... params) {
             try {
-                //在这里上传
+                //TODO 上传图片
                 Thread.sleep(1000);
             } catch (InterruptedException e) {
 
@@ -395,19 +404,19 @@ public class MainActivity extends Activity {
         }
     }
 
-    public class DownloadPictrueProgress extends AsyncTask<Void, Void, Boolean> {
+    public class DownloadPictureProgress extends AsyncTask<Void, Void, Boolean> {
 
         private String url;
         private View view;
         private DB db;
 
-        DownloadPictrueProgress(String url, DB db, View view) {
+        DownloadPictureProgress(String url, DB db, View view) {
             this.url = url;
             this.view = view;
             this.db = db;
         }
 
-        DownloadPictrueProgress(String url, DB db) {
+        DownloadPictureProgress(String url, DB db) {
             this.url = url;
             this.db = db;
         }
@@ -427,8 +436,14 @@ public class MainActivity extends Activity {
 
             if (!success) {
                 {
-                    //TODO: 大厅获取图片错误
-                    Toast.makeText(getApplicationContext(), "ERROR!", Toast.LENGTH_SHORT).show();
+                    if(toast == null){
+                        toast = Toast.makeText(getApplicationContext(),"下载图片出错",Toast.LENGTH_LONG);
+                        toast.show();
+                    }else{
+                        toast.cancel();
+                        toast = Toast.makeText(getApplicationContext(),"下载图片出错",Toast.LENGTH_LONG);
+                        toast.show();
+                    }
                 }
             }
         }

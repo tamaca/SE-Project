@@ -9,12 +9,12 @@
     android:clipToPadding="true"
     android:fitsSystemWindows="true"
     android:id="@+id/PictureActivity"
-    android:background="@color/背景蓝">
+    android:background="@color/黑色">
 
     <ImageView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/origin"
+        android:id="@+id/image_origin"
         android:layout_centerVertical="true"
         android:layout_centerHorizontal="true"
         android:contentDescription="@string/view_origin_picture" />

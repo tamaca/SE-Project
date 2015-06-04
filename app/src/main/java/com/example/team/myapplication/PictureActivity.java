@@ -1,21 +1,19 @@
 package com.example.team.myapplication;
 
 import android.os.Bundle;
-import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.ImageView;
+
+import com.example.team.myapplication.util.GeneralActivity;
 
 
-public class PictureActivity extends ActionBarActivity {
+public class PictureActivity extends GeneralActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setTitle("我的照片");
         setContentView(R.layout.activity_picture);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
 
 
@@ -46,9 +44,4 @@ public class PictureActivity extends ActionBarActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    public void addPicture(String string,View view){
-        ImageView imageView = new ImageView(this);
-        imageView.setImageResource(R.drawable.man);
-
-    }
 }

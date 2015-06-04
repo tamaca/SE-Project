@@ -180,20 +180,20 @@ public class ViewPictureActivity extends GeneralActivity {
     }*/
 
     /*  public void getImageInformation() {
-          //TODO 获取上传者
+
           String _author = "The Hammer";
           author.setText(_author);
 
-          //TODO 获取赞的数量和该用户是否已经赞
+
           isLike = false;//测试用, false 代表没有赞过
           likeNumber = 999;//测试用
           like.setText(isLike ? "取消赞\n" : "赞\n" + "(" + likeNumber + ")");
 
-          //TODO 获取该图片的上传时间
+
           String _uploadTime = "2月1日";
           uploadTime.setText(_uploadTime);
 
-          //TODO 获取评论
+
           String commenter = "sxy";
           String comment = "评论在这里（5毛一条，括号里不要复制）";
           comments.add(new Comment(getApplicationContext(),
