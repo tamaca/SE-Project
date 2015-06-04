@@ -39,7 +39,7 @@ public class UserListActivity extends GeneralActivity {
             case MainActivity.friend_list:
                 setTitle("我关注的人");
                 if(actionBar!=null)
-                    actionBar.setLogo(R.mipmap.ic_userlist);
+                    actionBar.setLogo(R.mipmap.ic_user_like);
                 //Toast.makeText(getApplicationContext(), "将会列出关注的人的名单！", Toast.LENGTH_LONG).show();
                 break;
             case MainActivity.blacklist:
