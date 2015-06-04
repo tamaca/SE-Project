@@ -226,9 +226,9 @@ public class JsonPost {
                     .toString()));
             CloseableHttpResponse response = null;
             try {
-                  httpPost.setHeader("Content-Type", "application/x-www-form-urlencoded");
-                  httpPost.setHeader("Accept", "application/json");
-                  httpPost.setHeader("Content-type", "application/json");
+                httpPost.setHeader("Content-Type", "application/x-www-form-urlencoded");
+                httpPost.setHeader("Accept", "application/json");
+                httpPost.setHeader("Content-type", "application/json");
                 httpPost.setEntity(new UrlEncodedFormEntityHC4(nameValuePair, "UTF-8"));
                 try {
                     response = client.execute(httpPost);
@@ -245,6 +245,7 @@ public class JsonPost {
                         e.printStackTrace();
                     }
                 } catch (IOException e) {
+                    //TODO:网络通信错误
                     e.printStackTrace();
                 }
 
@@ -252,7 +253,9 @@ public class JsonPost {
                 e.printStackTrace();
             } finally {
                 try {
-                    response.close();
+                    if (response != null) {
+                        response.close();
+                    }
                     client.close();
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -263,6 +266,10 @@ public class JsonPost {
 
         @Override
         protected void onPostExecute(JSONObject jsonObject) {
+            if(jsonObject==null)
+            {
+                //TODO:网络通信错误
+            }
             super.onPostExecute(jsonObject);
             switch (type) {
                 //多种处理方式
@@ -313,8 +320,8 @@ public class JsonPost {
                 case 5: {
                     try {
                         String status = jsonObject.getString("status");
-                      //  String email=jsonObject.getString("email");
-                       // String oldpassword=jsonObject.getString("oldpassword");
+                        //  String email=jsonObject.getString("email");
+                        // String oldpassword=jsonObject.getString("oldpassword");
                         //String newpassword=jsonObject.getString("newpassword");
                         /*if(status.equal("normal"))
                         {
