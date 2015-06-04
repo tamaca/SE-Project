@@ -240,6 +240,11 @@ public class MainActivity extends Activity {
         startActivity(intent);
     }
 
+    public void toUserPageActivity(View view){
+        Intent intent = new Intent(this,UserPageActivity.class);
+        intent.putExtra("user_name",LoginState.username);
+        startActivity(intent);
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

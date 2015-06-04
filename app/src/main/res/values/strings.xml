@@ -60,7 +60,13 @@
     <string name="confirm_new_password">确认新密码</string>
     <string name="cancel">取消</string>
     <string name="email">邮箱</string>
-
+    <string name="concern">关注</string>
+    <string name="remove_from_concern">取消关注</string>
+    <string name="add_to_blacklist">加入黑名单</string>
+    <string name="remove_from_blackList">从黑名单中移除</string>
+    <string name="manage_picture">管理图片</string>
+    <string name="before_concern">没有关注该用户，无法查看ta的图片</string>
+    <string name="no_pictures">没有图片…</string>
 
 <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>

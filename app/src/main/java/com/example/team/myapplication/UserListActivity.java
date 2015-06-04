@@ -1,15 +1,15 @@
 package com.example.team.myapplication;
 
 import android.app.ActionBar;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
+import android.widget.TextView;
 
 import com.example.team.myapplication.util.GeneralActivity;
 
@@ -84,6 +84,12 @@ public class UserListActivity extends GeneralActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    public void toUserPageActivity(View view,String name){
+        Intent intent = new Intent(this,UserPageActivity.class);
+        intent.putExtra("user_name",name);
+        startActivity(intent);
+    }
+
     public void showList(int type){
 
         final List<Map<String,Object>> listItems = new ArrayList<Map<String, Object>>();
@@ -100,6 +106,13 @@ public class UserListActivity extends GeneralActivity {
             }
             SimpleAdapter simpleAdapter = new SimpleAdapter(this, listItems,R.layout.layout_user_name,new String[] {"用户名"},new int[] {R.id.Names});
             listView.setAdapter(simpleAdapter);
+            listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                    String name = ((TextView)view.findViewById(R.id.Names)).getText().toString();
+                    toUserPageActivity(view,name);
+                }
+            });
 
         }
         if(type == MainActivity.blacklist){
@@ -115,6 +128,13 @@ public class UserListActivity extends GeneralActivity {
             }
             SimpleAdapter simpleAdapter = new SimpleAdapter(this, listItems,R.layout.layout_user_name,new String[] {"用户名"},new int[] {R.id.Names});
             listView.setAdapter(simpleAdapter);
+            listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                    String name = ((TextView) view.findViewById(R.id.Names)).getText().toString();
+                    toUserPageActivity(view, name);
+                }
+            });
         }
     }
 }
