@@ -79,7 +79,7 @@ public class UserPageActivity extends GeneralActivity implements ScrollViewListe
     public void loadView(boolean my) {
         if (my) {
             //加载我的个人主页
-            if(!getGallery(userName)){
+            if (!getGallery(userName)) {
                 findViewById(R.id.textView4).setVisibility(View.VISIBLE);
             }
             concernButton.setVisibility(View.GONE);
@@ -102,7 +102,7 @@ public class UserPageActivity extends GeneralActivity implements ScrollViewListe
                     break;
                 case concern:
                 case concern | isConcerned:
-                    if(!getGallery(userName)){
+                    if (!getGallery(userName)) {
                         findViewById(R.id.textView4).setVisibility(View.VISIBLE);
                     }
                     concernButton.setText(getString(R.string.remove_from_concern));
@@ -171,18 +171,20 @@ public class UserPageActivity extends GeneralActivity implements ScrollViewListe
     public boolean getGallery(String userName) {
         //TODO 在这里加载该用户的图片，如果用户没有图片，返回false,如果有，把 pictureCount 设置为该用户照片总数；
         // addGalleryItem(bitmap);
-        
+        pictureCount = 0;
         return false;
     }
 
     @Override
     public void onScrollChanged(MyScrollView scrollView, int x, int y, int oldX, int oldY) {
         if (y + scrollView.getMeasuredHeight() + 50 > scrollContent.getMeasuredHeight()) {
-            if (progressBar.getVisibility() == View.GONE) {
-                progressBar.setVisibility(View.VISIBLE);
-                if (getPicture == null) {
-                    getPicture = new GetPicture();
-                    getPicture.execute((Void) null);
+            if(galleryItems.size()!=pictureCount) {
+                if (progressBar.getVisibility() == View.GONE) {
+                    progressBar.setVisibility(View.VISIBLE);
+                    if (getPicture == null) {
+                        getPicture = new GetPicture();
+                        getPicture.execute((Void) null);
+                    }
                 }
             }
         }
@@ -205,7 +207,7 @@ public class UserPageActivity extends GeneralActivity implements ScrollViewListe
                     relationship = concern;
                     findViewById(R.id.textView4).setVisibility(View.GONE);
                     gallery.setVisibility(View.VISIBLE);
-                    if(!getGallery(userName)){
+                    if (!getGallery(userName)) {
                         findViewById(R.id.textView4).setVisibility(View.VISIBLE);
                     }
                     break;
@@ -216,7 +218,7 @@ public class UserPageActivity extends GeneralActivity implements ScrollViewListe
                     relationship = concern | isConcerned;
                     findViewById(R.id.textView4).setVisibility(View.GONE);
                     gallery.setVisibility(View.VISIBLE);
-                    if(!getGallery(userName)){
+                    if (!getGallery(userName)) {
                         findViewById(R.id.textView4).setVisibility(View.VISIBLE);
                     }
                     break;
@@ -320,6 +322,7 @@ public class UserPageActivity extends GeneralActivity implements ScrollViewListe
         @Override
         protected Boolean doInBackground(Void... voids) {
             try {
+                //TODO 添加几个图片到 galleryItems 里
                 Thread.sleep(1000);
             } catch (InterruptedException e) {
                 return false;
@@ -332,10 +335,16 @@ public class UserPageActivity extends GeneralActivity implements ScrollViewListe
             progressBar.setVisibility(View.GONE);
             getPicture = null;
             if (success) {
-                //TODO 添加几个图片到 gallery
-
+                gallery.postInvalidate();
             } else {
-
+                if (toast == null) {
+                    toast = Toast.makeText(getApplicationContext(), "刷新图片失败", Toast.LENGTH_SHORT);
+                    toast.show();
+                } else {
+                    toast.cancel();
+                    toast = Toast.makeText(getApplicationContext(), "刷新图片失败", Toast.LENGTH_SHORT);
+                    toast.show();
+                }
             }
         }
     }
