@@ -13,6 +13,7 @@
         android:paddingTop="10dp"
         android:textSize="20sp"
         android:textColor="@color/象牙黑"
-        android:id="@+id/Names" />
+        android:id="@+id/Names"
+        android:background="@drawable/textview_list1"/>
 
 </LinearLayout>
