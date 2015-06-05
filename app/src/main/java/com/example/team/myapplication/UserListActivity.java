@@ -119,7 +119,6 @@ public class UserListActivity extends GeneralActivity {
             listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                    view.setBackgroundColor(getResources().getColor(R.color.天依蓝));
                     String name = ((TextView)view.findViewById(R.id.Names)).getText().toString();
                     toUserPageActivity(view,name);
                 }
@@ -152,7 +151,6 @@ public class UserListActivity extends GeneralActivity {
             listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                    view.setBackgroundColor(getResources().getColor(R.color.中灰色));
                     String name = ((TextView) view.findViewById(R.id.Names)).getText().toString();
                     toUserPageActivity(view, name);
                 }

@@ -23,9 +23,7 @@ import java.util.ArrayList;
 public class UserPageActivity extends GeneralActivity implements ScrollViewListener {
     static final public int normal = 0;
     static final public int concern = 1;
-    static final public int isConcerned = 2;
-    static final public int hate = 4;
-    static final public int isHated = 8;
+    static final public int hate = 2;
 
     static public int relationship = normal;
 
@@ -37,10 +35,10 @@ public class UserPageActivity extends GeneralActivity implements ScrollViewListe
     private String userName;
     private LinearLayout gallery;
     private Toast toast;
-    private ProgressBar progressBar;
+    private ProgressBar inLoadingPicture;
+    private ProgressBar inChangingRelationship;
     private GetPicture getPicture = null;
     private LinearLayout scrollContent;
-    private Thread changeRelationship;
     private int pictureCount;
     public ArrayList<GalleryItem> galleryItems = null;
 
@@ -66,11 +64,12 @@ public class UserPageActivity extends GeneralActivity implements ScrollViewListe
         gallery = (LinearLayout) findViewById(R.id.gallery);
         galleryItems = new ArrayList<>();
         toast = null;
-        progressBar = (ProgressBar) findViewById(R.id.progressBar4);
+        inLoadingPicture = (ProgressBar) findViewById(R.id.progressBar4);
+        inChangingRelationship = (ProgressBar) findViewById(R.id.progressBar5);
         scrollContent = (LinearLayout) findViewById(R.id.scroll_content);
-        changeRelationship = null;
         //////////
-
+        concernButton.setOnClickListener(new OnClickConcernListener());
+        hateButton.setOnClickListener(new OnClickHateListener());
         loadView(isMe);
 
 
@@ -89,34 +88,44 @@ public class UserPageActivity extends GeneralActivity implements ScrollViewListe
             //加载别人的主页
             //TODO 获取用户和这个人的关系
             manageButton.setVisibility(View.GONE);
-            concernButton.setOnClickListener(new OnClickConcernListener());
-            hateButton.setOnClickListener(new OnClickHateListener());
-
-            relationship = hate;//测试用
-            switch (relationship) {
-                case normal:
-                case isConcerned:
-                case isHated:
-                    gallery.setVisibility(View.GONE);
-                    findViewById(R.id.textView3).setVisibility(View.VISIBLE);
-                    break;
-                case concern:
-                case concern | isConcerned:
-                    if (!getGallery(userName)) {
-                        findViewById(R.id.textView4).setVisibility(View.VISIBLE);
-                    }
-                    concernButton.setText(getString(R.string.remove_from_concern));
-                    break;
-                case hate:
-                case hate | isHated:
-                    findViewById(R.id.textView3).setVisibility(View.VISIBLE);
-                    gallery.setVisibility(View.GONE);
-                    hateButton.setText(getString(R.string.remove_from_blackList));
-                    break;
-            }
+            relationship = concern;//测试用
+            loadContent(relationship);
         }
     }
+    public void loadContent(int relationship){
+        switch (relationship) {
+            case normal:
+                gallery.setVisibility(View.GONE);
+                findViewById(R.id.textView3).setVisibility(View.VISIBLE);
+                concernButton.setText(getString(R.string.concern));
+                hateButton.setText(getString(R.string.add_to_blacklist));
+                break;
+            case concern:
+                gallery.setVisibility(View.VISIBLE);
+                if (!getGallery(userName)) {
+                    findViewById(R.id.textView4).setVisibility(View.VISIBLE);
+                }
+                findViewById(R.id.textView3).setVisibility(View.GONE);
+                concernButton.setText(getString(R.string.remove_from_concern));
+                hateButton.setText(getString(R.string.add_to_blacklist));
+                break;
+            case hate:
+                gallery.setVisibility(View.GONE);
+                findViewById(R.id.textView3).setVisibility(View.VISIBLE);
+                concernButton.setText(getString(R.string.concern));
+                hateButton.setText(getString(R.string.remove_from_blackList));
+                break;
+            case hate | concern:
+                gallery.setVisibility(View.VISIBLE);
+                if (!getGallery(userName)) {
+                    findViewById(R.id.textView4).setVisibility(View.VISIBLE);
+                }
+                findViewById(R.id.textView3).setVisibility(View.GONE);
+                concernButton.setText(getString(R.string.remove_from_concern));
+                hateButton.setText(getString(R.string.remove_from_blackList));
 
+        }
+    }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -178,9 +187,9 @@ public class UserPageActivity extends GeneralActivity implements ScrollViewListe
     @Override
     public void onScrollChanged(MyScrollView scrollView, int x, int y, int oldX, int oldY) {
         if (y + scrollView.getMeasuredHeight() + 50 > scrollContent.getMeasuredHeight()) {
-            if(galleryItems.size()!=pictureCount) {
-                if (progressBar.getVisibility() == View.GONE) {
-                    progressBar.setVisibility(View.VISIBLE);
+            if (galleryItems.size() != pictureCount) {
+                if (inLoadingPicture.getVisibility() == View.GONE) {
+                    inLoadingPicture.setVisibility(View.VISIBLE);
                     if (getPicture == null) {
                         getPicture = new GetPicture();
                         getPicture.execute((Void) null);
@@ -197,57 +206,16 @@ public class UserPageActivity extends GeneralActivity implements ScrollViewListe
             //点击 关注/取消关注 按钮
             switch (relationship) {
                 case hate:
-                    //TODO 把该用户从黑名单中移除。
-
                 case normal:
                     //TODO 关注该用户。
-                    findViewById(R.id.textView3).setVisibility(View.GONE);
-                    concernButton.setText(getString(R.string.remove_from_concern));
-                    hateButton.setText(getString(R.string.add_to_blacklist));
-                    relationship = concern;
-                    findViewById(R.id.textView4).setVisibility(View.GONE);
-                    gallery.setVisibility(View.VISIBLE);
-                    if (!getGallery(userName)) {
-                        findViewById(R.id.textView4).setVisibility(View.VISIBLE);
-                    }
+                    relationship = relationship == hate ? concern | hate : concern;
+                    loadContent(relationship);
                     break;
-                case isConcerned:
-                    //TODO 关注该用户。
-                    concernButton.setText(getString(R.string.remove_from_concern));
-                    hateButton.setText(getString(R.string.add_to_blacklist));
-                    relationship = concern | isConcerned;
-                    findViewById(R.id.textView4).setVisibility(View.GONE);
-                    gallery.setVisibility(View.VISIBLE);
-                    if (!getGallery(userName)) {
-                        findViewById(R.id.textView4).setVisibility(View.VISIBLE);
-                    }
-                    break;
-                case isHated:
-                case hate | isHated:
-                    if (toast == null) {
-                        toast = Toast.makeText(getApplicationContext(), "您已被该用户拉入黑名单", Toast.LENGTH_SHORT);
-                        toast.show();
-                    } else {
-                        toast.cancel();
-                        toast = Toast.makeText(getApplicationContext(), "您已被该用户拉入黑名单", Toast.LENGTH_SHORT);
-                        toast.show();
-                    }
-                    break;
+                case concern | hate:
                 case concern:
                     //TODO 取关该用户
-                    concernButton.setText(getString(R.string.concern));
-                    hateButton.setText(getString(R.string.add_to_blacklist));
-                    relationship = normal;
-                    gallery.setVisibility(View.GONE);
-                    findViewById(R.id.textView3).setVisibility(View.VISIBLE);
-                    break;
-                case concern | isConcerned:
-                    //TODO 取关该用户
-                    concernButton.setText(getString(R.string.concern));
-                    hateButton.setText(getString(R.string.add_to_blacklist));
-                    relationship = isConcerned;
-                    gallery.setVisibility(View.GONE);
-                    findViewById(R.id.textView3).setVisibility(View.VISIBLE);
+                    relationship = relationship == concern ? normal : hate;
+                    loadContent(relationship);
                     break;
             }
         }
@@ -260,55 +228,16 @@ public class UserPageActivity extends GeneralActivity implements ScrollViewListe
             //我 拉黑/取黑 该用户
             switch (relationship) {
                 case concern:
-                    //TODO 取关该用户
-                    findViewById(R.id.textView3).setVisibility(View.VISIBLE);
                 case normal:
                     //TODO 拉黑该用户
-                    concernButton.setText(getString(R.string.concern));
+                    relationship = relationship == concern ? concern | hate : hate;
                     hateButton.setText(getString(R.string.remove_from_blackList));
-                    relationship = hate;
-                    gallery.setVisibility(View.GONE);
-                    findViewById(R.id.textView3).setVisibility(View.VISIBLE);
-                    break;
-                case isHated:
-                    //TODO 拉黑该用户
-                    concernButton.setText(getString(R.string.concern));
-                    hateButton.setText(getString(R.string.remove_from_blackList));
-                    relationship = hate | isHated;
-                    gallery.setVisibility(View.GONE);
-                    findViewById(R.id.textView3).setVisibility(View.VISIBLE);
-                    break;
-                case isConcerned:
-                    //TODO 我拉黑该用户，该用户被迫取关我
-                    concernButton.setText(getString(R.string.concern));
-                    hateButton.setText(getString(R.string.remove_from_blackList));
-                    relationship = hate;
-                    gallery.setVisibility(View.GONE);
-                    findViewById(R.id.textView3).setVisibility(View.VISIBLE);
                     break;
                 case hate:
+                case concern | hate:
                     //TODO 把该用户从黑名单中移除
-                    concernButton.setText(getString(R.string.concern));
+                    relationship = relationship == hate ? normal : concern;
                     hateButton.setText(getString(R.string.add_to_blacklist));
-                    relationship = normal;
-                    gallery.setVisibility(View.GONE);
-                    findViewById(R.id.textView3).setVisibility(View.VISIBLE);
-                    break;
-                case hate | isHated:
-                    //TODO 把该用户从黑名单中移除
-                    concernButton.setText(getString(R.string.concern));
-                    hateButton.setText(getString(R.string.add_to_blacklist));
-                    relationship = isHated;
-                    gallery.setVisibility(View.GONE);
-                    findViewById(R.id.textView3).setVisibility(View.VISIBLE);
-                    break;
-                case concern | isConcerned:
-                    //TODO 取关该用户并拉黑，该用户被迫取关我
-                    concernButton.setText(getString(R.string.concern));
-                    hateButton.setText(getString(R.string.remove_from_blackList));
-                    relationship = hate;
-                    gallery.setVisibility(View.GONE);
-                    findViewById(R.id.textView3).setVisibility(View.VISIBLE);
                     break;
             }
         }
@@ -332,7 +261,7 @@ public class UserPageActivity extends GeneralActivity implements ScrollViewListe
 
         @Override
         protected void onPostExecute(Boolean success) {
-            progressBar.setVisibility(View.GONE);
+            inLoadingPicture.setVisibility(View.GONE);
             getPicture = null;
             if (success) {
                 gallery.postInvalidate();
@@ -348,4 +277,6 @@ public class UserPageActivity extends GeneralActivity implements ScrollViewListe
             }
         }
     }
+
+
 }

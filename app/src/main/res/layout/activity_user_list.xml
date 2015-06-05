@@ -16,7 +16,5 @@
         android:id="@+id/user_name_list"
         android:layout_alignParentTop="true"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:divider="@color/天依蓝"
-        android:dividerHeight="1dp"/>
+        android:layout_alignParentStart="true" />
 </RelativeLayout>
