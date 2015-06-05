@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="Encoding">
+    <file url="file://$PROJECT_DIR$/app/src/main/java/com/example/team/myapplication/EditPictureActivity.java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/app/src/main/java/com/example/team/myapplication/LoginState.java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/app/src/main/java/com/example/team/myapplication/RecentActivity.java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/app/src/main/java/com/example/team/myapplication/util/CheckValid.java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/app/src/main/java/com/example/team/myapplication/util/Comment.java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/app/src/main/java/com/example/team/myapplication/util/GalleryItem.java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/app/src/main/java/com/example/team/myapplication/util/GeneralActivity.java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/app/src/main/java/com/example/team/myapplication/util/RecentItem.java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/app/src/main/java/com/example/team/myapplication/util/ScrollViewListener.java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/app/src/main/java/com/example/team/myapplication/util/Tag.java" charset="UTF-8" />
+  </component>
+</project>
