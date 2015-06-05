@@ -154,7 +154,10 @@ public class MainActivity extends Activity {
 
         changeView(LoginState.getLogined());
         //Toast.makeText(getBaseContext(),"isLogin?"+LoginState.logined,Toast.LENGTH_LONG).show();
-        imagedownload();
+        /**
+         * 如果imagedownload()的线程一直跑会占用很多cpu资源，请解决
+         */
+        //imagedownload();
         //imageview
 
     }
@@ -199,6 +202,10 @@ public class MainActivity extends Activity {
         startActivity(intent);
     }
 
+    public void toRecentActivity(View view){
+        Intent intent = new Intent(this,RecentActivity.class);
+        startActivity(intent);
+    }
     public void toUserPageActivity(View view) {
         Intent intent = new Intent(this, UserPageActivity.class);
         intent.putExtra("user_name", LoginState.username);

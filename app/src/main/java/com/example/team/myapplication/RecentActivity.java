@@ -1,5 +1,6 @@
 package com.example.team.myapplication;
 
+import android.app.Activity;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -10,15 +11,15 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
-import com.example.team.myapplication.util.GeneralActivity;
 import com.example.team.myapplication.util.MyScrollView;
 import com.example.team.myapplication.util.RecentItem;
+import com.example.team.myapplication.util.RefreshableView;
 import com.example.team.myapplication.util.ScrollViewListener;
 
 import java.util.ArrayList;
 
 
-public class RecentActivity extends GeneralActivity implements ScrollViewListener {
+public class RecentActivity extends Activity implements ScrollViewListener {
     private LinearLayout scrollContent;
     private ArrayList<RecentItem> recentItems;
     private MyScrollView myScrollView;
@@ -26,20 +27,26 @@ public class RecentActivity extends GeneralActivity implements ScrollViewListene
     private Toast toast = null;
     private GetPicture getPicture = null;
     private int pictureCount = 0;
+    private RefreshableView refreshableView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_recent);
         getActionBar().setDisplayHomeAsUpEnabled(true);
-        //变量初始化
+        /**
+         * 变量初始化
+         */
         scrollContent = (LinearLayout) findViewById(R.id.linearLayout5);
         recentItems = new ArrayList<>();
         myScrollView = (MyScrollView) findViewById(R.id.scrollView4);
         inLoadingPicture = (ProgressBar) findViewById(R.id.progressBar6);
+        refreshableView = (RefreshableView) findViewById(R.id.refreshable_view);
         ////////
         myScrollView.setScrollViewListener(this);
+        refreshableView.setOnRefreshListener(new MyRefreshListener(), 0);
         getRecent();
+
 
     }
 
@@ -70,18 +77,27 @@ public class RecentActivity extends GeneralActivity implements ScrollViewListene
         return super.onOptionsItemSelected(item);
     }
 
-    public void addRecentItem(String author,String date ,Bitmap bitmap){
-        RecentItem recentItem = new RecentItem(RecentActivity.this,author,date,bitmap);
+    /**
+     * 添加图片时请使用这个函数，注意每次只能添加一个进recentItems
+     */
+    public void addRecentItem(String author, String date, Bitmap bitmap) {
+        RecentItem recentItem = new RecentItem(RecentActivity.this, author, date, bitmap);
         recentItems.add(recentItem);
     }
-    public void addRecentItemsToView(){//在第一次加载完成 和刷新 之后调用
+
+    /**
+     * 这是添加完成之后的UI操作。
+     */
+    public void addRecentItemsToView() {
         scrollContent.removeAllViews();
-        for (int i = 0;i < recentItems.size();i++){
+        for (int i = 0; i < recentItems.size(); i++) {
             scrollContent.addView(recentItems.get(i));
         }
+
     }
-    public void getRecent(){
-        //TODO 刷出来几个新图片，按照时间排序，新的先加进去。
+
+    public void getRecent() {
+        //TODO 上拉刷出来几个新图片，按照时间排序，新的先加进去。
 
     }
 
@@ -90,24 +106,15 @@ public class RecentActivity extends GeneralActivity implements ScrollViewListene
 
         //处理上划查看更多图片
         if (y + scrollView.getMeasuredHeight() + 50 > scrollContent.getMeasuredHeight()) {
-            if (recentItems.size() != pictureCount) {
-                if (inLoadingPicture.getVisibility() == View.GONE) {
-                    inLoadingPicture.setVisibility(View.VISIBLE);
-                    if (getPicture == null) {
-                        getPicture = new GetPicture();
-                        getPicture.execute((Void) null);
-                    }
-                }
-            } else {
-                if (toast == null) {
-                    toast = Toast.makeText(getApplicationContext(), "没有更多图片了", Toast.LENGTH_SHORT);
-                    toast.show();
-                } else {
-                    toast.cancel();
-                    toast = Toast.makeText(getApplicationContext(), "没有更多图片了", Toast.LENGTH_SHORT);
-                    toast.show();
+
+            if (inLoadingPicture.getVisibility() == View.GONE) {
+                inLoadingPicture.setVisibility(View.VISIBLE);
+                if (getPicture == null) {
+                    getPicture = new GetPicture();
+                    getPicture.execute((Void) null);
                 }
             }
+
         }
     }
 
@@ -119,7 +126,7 @@ public class RecentActivity extends GeneralActivity implements ScrollViewListene
         @Override
         protected Boolean doInBackground(Void... voids) {
             try {
-
+                //TODO 在这里写上拉刷新的操作
                 Thread.sleep(1000);
             } catch (InterruptedException e) {
                 return false;
@@ -132,8 +139,32 @@ public class RecentActivity extends GeneralActivity implements ScrollViewListene
             inLoadingPicture.setVisibility(View.GONE);
             getPicture = null;
             if (success) {
-
+                scrollContent.postInvalidate();
             } else {
+
+            }
+        }
+    }
+
+    class MyRefreshListener implements RefreshableView.PullToRefreshListener {
+        public MyRefreshListener() {
+
+        }
+
+        @Override
+        public void onRefresh() {
+            try {
+                recentItems.clear();
+                //TODO 在这里写下拉刷新时的操作
+                Thread.sleep(3000);
+                scrollContent.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        addRecentItemsToView();
+                    }
+                });
+            } catch (InterruptedException e) {
+                e.printStackTrace();
                 if (toast == null) {
                     toast = Toast.makeText(getApplicationContext(), "刷新图片失败", Toast.LENGTH_SHORT);
                     toast.show();
@@ -143,6 +174,7 @@ public class RecentActivity extends GeneralActivity implements ScrollViewListene
                     toast.show();
                 }
             }
+            refreshableView.finishRefreshing();
         }
     }
 }

@@ -61,7 +61,8 @@
                     android:textColor="@drawable/button_me_text"
                     android:id="@+id/button2"
                     android:drawableTop="@drawable/button_moments"
-                    android:background="@color/背景蓝"/>
+                    android:background="@color/背景蓝"
+                    android:onClick="toRecentActivity"/>
 
                 <Button
                     android:layout_width="fill_parent"
