@@ -89,8 +89,8 @@ public class DB extends SQLiteOpenHelper {
         String lastuser = "CREATE TABLE " + M_LASTUSER + " (" + M_LASTUSER_ID
                 + " TEXT primary key, " + M_LASTUSER_PASSWORD + " TEXT NOT NULL," + "FOREIGN KEY (M_LASTUSER_ID) REFERENCES M_USER(M_USER_ID));";
         String image = "CREATE TABLE " + M_IMAGE + " (" + M_IMAGE_IMAGEID
-                + " TEXT primary key, " + M_IMAGE_USERID + " TEXT NOT NULL, " + M_IMAGE_ISLIKE + "TEXT NOT NULL,"
-                + M_IMAGE_LIKENUMBER + " TEXT NOT NULL," + M_IMAGE_UPDATEDATE + " DATETIME NOT NULL," + " FOREIGN KEY (M_IMAGE_USERID) REFERENCES M_USER(M_USER_ID) ON DELETE CASCADE);";
+                + " TEXT primary key, " + M_IMAGE_USERID + " TEXT, "
+                + M_IMAGE_LIKENUMBER + " TEXT," + M_IMAGE_UPDATEDATE + " DATETIME," + " FOREIGN KEY (M_IMAGE_USERID) REFERENCES M_USER(M_USER_ID) ON DELETE CASCADE);";
         String comment = "CREATE TABLE " + M_COMMENT + " (" + M_COMMENT_COMMENTID + " TEXT primary key, "
                 + M_COMMENT_USERID + " TEXT NOT NULL, " + M_COMMENT_IMAGEID + " TEXT NOT NULL, " + M_COMMENT_CONTENT + " TEXT NOT NULL,"
                 + M_COMMENT_COMMETNTDATE + " DATETIME NOT NULL," + "FOREIGN KEY (M_COMMENT_USERID) REFERENCES M_USER(M_USER_ID)  ON DELETE CASCADE, "
@@ -283,7 +283,15 @@ public class DB extends SQLiteOpenHelper {
                 .query(M_IMAGE, null, null, null, null, null, null);
         return cursor;
     }
-
+    //缩略图插入数据库
+    public long imageinsert(String imageid) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues cv = new ContentValues();
+        cv.put(M_IMAGE_IMAGEID, imageid);
+        long row = db.insert(M_IMAGE, null, cv);
+        return row;
+    }
+    //大图插入数据库
     public long imageinsert(String imageid, String userid, String islike, String likenumber, Timestamp updatedate) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues cv = new ContentValues();
