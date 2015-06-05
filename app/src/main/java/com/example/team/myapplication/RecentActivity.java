@@ -21,6 +21,9 @@ import java.util.ArrayList;
 
 public class RecentActivity extends Activity implements ScrollViewListener {
     private LinearLayout scrollContent;
+    private LinearLayout scrollContentLeft;
+    private LinearLayout scrollContentRight;
+
     private ArrayList<RecentItem> recentItems;
     private MyScrollView myScrollView;
     private ProgressBar inLoadingPicture;
@@ -42,6 +45,8 @@ public class RecentActivity extends Activity implements ScrollViewListener {
         myScrollView = (MyScrollView) findViewById(R.id.scrollView4);
         inLoadingPicture = (ProgressBar) findViewById(R.id.progressBar6);
         refreshableView = (RefreshableView) findViewById(R.id.refreshable_view);
+        scrollContentLeft = (LinearLayout) findViewById(R.id.linearLayout6);
+        scrollContentRight = (LinearLayout) findViewById(R.id.linearLayout7);
         ////////
         myScrollView.setScrollViewListener(this);
         refreshableView.setOnRefreshListener(new MyRefreshListener(), 0);
@@ -91,7 +96,12 @@ public class RecentActivity extends Activity implements ScrollViewListener {
     public void addRecentItemsToView() {
         scrollContent.removeAllViews();
         for (int i = 0; i < recentItems.size(); i++) {
-            scrollContent.addView(recentItems.get(i));
+            if(i/2==0) {
+                scrollContentLeft.addView(recentItems.get(i));
+            }
+            else{
+                scrollContentRight.addView(recentItems.get(i));
+            }
         }
 
     }
