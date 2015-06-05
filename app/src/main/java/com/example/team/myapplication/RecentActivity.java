@@ -50,6 +50,9 @@ public class RecentActivity extends Activity implements ScrollViewListener {
         ////////
         myScrollView.setScrollViewListener(this);
         refreshableView.setOnRefreshListener(new MyRefreshListener(), 0);
+        /**
+         * 请在getRecent里获得所有动态
+         */
         getRecent();
 
 
@@ -96,10 +99,9 @@ public class RecentActivity extends Activity implements ScrollViewListener {
     public void addRecentItemsToView() {
         scrollContent.removeAllViews();
         for (int i = 0; i < recentItems.size(); i++) {
-            if(i/2==0) {
+            if (i / 2 == 0) {
                 scrollContentLeft.addView(recentItems.get(i));
-            }
-            else{
+            } else {
                 scrollContentRight.addView(recentItems.get(i));
             }
         }
@@ -107,7 +109,7 @@ public class RecentActivity extends Activity implements ScrollViewListener {
     }
 
     public void getRecent() {
-        //TODO 上拉刷出来几个新图片，按照时间排序，新的先加进去。
+        //TODO 刷出来几个新图片，按照时间排序，新的先加进去，如果使用 新线程 来实现，请在执行完成之后在 UI线程 使用方法 addRecentItemsToView()
 
     }
 
