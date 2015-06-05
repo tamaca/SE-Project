@@ -2,8 +2,8 @@
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item android:state_pressed="true"
-        android:drawable="@drawable/camera_pressed" /> <!-- pressed -->
+        android:drawable="@drawable/moments_pressed" /> <!-- pressed -->
 
-    <item android:drawable="@drawable/camera_normal" /> <!-- default -->
+    <item android:drawable="@drawable/moments" /> <!-- default -->
 
 </selector>

@@ -1,20 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
-    <item
-        android:state_pressed="true">
-        <shape
-            android:shape="rectangle">
-            <solid android:color="@color/浅灰色" />
-            <corners android:radius="10dp"/>
-        </shape>
-    </item>
 
-    <item>
-        <shape
-            android:shape="rectangle">
-            <solid android:color="@color/背景蓝" />
-            <corners android:radius="10dp"/>
-        </shape>
-    </item>
+    <item android:state_pressed="true"
+        android:drawable="@drawable/userpage_pressed" /> <!-- pressed -->
+
+    <item android:drawable="@drawable/userpage" /> <!-- default -->
 
 </selector>
