@@ -41,7 +41,7 @@ public class UserPageActivity extends GeneralActivity implements ScrollViewListe
     private LinearLayout scrollContent;
     private int pictureCount;
     public ArrayList<GalleryItem> galleryItems = null;
-    private ConcerenTask mAuthTask = null;
+    private BlackConcerenTask mAuthTask = null;
     private GetInfomation getInfomationtask = null;
 
     @Override
@@ -223,7 +223,7 @@ public class UserPageActivity extends GeneralActivity implements ScrollViewListe
         public void onClick(View view) {
             //点击 关注/取消关注 按钮
 
-            mAuthTask = new ConcerenTask("Kevin2");
+            mAuthTask = new BlackConcerenTask("Kevin2",1);
             mAuthTask.execute();
         }
     }
@@ -244,26 +244,37 @@ public class UserPageActivity extends GeneralActivity implements ScrollViewListe
         }
     }
 
-    public class ConcerenTask extends AsyncTask<Void, Void, Boolean> {
+    public class BlackConcerenTask extends AsyncTask<Void, Void, Boolean> {
         private String otherUsername;
+        private int type;
 
-        ConcerenTask(String otherUsername) {
+        BlackConcerenTask(String otherUsername, int type) {
             this.otherUsername = otherUsername;
+            this.type = type;
         }
 
         @Override
         protected Boolean doInBackground(Void... params) {
             try {
                 String url = null;
-                if (concern) {
-                    url = "http://192.168.253.1/Kevin/concern/delete/";
+                if (type == 1) {
+                    if (concern) {
+                        url = "http://192.168.253.1/Kevin/concern/delete/";
+                    } else {
+                        url = "http://192.168.253.1/Kevin/concern/insert/";
+                    }
                 } else {
-                    url = "http://192.168.253.1/Kevin/concern/insert/";
+                    if (blacklist) {
+                        url = "http://192.168.253.1/Kevin/blacklist/delete/";
+                    } else {
+                        url = "http://192.168.253.1/Kevin/blacklist/insert/";
+                    }
                 }
                 HashMap<String, String> map = new HashMap<String, String>();
                 map.put("username", otherUsername);
                 new JsonPost(map, url, 0);
                 Thread.sleep(100);
+
             } catch (Exception e) {
                 return false;
             }
@@ -275,16 +286,28 @@ public class UserPageActivity extends GeneralActivity implements ScrollViewListe
             Boolean a = success;
             mAuthTask = null;
             if (success) {
-                if (concern) {
-                    concern = !concern;
-                    concernButton.setText(getString(R.string.remove_from_concern));
-                } else {
-                    concern = !concern;
-                    concernButton.setText(getString(R.string.concern));
+                if(type==1) {
+                    if (concern) {
+                        concern = !concern;
+                        concernButton.setText(getString(R.string.remove_from_concern));
+                    } else {
+                        concern = !concern;
+                        concernButton.setText(getString(R.string.concern));
+                    }
+                    loadContent(concern, blacklist);
+                }else
+                {
+                    if (blacklist) {
+                        blacklist = !blacklist;
+                        hateButton.setText(getString(R.string.remove_from_blackList));
+                    } else {
+                        blacklist = !blacklist;
+                        hateButton.setText(getString(R.string.add_to_blacklist));
+                    }
+                    loadContent(concern, blacklist);
                 }
-                loadContent(concern, blacklist);
             } else {
-                Toast.makeText(getApplicationContext(), "关注失败", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getApplicationContext(), "操作失败", Toast.LENGTH_LONG).show();
             }
         }
 
