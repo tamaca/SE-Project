@@ -1,6 +1,7 @@
 package com.example.team.myapplication.util;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,12 +21,16 @@ public class RecentItem extends LinearLayout {
     public RecentItem(Context context) {
         super(context);
     }
-    public RecentItem(Context context,String author,String time) {
+    public RecentItem(Context context,String _author,String _time,Bitmap _bitmap) {
         super(context);
         View view = LayoutInflater.from(context).inflate(R.layout.layout_recent_item, null);
-        this.author = (TextView)view.findViewById(R.id.textView6);
-        this.time = (TextView)view.findViewById(R.id.textView7);
-        this.imageView = (ImageView)view.findViewById(R.id.imageView9);
+        author = (TextView)view.findViewById(R.id.textView6);
+        time = (TextView)view.findViewById(R.id.textView7);
+        imageView = (ImageView)view.findViewById(R.id.imageView9);
+        author.setText(_author);
+        time.setText(_time);
+        imageView.setImageBitmap(_bitmap);
+        addView(view);
 
 
 
