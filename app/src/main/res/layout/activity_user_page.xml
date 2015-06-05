@@ -78,15 +78,6 @@
                     android:layout_height="match_parent"
                     android:id="@+id/gallery">
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:textAppearance="?android:attr/textAppearanceLarge"
-                        android:text="@string/no_pictures"
-                        android:id="@+id/textView4"
-                        android:layout_centerInParent="true"
-                        android:visibility="gone"
-                        android:textColor="@color/深灰色"/>
                 </LinearLayout>
             </LinearLayout>
         </ScrollView>
@@ -100,6 +91,16 @@
             android:layout_centerInParent="true"
             android:textColor="@color/深灰色"
             android:visibility="gone" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:text="@string/no_pictures"
+            android:id="@+id/textView4"
+            android:layout_centerInParent="true"
+            android:visibility="gone"
+            android:textColor="@color/深灰色"/>
 
         <ProgressBar
             android:layout_width="wrap_content"
