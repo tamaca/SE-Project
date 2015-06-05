@@ -13,20 +13,18 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.team.myapplication.Network.JsonPost;
 import com.example.team.myapplication.util.GalleryItem;
 import com.example.team.myapplication.util.GeneralActivity;
 import com.example.team.myapplication.util.MyScrollView;
 import com.example.team.myapplication.util.ScrollViewListener;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class UserPageActivity extends GeneralActivity implements ScrollViewListener {
-    static final public int normal = 0;
-    static final public int concern = 1;
-    static final public int hate = 2;
-
-    static public int relationship = normal;
-
+    static public boolean concern;
+    static public boolean blacklist;
     private boolean isMe = false;
     private TextView name;
     private Button concernButton;
@@ -41,7 +39,7 @@ public class UserPageActivity extends GeneralActivity implements ScrollViewListe
     private LinearLayout scrollContent;
     private int pictureCount;
     public ArrayList<GalleryItem> galleryItems = null;
-
+    private AddFriendTask mAuthTask = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -88,13 +86,31 @@ public class UserPageActivity extends GeneralActivity implements ScrollViewListe
             //加载别人的主页
             //TODO 获取用户和这个人的关系
             manageButton.setVisibility(View.GONE);
-            relationship = concern;//测试用
-            loadContent(relationship);
+            blacklist = true;
+            concern = true;
+            loadContent(concern, blacklist);
         }
     }
-    public void loadContent(int relationship){
-        switch (relationship) {
-            case normal:
+
+    public void loadContent(boolean concern, boolean blacklist) {
+        if (concern) {
+            gallery.setVisibility(View.VISIBLE);
+            if (!getGallery(userName)) {
+                findViewById(R.id.textView4).setVisibility(View.VISIBLE);
+            }
+            findViewById(R.id.textView3).setVisibility(View.GONE);
+            concernButton.setText(getString(R.string.remove_from_concern));
+        } else {
+            gallery.setVisibility(View.INVISIBLE);
+            findViewById(R.id.textView3).setVisibility(View.VISIBLE);
+            concernButton.setText(getString(R.string.concern));
+        }
+        if (blacklist) {
+            hateButton.setText(getString(R.string.remove_from_blackList));
+        } else {
+            hateButton.setText(getString(R.string.add_to_blacklist));
+        }
+          /*  case normal:
                 gallery.setVisibility(View.GONE);
                 findViewById(R.id.textView3).setVisibility(View.VISIBLE);
                 concernButton.setText(getString(R.string.concern));
@@ -123,9 +139,9 @@ public class UserPageActivity extends GeneralActivity implements ScrollViewListe
                 findViewById(R.id.textView3).setVisibility(View.GONE);
                 concernButton.setText(getString(R.string.remove_from_concern));
                 hateButton.setText(getString(R.string.remove_from_blackList));
-
-        }
+*/
     }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -204,20 +220,15 @@ public class UserPageActivity extends GeneralActivity implements ScrollViewListe
         @Override
         public void onClick(View view) {
             //点击 关注/取消关注 按钮
-            switch (relationship) {
-                case hate:
-                case normal:
-                    //TODO 关注该用户。
-                    relationship = relationship == hate ? concern | hate : concern;
-                    loadContent(relationship);
-                    break;
-                case concern | hate:
-                case concern:
-                    //TODO 取关该用户
-                    relationship = relationship == concern ? normal : hate;
-                    loadContent(relationship);
-                    break;
+            if (concern) {
+                concern=!concern;
+                concernButton.setText(getString(R.string.remove_from_concern));
+
+            } else {
+                concern=!concern;
+                concernButton.setText(getString(R.string.concern));
             }
+            loadContent(concern,blacklist);
         }
     }
 
@@ -226,21 +237,53 @@ public class UserPageActivity extends GeneralActivity implements ScrollViewListe
         @Override
         public void onClick(View view) {
             //我 拉黑/取黑 该用户
-            switch (relationship) {
-                case concern:
-                case normal:
-                    //TODO 拉黑该用户
-                    relationship = relationship == concern ? concern | hate : hate;
-                    hateButton.setText(getString(R.string.remove_from_blackList));
-                    break;
-                case hate:
-                case concern | hate:
-                    //TODO 把该用户从黑名单中移除
-                    relationship = relationship == hate ? normal : concern;
-                    hateButton.setText(getString(R.string.add_to_blacklist));
-                    break;
+            if (blacklist) {
+                //TODO 把该用户从黑名单中移除
+                blacklist = !blacklist;
+                hateButton.setText(getString(R.string.add_to_blacklist));
+            } else {
+                blacklist = !blacklist;
+                hateButton.setText(getString(R.string.remove_from_blackList));
             }
         }
+    }
+
+    public class AddFriendTask extends AsyncTask<Void, Void, Boolean> {
+        private String otherUsername;
+
+        AddFriendTask(String otherUsername) {
+            this.otherUsername = otherUsername;
+        }
+
+        @Override
+        protected Boolean doInBackground(Void... params) {
+            try {
+                String url = "http://192.168.253.1/Kevin/like/insert/";
+                HashMap<String, String> map = new HashMap<String, String>();
+                map.put("username", otherUsername);
+                new JsonPost(map, url, 6);
+                Thread.sleep(3000);
+            } catch (Exception e) {
+                return false;
+            }
+            return true;
+        }
+
+        @Override
+        protected void onPostExecute(final Boolean success) {
+            mAuthTask = null;
+            if (success) {
+
+            } else {
+                Toast.makeText(getApplicationContext(), "关注失败", Toast.LENGTH_LONG).show();
+            }
+        }
+
+        @Override
+        protected void onCancelled() {
+            mAuthTask = null;
+        }
+
     }
 
     class GetPicture extends AsyncTask<Void, Void, Boolean> {

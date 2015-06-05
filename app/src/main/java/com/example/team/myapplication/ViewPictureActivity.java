@@ -109,7 +109,7 @@ public class ViewPictureActivity extends GeneralActivity {
         });
 
         String bigurl = (String) intent.getExtras().get("bigurl");
-        ImageGet imageGet = new ImageGet(imgview, bigurl, db, "big");
+        new ImageGet(imgview, bigurl, db, "big");
         // getImageInformation(imageid);
     }
 

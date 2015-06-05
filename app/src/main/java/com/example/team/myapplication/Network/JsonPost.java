@@ -69,7 +69,14 @@ public class JsonPost {
         JSONObject jsonObject = post.PostToServer();
         post.PostExecute(jsonObject);
     }
-
+    //添加关注 黑名单
+    public JsonPost(HashMap<String, String> map, String url, int type) throws Exception {
+        this.url = url;
+        this.type = type;
+        Post post = new Post(map);
+        JSONObject jsonObject = post.PostToServer();
+        post.PostExecute(jsonObject);
+    }
     //数据库储存用户
     private void dbsaveuser(String id, String password) {
         if (rememPassword) {
@@ -281,6 +288,9 @@ public class JsonPost {
                               db.lastuserupdatepassword(map.get("password"));
                           }
                         }*/
+                    }
+                    case 6:{
+                        String status=jsonObject.getString("status");
                     }
                     default:
                         return;

@@ -1,7 +1,9 @@
 package com.example.team.myapplication;
 
 import android.app.ActionBar;
+import android.content.Context;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -10,7 +12,9 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.example.team.myapplication.Network.JsonGet;
 import com.example.team.myapplication.util.GeneralActivity;
 
 import java.util.ArrayList;
@@ -126,7 +130,7 @@ public class UserListActivity extends GeneralActivity {
 
         }
         if(type == MainActivity.blacklist){
-            //获得黑名单，名单是Arraylist<String>数组,放置到userName里
+            /*//获得黑名单，名单是Arraylist<String>数组,放置到userName里
             //以下测试用
             userNames.add("黑1");
             userNames.add("黑2");
@@ -155,6 +159,63 @@ public class UserListActivity extends GeneralActivity {
                     toUserPageActivity(view, name);
                 }
             });
+            */
+            String url = "";
+            DownloadFriendList downloadFriendList = new DownloadFriendList(url, this);
+            downloadFriendList.execute();
+        }
+    }
+    public class DownloadFriendList extends AsyncTask<Void, Void, Boolean> {
+
+        private String url;
+        private Toast toast = null;
+        private Context context;
+        private List<Map<String, Object>> listItems = new ArrayList<Map<String, Object>>();
+
+        DownloadFriendList(String url, Context context) {
+            this.url = url;
+            this.context = context;
+        }
+
+        @Override
+        protected Boolean doInBackground(Void... params) {
+            try {
+                userNames = new JsonGet(url).getUserNames();
+                for (int i = 0; i < userNames.size(); i++) {
+                    Map<String, Object> listItem = new HashMap<String, Object>();
+                    listItem.put("用户名", userNames.get(i));
+                    listItems.add(listItem);
+                }
+            } catch (Exception e) {
+                return false;
+            }
+            return true;
+        }
+
+        @Override
+        protected void onPostExecute(final Boolean success) {
+            if (success) {
+                SimpleAdapter simpleAdapter = new SimpleAdapter(context, listItems, R.layout.layout_user_name, new String[]{"用户名"}, new int[]{R.id.Names});
+                listView.setAdapter(simpleAdapter);
+                listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                        String name = ((TextView) view.findViewById(R.id.Names)).getText().toString();
+                        toUserPageActivity(view, name);
+                    }
+                });
+            } else {
+                {
+                    if (toast == null) {
+                        toast = Toast.makeText(getApplicationContext(), "获取列表出错", Toast.LENGTH_LONG);
+                        toast.show();
+                    } else {
+                        toast.cancel();
+                        toast = Toast.makeText(getApplicationContext(), "获取列表出错", Toast.LENGTH_LONG);
+                        toast.show();
+                    }
+                }
+            }
         }
     }
 }
