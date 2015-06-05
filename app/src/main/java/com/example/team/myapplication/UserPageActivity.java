@@ -13,14 +13,12 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.team.myapplication.Network.JsonPost;
 import com.example.team.myapplication.util.GalleryItem;
 import com.example.team.myapplication.util.GeneralActivity;
 import com.example.team.myapplication.util.MyScrollView;
 import com.example.team.myapplication.util.ScrollViewListener;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 public class UserPageActivity extends GeneralActivity implements ScrollViewListener {
     static final public int normal = 0;
@@ -43,7 +41,6 @@ public class UserPageActivity extends GeneralActivity implements ScrollViewListe
     private LinearLayout scrollContent;
     private int pictureCount;
     public ArrayList<GalleryItem> galleryItems = null;
-    private AddFriendTask mAuthTask = null;
 
 
     @Override
@@ -245,49 +242,7 @@ public class UserPageActivity extends GeneralActivity implements ScrollViewListe
             }
         }
     }
-    public class AddFriendTask extends AsyncTask<Void, Void, Boolean> {
-       private String otherUsername;
 
-        AddFriendTask(String otherUsername) {
-            otherUsername = otherUsername;
-        }
-
-        @Override
-        protected Boolean doInBackground(Void... params) {
-
-
-            try {
-                String url = "http://192.168.253.1/Kevin/like/insert/";
-                HashMap<String, String> map = new HashMap<String, String>();
-                map.put("username", otherUsername);
-                new JsonPost(map, url, 6);
-                Thread.sleep(3000);
-            } catch (Exception e) {
-
-                return false;
-            }
-
-            return true;
-        }
-
-        @Override
-        protected void onPostExecute(final Boolean success) {
-            mAuthTask = null;
-
-            if (success) {
-                Toast.makeText(getApplicationContext(), "注册成功", Toast.LENGTH_LONG).show();
-
-            } else {
-                Toast.makeText(getApplicationContext(), "注册失败", Toast.LENGTH_LONG).show();
-            }
-        }
-
-        @Override
-        protected void onCancelled() {
-            mAuthTask = null;
-        }
-
-    }
     class GetPicture extends AsyncTask<Void, Void, Boolean> {
         public GetPicture() {
 

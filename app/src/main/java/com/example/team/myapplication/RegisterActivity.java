@@ -252,7 +252,7 @@ public class RegisterActivity extends GeneralActivity {
                 //map.put("email", encrptEmail);
                 // map.put("password", encrptPassword);
                 //  map.put("username", encrptname);
-                new JsonPost(map, url, 2, db);
+                JsonPost post = new JsonPost(map, url, 2, db);
                 Thread.sleep(3000);
             } catch (Exception e) {
 

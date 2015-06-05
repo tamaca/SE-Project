@@ -1,9 +1,7 @@
 package com.example.team.myapplication;
 
 import android.app.ActionBar;
-import android.content.Context;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -12,16 +10,14 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.example.team.myapplication.Database.DB;
-import com.example.team.myapplication.Network.JsonGet;
 import com.example.team.myapplication.util.GeneralActivity;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 
 
 public class UserListActivity extends GeneralActivity {
@@ -35,26 +31,20 @@ public class UserListActivity extends GeneralActivity {
         setContentView(R.layout.activity_user_list);
         ActionBar actionBar = getActionBar();
 
-        listView = (ListView) findViewById(R.id.user_name_list);
+        listView = (ListView)findViewById(R.id.user_name_list);
         userNames = new ArrayList<String>();
 
-<<<<<<< HEAD
         int message = (int)intent.getExtras().get("message");
         switch (message){
             case MainActivity.concernList:
-=======
-        int message = (int) intent.getExtras().get("message");
-        switch (message) {
-            case MainActivity.friend_list:
->>>>>>> origin/WHR
                 setTitle("我关注的人");
-                if (actionBar != null)
+                if(actionBar!=null)
                     actionBar.setLogo(R.mipmap.ic_user_like);
                 //Toast.makeText(getApplicationContext(), "将会列出关注的人的名单！", Toast.LENGTH_LONG).show();
                 break;
             case MainActivity.blacklist:
                 setTitle("黑名单");
-                if (actionBar != null)
+                if(actionBar!=null)
                     actionBar.setLogo(R.mipmap.ic_blacklist);
                 //Toast.makeText(getApplicationContext(),"将会列出黑名单！",Toast.LENGTH_LONG).show();
                 break;
@@ -67,7 +57,6 @@ public class UserListActivity extends GeneralActivity {
         getActionBar().setDisplayHomeAsUpEnabled(true);
 
     }
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -83,7 +72,7 @@ public class UserListActivity extends GeneralActivity {
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        switch (id) {
+        switch (id){
             case android.R.id.home:
                 finish();
                 return true;
@@ -95,24 +84,18 @@ public class UserListActivity extends GeneralActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    public void toUserPageActivity(View view, String name) {
-        Intent intent = new Intent(this, UserPageActivity.class);
-        intent.putExtra("user_name", name);
+    public void toUserPageActivity(View view,String name){
+        Intent intent = new Intent(this,UserPageActivity.class);
+        intent.putExtra("user_name",name);
         startActivity(intent);
     }
 
-    public void showList(int type) {
+    public void showList(int type){
 
-<<<<<<< HEAD
         final List<Map<String,Object>> listItems = new ArrayList<Map<String, Object>>();
         if(type == MainActivity.concernList){
-=======
-        final List<Map<String, Object>> listItems = new ArrayList<Map<String, Object>>();
-        if (type == MainActivity.friend_list) {
->>>>>>> origin/WHR
             //获得关注的人的名单，名单是Arraylist<String>数组,放置到userName里
             //以下测试用
-
             userNames.add("好友1");
             userNames.add("好友2");
             userNames.add("好友3");
@@ -126,26 +109,26 @@ public class UserListActivity extends GeneralActivity {
             userNames.add("好友11");
             userNames.add("好友12");
             //以上---
-            for (int i = 0; i < userNames.size(); i++) {
-                Map<String, Object> listItem = new HashMap<String, Object>();
-                listItem.put("用户名", userNames.get(i));
+            for(int i = 0;i<userNames.size();i++){
+                Map<String,Object> listItem = new HashMap<String, Object>();
+                listItem.put("用户名",userNames.get(i));
                 listItems.add(listItem);
             }
-            SimpleAdapter simpleAdapter = new SimpleAdapter(this, listItems, R.layout.layout_user_name, new String[]{"用户名"}, new int[]{R.id.Names});
+            SimpleAdapter simpleAdapter = new SimpleAdapter(this, listItems,R.layout.layout_user_name,new String[] {"用户名"},new int[] {R.id.Names});
             listView.setAdapter(simpleAdapter);
             listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                    String name = ((TextView) view.findViewById(R.id.Names)).getText().toString();
-                    toUserPageActivity(view, name);
+                    String name = ((TextView)view.findViewById(R.id.Names)).getText().toString();
+                    toUserPageActivity(view,name);
                 }
             });
 
         }
-        if (type == MainActivity.blacklist) {
+        if(type == MainActivity.blacklist){
             //获得黑名单，名单是Arraylist<String>数组,放置到userName里
             //以下测试用
-          /*  userNames.add("黑1");
+            userNames.add("黑1");
             userNames.add("黑2");
             userNames.add("黑3");
             userNames.add("黑4");
@@ -158,12 +141,12 @@ public class UserListActivity extends GeneralActivity {
             userNames.add("黑11");
             userNames.add("黑12");
             //以上---
-            for (int i = 0; i < userNames.size(); i++) {
-                Map<String, Object> listItem = new HashMap<String, Object>();
-                listItem.put("用户名", userNames.get(i));
+            for(int i = 0;i<userNames.size();i++){
+                Map<String,Object> listItem = new HashMap<String, Object>();
+                listItem.put("用户名",userNames.get(i));
                 listItems.add(listItem);
             }
-            SimpleAdapter simpleAdapter = new SimpleAdapter(this, listItems, R.layout.layout_user_name, new String[]{"用户名"}, new int[]{R.id.Names});
+            SimpleAdapter simpleAdapter = new SimpleAdapter(this, listItems,R.layout.layout_user_name,new String[] {"用户名"},new int[] {R.id.Names});
             listView.setAdapter(simpleAdapter);
             listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
@@ -172,64 +155,6 @@ public class UserListActivity extends GeneralActivity {
                     toUserPageActivity(view, name);
                 }
             });
-            */
-            String url = "";
-            DownloadFriendList downloadFriendList = new DownloadFriendList(url, this);
-            downloadFriendList.execute();
-        }
-    }
-
-    public class DownloadFriendList extends AsyncTask<Void, Void, Boolean> {
-
-        private String url;
-        private Toast toast = null;
-        private Context context;
-        private List<Map<String, Object>> listItems = new ArrayList<Map<String, Object>>();
-
-        DownloadFriendList(String url, Context context) {
-            this.url = url;
-            this.context = context;
-        }
-
-        @Override
-        protected Boolean doInBackground(Void... params) {
-            try {
-                userNames = new JsonGet(url).getUserNames();
-                for (int i = 0; i < userNames.size(); i++) {
-                    Map<String, Object> listItem = new HashMap<String, Object>();
-                    listItem.put("用户名", userNames.get(i));
-                    listItems.add(listItem);
-                }
-            } catch (Exception e) {
-                return false;
-            }
-            return true;
-        }
-
-        @Override
-        protected void onPostExecute(final Boolean success) {
-            if (success) {
-                SimpleAdapter simpleAdapter = new SimpleAdapter(context, listItems, R.layout.layout_user_name, new String[]{"用户名"}, new int[]{R.id.Names});
-                listView.setAdapter(simpleAdapter);
-                listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                    @Override
-                    public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                        String name = ((TextView) view.findViewById(R.id.Names)).getText().toString();
-                        toUserPageActivity(view, name);
-                    }
-                });
-            } else {
-                {
-                    if (toast == null) {
-                        toast = Toast.makeText(getApplicationContext(), "获取列表出错", Toast.LENGTH_LONG);
-                        toast.show();
-                    } else {
-                        toast.cancel();
-                        toast = Toast.makeText(getApplicationContext(), "获取列表出错", Toast.LENGTH_LONG);
-                        toast.show();
-                    }
-                }
-            }
         }
     }
 }
