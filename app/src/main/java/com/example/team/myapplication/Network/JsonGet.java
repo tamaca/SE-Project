@@ -29,15 +29,17 @@ public class JsonGet {
     private String url;
     private DB db;
     private View view;
+    private  String type;
     public ArrayList<String> getUserNames() {
         return userNames;
     }
     private ArrayList<String> userNames;
     //图片获取
-    public JsonGet(String url, DB db, View view) throws Exception {
+    public JsonGet(String url, DB db, View view,String type) throws Exception {
         this.url = url;
         this.db = db;
         this.view = view;
+        this.type=type;
         Get get = new Get();
         JSONObject jsonObject = get.GetFromServer();
         get.PostExecuteImage(jsonObject);
@@ -85,6 +87,7 @@ public class JsonGet {
             if (jsonObject != null) {
                 String status = jsonObject.getString("status");
                 if (status.equals("normal")) {
+                //TODO:不满4张需要处理
                     String baseurl = "http://192.168.253.1/media/";
                     String image_small[] = new String[4];
                     String image_big[] = new String[4];
@@ -112,6 +115,7 @@ public class JsonGet {
                         ImageGet imageGet9 = new ImageGet(null, image_small[3], db, "small");
                     }
                     //TODO 此处需要加入本地数据库
+                    HashMap<String, String> image = new HashMap<String, String>();
                 } else {
                     throw new executeException();
                     //TODO:接收信息错误

@@ -20,11 +20,15 @@ import android.widget.Toast;
 
 import com.example.team.myapplication.Database.DB;
 import com.example.team.myapplication.Network.ImageGet;
+import com.example.team.myapplication.Network.JsonPost;
 import com.example.team.myapplication.Network.NetworkState;
 import com.example.team.myapplication.util.Comment;
 import com.example.team.myapplication.util.GeneralActivity;
 
+import org.json.JSONObject;
+
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 
@@ -40,42 +44,12 @@ public class ViewPictureActivity extends GeneralActivity {
     private DB db = new DB(this);
     private int likeNumber;
     private ImageButton like;
-
+    private Toast toast = null;
 
     private TextView likeText;
     private boolean isLike = false;
     private ScrollView scrollView;
     private LinearLayout linearLayout;
-
-    //
-    public ImageView getImgview() {
-        return imgview;
-    }
-
-    public List<Comment> getComments() {
-        return comments;
-    }
-
-    public LinearLayout getCommentView() {
-        return commentView;
-    }
-
-    public TextView getAuthor() {
-        return author;
-    }
-
-    public TextView getUploadTime() {
-        return uploadTime;
-    }
-
-    public ImageButton getLike() {
-        return like;
-    }
-
-    public TextView getLikeText() {
-        return likeText;
-    }
-
 
     @Override
 
@@ -172,6 +146,67 @@ public class ViewPictureActivity extends GeneralActivity {
         refresh.start();
     }
 
+    public class getImageInformationProgress extends AsyncTask<Void, Void, Boolean> {
+
+        private String url;
+        private DB db;
+        private String imageid;
+        private JSONObject jsonObject;
+        private HashMap<String, String> returnmap;
+
+        getImageInformationProgress(String url, String imageid ,DB db) {
+            this.url = url;
+            this.imageid = imageid;
+            this.db = db;
+        }
+
+        @Override
+        protected Boolean doInBackground(Void... params) {
+            try {
+                HashMap<String, String> map = new HashMap<String, String>();
+                map.put("imageid", imageid);
+                jsonObject = new JsonPost(map, url, 4, db).getReturnjsonObject();
+                String originImageurl = jsonObject.getString("origin");
+                String _author = jsonObject.getString("author");
+                String _like = jsonObject.getString("like");
+                String _isLike = jsonObject.getString("islike");
+                String _updateTime = jsonObject.getString("updatetime");
+                returnmap = new HashMap<String, String>();
+                returnmap.put("origin", originImageurl);
+                returnmap.put("author", _author);
+                returnmap.put("like", _like);
+                returnmap.put("islike", _isLike);
+                returnmap.put("updatetime", _updateTime);
+
+            } catch (Exception e) {
+                return false;
+            }
+            return true;
+        }
+
+        @Override
+        protected void onPostExecute(final Boolean success) {
+
+            if (success) {
+                author.setText(returnmap.get("author"));
+                imgview.setContentDescription(returnmap.get("origin"));
+                isLike = (returnmap.get("islike").equals("true"));
+                String likenumber = returnmap.get("_like");
+                int _likenumber = Integer.parseInt(likenumber);
+                likeText.setText(_likenumber < 10000 ? likenumber : _likenumber / 10000 + "万+");
+                uploadTime.setText(returnmap.get("updatetime"));
+            } else {
+                if (toast == null) {
+                    toast = Toast.makeText(getApplicationContext(), "获取图片信息出错", Toast.LENGTH_LONG);
+                    toast.show();
+                } else {
+                    toast.cancel();
+                    toast = Toast.makeText(getApplicationContext(), "获取图片信息出错", Toast.LENGTH_LONG);
+                    toast.show();
+                }
+            }
+        }
+    }
     /*public void getImageInformation(String imageid) {
         String url = "http://192.168.137.1/php23/index.php";
         HashMap<String, String> map = new HashMap<String, String>();

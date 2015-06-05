@@ -54,22 +54,11 @@ public class JsonPost {
         post.PostExecute(returnjsonObject);
     }
 
-    //注册、修改密码
+    //注册、修改密码 图片信息获取
     public JsonPost(HashMap<String, String> map, String url, int type, DB db) throws Exception {
         this.url = url;
         this.type = type;
         this.db = db;
-        Post post = new Post(map);
-        returnjsonObject = post.PostToServer();
-        post.PostExecute(returnjsonObject);
-    }
-
-    //图片信息获取
-    public JsonPost(HashMap<String, String> map, String url, int type, DB db, ViewPictureActivity view) throws Exception {
-        this.url = url;
-        this.type = type;
-        this.db = db;
-        this.view = view;
         Post post = new Post(map);
         returnjsonObject = post.PostToServer();
         post.PostExecute(returnjsonObject);
@@ -110,13 +99,12 @@ public class JsonPost {
             db.lastuserdelete();
         }
     }
-
+    //数据库存储图片
     private void dbimagesave(HashMap<String, String> image) {
         Timestamp updatetime = new Timestamp(System.currentTimeMillis());
         updatetime.valueOf(image.get("updatetime"));
         db.imageinsert(image.get("imageid"), image.get("userid"), image.get("islike"), image.get("likenumber"), updatetime);
     }
-
     private void dbcommentsave(HashMap<String, String> commentmap) {
         String _commentnum = commentmap.get("commentnum");
         int commentnum = Integer.parseInt(_commentnum);
@@ -129,49 +117,27 @@ public class JsonPost {
     }
 
     //UI处理图片信息
-    private void getImageInformation(JSONObject info) throws Exception {
+    private void getImageInformation(JSONObject info,int type) throws Exception {
         String imageId = info.getString("imageid");
         String originImageurl = info.getString("origin");
         String _author = info.getString("author");
         String _like = info.getString("like");
         String _isLike = info.getString("islike");
         String _updateTime = info.getString("updatetime");
-        String _commentnum = info.getString("commentnum");
-        String _comment = info.getString("comment");
-        int commentnum = Integer.parseInt(_commentnum);
-        JSONObject commentJson = new JSONObject(_comment);
-        String commenter[] = new String[6];
-        String comment[] = new String[6];
-        String commentid[] = new String[6];
-        String updatedate[] = new String[6];
-        for (int i = 1; i <= commentnum; i++) {
+     //   String _commentnum = info.getString("commentnum");
+     //   String _comment = info.getString("comment");
+     //  int commentnum = Integer.parseInt(_commentnum);
+    //    JSONObject commentJson = new JSONObject(_comment);
+     //   String commenter[] = new String[6];
+     //   String comment[] = new String[6];
+   //     String commentid[] = new String[6];
+   //     String updatedate[] = new String[6];
+   /*     for (int i = 1; i <= commentnum; i++) {
             commenter[i - 1] = commentJson.getString("name" + String.valueOf(i));
             comment[i - 1] = commentJson.getString("comment" + String.valueOf(i));
             commentid[i - 1] = commentJson.getString("commentid" + String.valueOf(i));
             updatedate[i - 1] = commentJson.getString("updatedate" + String.valueOf(i));
-        }
-        //原图位置
-        view.getImgview().setContentDescription(originImageurl);
-        //String _author = "The Hammer";
-        view.getAuthor().setText(_author);
-        Boolean isLike = (_isLike.equals("true"));//测试用, false 代表没有赞过
-        view.getLikeText().setText(Integer.parseInt(_like) < 10000 ? _like : Integer.parseInt(_like) / 10000 + "万+");
-        view.getCommentView().postInvalidate();
-        view.getUploadTime().setText(_updateTime);
-        //String commenter1 = "sxy";
-        //String comment1 = "评论在这里（5毛一条，括号里不要复制）";
-        for (int i = 1; i <= commentnum; i++) {
-            view.getComments().add(new Comment(view.getApplicationContext(), commenter[i - 1], comment[i - 1]));
-        }
-        for (int i = 0; i < view.getComments().size(); i++) {
-            view.getCommentView().addView(view.getComments().get(i));
-            view.getComments().get(i).textView1.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    view.toUserPageActivity(v);
-                }
-            });
-        }
+        }*/
         HashMap<String, String> image = new HashMap<String, String>();
         image.put("imageid", imageId);
         image.put("userid", _author);
@@ -179,7 +145,7 @@ public class JsonPost {
         image.put("likenumber", _like);
         image.put("updatetime", _updateTime);
         dbimagesave(image);
-        HashMap<String, String> commentmap = new HashMap<String, String>();
+       /* HashMap<String, String> commentmap = new HashMap<String, String>();
         commentmap.put("imageid", imageId);
         commentmap.put("commentnum", _commentnum);
         for (int i = 1; i <= commentnum; i++) {
@@ -187,7 +153,7 @@ public class JsonPost {
             commentmap.put("userid" + String.valueOf(i), commenter[i - 1]);
             commentmap.put("context" + String.valueOf(i), commentid[i - 1]);
             commentmap.put("updatedate" + String.valueOf(i), updatedate[i - 1]);
-        }
+        }*/
     }
 
     private class Post {
@@ -278,7 +244,7 @@ public class JsonPost {
                     case 4: {
                         //直接获取原图的URL
                         //图片的评论以JSON格式收取
-                        getImageInformation(jsonObject);
+                        getImageInformation(jsonObject,4);
                         break;
                     }
                     //修改密码

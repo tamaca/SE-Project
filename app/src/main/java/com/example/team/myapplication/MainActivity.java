@@ -383,7 +383,7 @@ public class MainActivity extends Activity {
         @Override
         protected Boolean doInBackground(Void... params) {
             try {
-              new JsonGet(url, db, view);
+              new JsonGet(url, db, view,"lobby");
             } catch (Exception e) {
                 return false;
             }
