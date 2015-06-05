@@ -163,7 +163,7 @@ public class MainActivity extends Activity {
         String picURL1 = "http://192.168.253.1/square_page/1/";
         String picURL2 = "http://192.168.253.1/square_page/2/";
         DownloadPictureProgress downloadPictureProgress1 = new DownloadPictureProgress(picURL1, db, squareView);
-        DownloadPictureProgress downloadPictureProgress2 = new DownloadPictureProgress(picURL2, db);
+        DownloadPictureProgress downloadPictureProgress2 = new DownloadPictureProgress(picURL2, db,null);
         downloadPictureProgress1.execute();
         downloadPictureProgress2.execute();
         //  JsonGet jsonGet1 = new JsonGet(picURL1, db, squareView);
@@ -373,15 +373,10 @@ public class MainActivity extends Activity {
             this.db = db;
         }
 
-        DownloadPictureProgress(String url, DB db) {
-            this.url = url;
-            this.db = db;
-        }
-
         @Override
         protected Boolean doInBackground(Void... params) {
             try {
-                JsonGet jsonGet = new JsonGet(url, db, view);
+                new JsonGet(url, db, view);
             } catch (Exception e) {
                 return false;
             }

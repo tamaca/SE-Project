@@ -19,6 +19,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
@@ -26,24 +27,28 @@ import java.util.HashMap;
  */
 public class JsonGet {
     private String url;
-    DB db;
+    private DB db;
     private View view;
-
+    public ArrayList<String> getUserNames() {
+        return userNames;
+    }
+    private ArrayList<String> userNames;
+    //图片获取
     public JsonGet(String url, DB db, View view) throws Exception {
         this.url = url;
         this.db = db;
         this.view = view;
         Get get = new Get();
         JSONObject jsonObject = get.GetFromServer();
-        get.PostExecute(jsonObject);
+        get.PostExecuteImage(jsonObject);
     }
 
-    public JsonGet(String url, DB db) throws Exception {
+    //关注的人获取 或 黑名单获取
+    public JsonGet(String url) throws Exception {
         this.url = url;
-        this.db = db;
         Get get = new Get();
         JSONObject jsonObject = get.GetFromServer();
-        get.PostExecute(jsonObject);
+        userNames=get.PostExecuteList(jsonObject);
     }
 
     private class Get {
@@ -75,16 +80,17 @@ public class JsonGet {
             }
         }
 
-        protected void PostExecute(JSONObject jsonObject) throws Exception {
+        //接收图片
+        protected void PostExecuteImage(JSONObject jsonObject) throws Exception {
             if (jsonObject != null) {
                 String status = jsonObject.getString("status");
                 if (status.equals("normal")) {
-                    String url = "http://192.168.253.1/media/";
+                    String baseurl = "http://192.168.253.1/media/";
                     String image_small[] = new String[4];
                     String image_big[] = new String[4];
                     for (int i = 0; i <= 3; i++) {
-                        image_small[i] = url + jsonObject.getString("image" + i + "_small");
-                        image_big[i] = url + jsonObject.getString("image" + i + "_big");
+                        image_small[i] = baseurl + jsonObject.getString("image" + i + "_small");
+                        image_big[i] = baseurl + jsonObject.getString("image" + i + "_big");
                     }
                     if (view != null) {
                         ImageView imageView1 = (ImageView) view.findViewById(R.id.imageView1);
@@ -116,19 +122,40 @@ public class JsonGet {
                 //TODO:接收信息错误
                 throw new nullException();
             }
+
         }
-    }
-    //异常类
 
-    class getException extends Exception {
-        public String name = "get";
-    }
+        //黑名单 和 关注的人
+        protected ArrayList<String> PostExecuteList(JSONObject jsonObject) throws Exception {
+            if (jsonObject != null) {
+                String status = jsonObject.getString("status");
+                if (status.equals("normal")) {
+                    ArrayList<String> userNames = new ArrayList<String>();
+                    for (int i = 0; i <= 15; i++) {
+                        String _username = jsonObject.getString("username" + i);
+                        userNames.add(_username);
+                    }
+                    return userNames;
+                } else {
+                    throw new executeException();
+                }
+            } else {
+                //TODO:接收信息错误
+                throw new nullException();
+            }
+        }
+//异常类
 
-    class nullException extends Exception {
-        public String name = "null";
-    }
+        class getException extends Exception {
+            public String name = "get";
+        }
 
-    class executeException extends Exception {
-        public String name = "execute";
+        class nullException extends Exception {
+            public String name = "null";
+        }
+
+        class executeException extends Exception {
+            public String name = "execute";
+        }
     }
 }
