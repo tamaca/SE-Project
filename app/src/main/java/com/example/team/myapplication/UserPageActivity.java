@@ -19,6 +19,8 @@ import com.example.team.myapplication.util.GeneralActivity;
 import com.example.team.myapplication.util.MyScrollView;
 import com.example.team.myapplication.util.ScrollViewListener;
 
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -39,7 +41,8 @@ public class UserPageActivity extends GeneralActivity implements ScrollViewListe
     private LinearLayout scrollContent;
     private int pictureCount;
     public ArrayList<GalleryItem> galleryItems = null;
-    private AddFriendTask mAuthTask = null;
+    private ConcerenTask mAuthTask = null;
+    private GetInfomation getInfomationtask = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -86,9 +89,8 @@ public class UserPageActivity extends GeneralActivity implements ScrollViewListe
             //加载别人的主页
             //TODO 获取用户和这个人的关系
             manageButton.setVisibility(View.GONE);
-            blacklist = true;
-            concern = true;
-            loadContent(concern, blacklist);
+            getInfomationtask = new GetInfomation("Kevin2");
+            getInfomationtask.execute();
         }
     }
 
@@ -220,15 +222,9 @@ public class UserPageActivity extends GeneralActivity implements ScrollViewListe
         @Override
         public void onClick(View view) {
             //点击 关注/取消关注 按钮
-            if (concern) {
-                concern=!concern;
-                concernButton.setText(getString(R.string.remove_from_concern));
 
-            } else {
-                concern=!concern;
-                concernButton.setText(getString(R.string.concern));
-            }
-            loadContent(concern,blacklist);
+            mAuthTask = new ConcerenTask("Kevin2");
+            mAuthTask.execute();
         }
     }
 
@@ -248,21 +244,26 @@ public class UserPageActivity extends GeneralActivity implements ScrollViewListe
         }
     }
 
-    public class AddFriendTask extends AsyncTask<Void, Void, Boolean> {
+    public class ConcerenTask extends AsyncTask<Void, Void, Boolean> {
         private String otherUsername;
 
-        AddFriendTask(String otherUsername) {
+        ConcerenTask(String otherUsername) {
             this.otherUsername = otherUsername;
         }
 
         @Override
         protected Boolean doInBackground(Void... params) {
             try {
-                String url = "http://192.168.253.1/Kevin/like/insert/";
+                String url = null;
+                if (concern) {
+                    url = "http://192.168.253.1/Kevin/concern/delete/";
+                } else {
+                    url = "http://192.168.253.1/Kevin/concern/insert/";
+                }
                 HashMap<String, String> map = new HashMap<String, String>();
                 map.put("username", otherUsername);
-                new JsonPost(map, url, 6);
-                Thread.sleep(3000);
+                new JsonPost(map, url, 0);
+                Thread.sleep(100);
             } catch (Exception e) {
                 return false;
             }
@@ -271,9 +272,17 @@ public class UserPageActivity extends GeneralActivity implements ScrollViewListe
 
         @Override
         protected void onPostExecute(final Boolean success) {
+            Boolean a = success;
             mAuthTask = null;
             if (success) {
-
+                if (concern) {
+                    concern = !concern;
+                    concernButton.setText(getString(R.string.remove_from_concern));
+                } else {
+                    concern = !concern;
+                    concernButton.setText(getString(R.string.concern));
+                }
+                loadContent(concern, blacklist);
             } else {
                 Toast.makeText(getApplicationContext(), "关注失败", Toast.LENGTH_LONG).show();
             }
@@ -282,6 +291,43 @@ public class UserPageActivity extends GeneralActivity implements ScrollViewListe
         @Override
         protected void onCancelled() {
             mAuthTask = null;
+        }
+
+    }
+
+    public class GetInfomation extends AsyncTask<Void, Void, Boolean> {
+        private String otherUsername;
+
+        GetInfomation(String otherUsername) {
+            this.otherUsername = otherUsername;
+        }
+
+        @Override
+        protected Boolean doInBackground(Void... params) {
+            try {
+                String url = "http://192.168.253.1/Kevin/relation_page/";
+                HashMap<String, String> map = new HashMap<String, String>();
+                map.put("username", otherUsername);
+                JsonPost jsonPost = new JsonPost(map, url, 0);
+                JSONObject jsonObject = jsonPost.getReturnjsonObject();
+                String _concern = jsonObject.getString("concern");
+                String _blacklist = jsonObject.getString("blacklist");
+                concern = _concern.equals("true");
+                blacklist = _blacklist.equals("true");
+            } catch (Exception e) {
+                return false;
+            }
+            return true;
+        }
+
+        @Override
+        protected void onPostExecute(Boolean success) {
+            loadContent(concern, blacklist);
+        }
+
+        @Override
+        protected void onCancelled() {
+            getInfomationtask = null;
         }
 
     }
