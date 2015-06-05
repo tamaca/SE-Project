@@ -107,7 +107,7 @@
                     android:layout_height="40dp"
                     android:textAppearance="?android:attr/textAppearanceSmall"
                     android:text="@string/register"
-                    android:textColor="@color/天依蓝"
+                    android:textColor="@drawable/button_reg"
                     android:id="@+id/register_button"
                     android:layout_gravity="right"
                     android:gravity="top|right"

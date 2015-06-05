@@ -36,6 +36,11 @@ public class JsonPost {
     private DB db;
     private ViewPictureActivity view;
 
+    public JSONObject getReturnjsonObject() {
+        return returnjsonObject;
+    }
+
+    private JSONObject returnjsonObject=null;
     //多种处理方式
     //登录
     public JsonPost(HashMap<String, String> map, String url, int type, boolean autoLogin, boolean rememPassword, DB db) throws Exception {
@@ -45,8 +50,8 @@ public class JsonPost {
         this.rememPassword = rememPassword;
         this.db = db;
         Post post = new Post(map);
-        JSONObject jsonObject = post.PostToServer();
-        post.PostExecute(jsonObject);
+        returnjsonObject = post.PostToServer();
+        post.PostExecute(returnjsonObject);
     }
 
     //注册、修改密码
@@ -55,8 +60,8 @@ public class JsonPost {
         this.type = type;
         this.db = db;
         Post post = new Post(map);
-        JSONObject jsonObject = post.PostToServer();
-        post.PostExecute(jsonObject);
+        returnjsonObject = post.PostToServer();
+        post.PostExecute(returnjsonObject);
     }
 
     //图片信息获取
@@ -66,16 +71,16 @@ public class JsonPost {
         this.db = db;
         this.view = view;
         Post post = new Post(map);
-        JSONObject jsonObject = post.PostToServer();
-        post.PostExecute(jsonObject);
+        returnjsonObject = post.PostToServer();
+        post.PostExecute(returnjsonObject);
     }
-    //添加关注 黑名单
+    //添加关注 黑名单 获取关注和黑名单信息
     public JsonPost(HashMap<String, String> map, String url, int type) throws Exception {
         this.url = url;
         this.type = type;
         Post post = new Post(map);
-        JSONObject jsonObject = post.PostToServer();
-        post.PostExecute(jsonObject);
+        returnjsonObject = post.PostToServer();
+        post.PostExecute(returnjsonObject);
     }
     //数据库储存用户
     private void dbsaveuser(String id, String password) {
@@ -219,6 +224,7 @@ public class JsonPost {
                 httpPost.setHeader("Content-type", "application/json");
                 httpPost.setEntity(new UrlEncodedFormEntityHC4(nameValuePair, "UTF-8"));
                 response = client.execute(httpPost);
+                int a=response.getStatusLine().getStatusCode();
                 StringBuilder builder = new StringBuilder();
                 BufferedReader reader = new BufferedReader(new InputStreamReader(
                         response.getEntity().getContent()));
@@ -289,8 +295,12 @@ public class JsonPost {
                           }
                         }*/
                     }
-                    case 6:{
+                    case 0:{
                         String status=jsonObject.getString("status");
+                        if(!status.equals("normal"))
+                        {
+                            throw new executeException();
+                        }
                     }
                     default:
                         return;

@@ -124,7 +124,7 @@ public class MainActivity extends Activity {
 
             @Override
             public void onPageSelected(int position) {
-                if (position == 0) {
+                if (position == 0 || position == 2) {
                     camera.setVisibility(View.GONE);
                 } else {
                     camera.setVisibility(View.VISIBLE);
