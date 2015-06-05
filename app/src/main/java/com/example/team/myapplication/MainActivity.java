@@ -13,15 +13,11 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.ListView;
 import android.widget.RelativeLayout;
-import android.widget.SimpleAdapter;
 import android.widget.TabHost;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.team.myapplication.Cache.Localstorage;
@@ -29,14 +25,11 @@ import com.example.team.myapplication.Database.DB;
 import com.example.team.myapplication.Network.JsonGet;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class MainActivity extends Activity {
     private TabHost mTabHost;
-    private ListView listView;
-    public final static int friend_list = 1;
+    public final static int concernList = 1;
     public final static int blacklist = 2;
     public View squareView;
     public View meView;
@@ -53,13 +46,9 @@ public class MainActivity extends Activity {
     private DB db = null;
     private ImageButton camera;
     private Toast toast = null;
-
     public static String getCurrentTag() {
         return currentTag;
     }
-
-    private TextView userNameView;
-
     public static void setCurrentTag(String currentTag) {
         MainActivity.currentTag = currentTag;
     }
@@ -83,9 +72,7 @@ public class MainActivity extends Activity {
         mTabHost = (TabHost) findViewById(R.id.tabHost2);
         viewPager = (ViewPager) findViewById(R.id.viewPager);
         listOfViews = new ArrayList<>();
-        listView = (ListView) meView.findViewById(R.id.listView);
         loginView = meView.findViewById(R.id.login_button);
-        userNameView = (TextView) meView.findViewById(R.id.user_name);
         mainLayout = (RelativeLayout) findViewById(R.id.main_layout);
         uploadPictureLayout = (RelativeLayout) findViewById(R.id.upload_picture_layout);
         imageView = (ImageView) findViewById(R.id.imageView);
@@ -93,6 +80,20 @@ public class MainActivity extends Activity {
         cancel = (Button) findViewById(R.id.cancel_button);
         camera = (ImageButton) findViewById(R.id.imageButton);
 
+        Button myConcern = (Button) meView.findViewById(R.id.my_concern_button);
+        myConcern.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                toUserListActivity(view, concernList);
+            }
+        });
+        Button myBlacklist = (Button) meView.findViewById(R.id.my_blacklist_button);
+        myBlacklist.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                toUserListActivity(view, blacklist);
+            }
+        });
         upload.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -123,10 +124,9 @@ public class MainActivity extends Activity {
 
             @Override
             public void onPageSelected(int position) {
-                if(position == 0){
+                if (position == 0) {
                     camera.setVisibility(View.GONE);
-                }
-                else{
+                } else {
                     camera.setVisibility(View.VISIBLE);
                 }
                 mTabHost.setCurrentTab(position);
@@ -151,46 +151,6 @@ public class MainActivity extends Activity {
         });
         mTabHost.setCurrentTab(1);
 
-        ArrayList<String> items = new ArrayList<String>();
-        //0
-        items.add("关注的人");
-        //1
-        items.add("黑名单");
-        //2
-        items.add("修改密码");
-        //3
-        items.add("注销");
-
-
-        final List<Map<String, Object>> listItems = new ArrayList<Map<String, Object>>();
-        for (int i = 0; i < items.size(); i++) {
-            Map<String, Object> listItem = new HashMap<String, Object>();
-            listItem.put("选项", items.get(i));
-            listItems.add(listItem);
-        }
-        SimpleAdapter simpleAdapter = new SimpleAdapter(this, listItems, R.layout.layout_simple_item, new String[]{"选项"}, new int[]{R.id.Option});
-        listView.setAdapter(simpleAdapter);
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-                switch (position) {
-                    case 0:
-                        toUserListActivity(listView, friend_list);
-                        break;
-                    case 1:
-                        toUserListActivity(listView, blacklist);
-
-                        break;
-                    case 2:
-                        toChangePasswordActivity(listView);
-
-                        break;
-                    case 3:
-                        logout();
-                        break;
-                }
-            }
-        });
 
         changeView(LoginState.getLogined());
         //Toast.makeText(getBaseContext(),"isLogin?"+LoginState.logined,Toast.LENGTH_LONG).show();
@@ -223,7 +183,7 @@ public class MainActivity extends Activity {
         changeView(LoginState.getLogined());
     }
 
-    public void logout() {
+    public void logout(View view) {
         LoginState.setLogined(false, "guest");
         changeView(LoginState.logined);
 
@@ -232,9 +192,6 @@ public class MainActivity extends Activity {
     public void changeView(boolean isLogined) {
         loginView.setVisibility(isLogined ? View.GONE : View.VISIBLE);
         userOptions.setVisibility(isLogined ? View.VISIBLE : View.GONE);
-        userNameView.setVisibility(isLogined ? View.VISIBLE : View.GONE);
-        userNameView.setText(LoginState.username);
-
     }
 
     public void toLoginActivity(View view) {
@@ -242,9 +199,9 @@ public class MainActivity extends Activity {
         startActivity(intent);
     }
 
-    public void toUserPageActivity(View view){
-        Intent intent = new Intent(this,UserPageActivity.class);
-        intent.putExtra("user_name",LoginState.username);
+    public void toUserPageActivity(View view) {
+        Intent intent = new Intent(this, UserPageActivity.class);
+        intent.putExtra("user_name", LoginState.username);
         startActivity(intent);
     }
 
@@ -328,12 +285,12 @@ public class MainActivity extends Activity {
             intent.putExtra("bigurl", bigurl);
             startActivity(intent);
         } else {
-            if(toast == null){
-                toast = Toast.makeText(getApplicationContext(),"图片出错",Toast.LENGTH_LONG);
+            if (toast == null) {
+                toast = Toast.makeText(getApplicationContext(), "图片出错", Toast.LENGTH_LONG);
                 toast.show();
-            }else{
+            } else {
                 toast.cancel();
-                toast = Toast.makeText(getApplicationContext(),"图片出错",Toast.LENGTH_LONG);
+                toast = Toast.makeText(getApplicationContext(), "图片出错", Toast.LENGTH_LONG);
                 toast.show();
             }
         }
@@ -436,12 +393,12 @@ public class MainActivity extends Activity {
 
             if (!success) {
                 {
-                    if(toast == null){
-                        toast = Toast.makeText(getApplicationContext(),"下载图片出错",Toast.LENGTH_LONG);
+                    if (toast == null) {
+                        toast = Toast.makeText(getApplicationContext(), "下载图片出错", Toast.LENGTH_LONG);
                         toast.show();
-                    }else{
+                    } else {
                         toast.cancel();
-                        toast = Toast.makeText(getApplicationContext(),"下载图片出错",Toast.LENGTH_LONG);
+                        toast = Toast.makeText(getApplicationContext(), "下载图片出错", Toast.LENGTH_LONG);
                         toast.show();
                     }
                 }

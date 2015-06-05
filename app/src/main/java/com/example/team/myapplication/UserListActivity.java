@@ -2,7 +2,6 @@ package com.example.team.myapplication;
 
 import android.app.ActionBar;
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -37,7 +36,7 @@ public class UserListActivity extends GeneralActivity {
 
         int message = (int)intent.getExtras().get("message");
         switch (message){
-            case MainActivity.friend_list:
+            case MainActivity.concernList:
                 setTitle("我关注的人");
                 if(actionBar!=null)
                     actionBar.setLogo(R.mipmap.ic_user_like);
@@ -94,7 +93,7 @@ public class UserListActivity extends GeneralActivity {
     public void showList(int type){
 
         final List<Map<String,Object>> listItems = new ArrayList<Map<String, Object>>();
-        if(type == MainActivity.friend_list){
+        if(type == MainActivity.concernList){
             //获得关注的人的名单，名单是Arraylist<String>数组,放置到userName里
             //以下测试用
             userNames.add("好友1");
