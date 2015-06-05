@@ -3,7 +3,6 @@ package com.example.team.myapplication;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 
 import com.example.team.myapplication.util.GeneralActivity;
 import com.example.team.myapplication.util.MyScrollView;
@@ -49,9 +48,11 @@ public class RecentActivity extends GeneralActivity implements ScrollViewListene
         return super.onOptionsItemSelected(item);
     }
 
-    /*@Override
+
+
+    @Override
     public void onScrollChanged(MyScrollView scrollView, int x, int y, int oldX, int oldY) {
-        if (y + scrollView.getMeasuredHeight() + 50 > scrollContent.getMeasuredHeight()) {
+        /*if (y + scrollView.getMeasuredHeight() + 50 > scrollContent.getMeasuredHeight()) {
             if (galleryItems.size() != pictureCount) {
                 if (inLoadingPicture.getVisibility() == View.GONE) {
                     inLoadingPicture.setVisibility(View.VISIBLE);
@@ -61,6 +62,6 @@ public class RecentActivity extends GeneralActivity implements ScrollViewListene
                     }
                 }
             }
-        }
-    }*/
+        }*/
+    }
 }
