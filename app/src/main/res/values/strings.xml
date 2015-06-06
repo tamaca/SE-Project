@@ -52,8 +52,8 @@
     <string name="remember_password">记住密码</string>
     <string name="title_activity_general">GeneralActivity</string>
     <string name="view_origin_picture">原图</string>
-    <string name="author">作者</string>
-    <string name="upload_time">上传时间</string>
+    <string name="author"></string>
+    <string name="upload_time"></string>
     <string name="title_activity_change_password">修改密码</string>
     <string name="old_password">旧密码</string>
     <string name="new_password">新密码</string>
