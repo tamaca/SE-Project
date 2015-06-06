@@ -118,12 +118,11 @@ public class JsonPost {
 
     //UI处理图片信息
     private void getImageInformation(JSONObject info,int type) throws Exception {
-        String imageId = info.getString("imageid");
-        String originImageurl = info.getString("origin");
+        String imageId = info.getString("image_id");
         String _author = info.getString("author");
         String _like = info.getString("like");
-        String _isLike = info.getString("islike");
-        String _updateTime = info.getString("updatetime");
+        String _isLike = info.getString("is_like");
+        String _updateTime = info.getString("update_time");
      //   String _commentnum = info.getString("commentnum");
      //   String _comment = info.getString("comment");
      //  int commentnum = Integer.parseInt(_commentnum);
