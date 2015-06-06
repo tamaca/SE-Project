@@ -1,10 +1,15 @@
 package com.example.team.myapplication;
 
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
@@ -16,6 +21,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TabHost;
 import android.widget.Toast;
@@ -26,13 +32,18 @@ import com.example.team.myapplication.Network.JsonGet;
 
 import org.json.JSONObject;
 
+import java.io.File;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class MainActivity extends Activity {
     private TabHost mTabHost;
     public final static int concernList = 1;
     public final static int blacklist = 2;
+    private String capturePath = null;
     public View squareView;
     public View meView;
     private View loginView;
@@ -47,6 +58,7 @@ public class MainActivity extends Activity {
     private DB db = null;
     private ImageButton camera;
     private Toast toast = null;
+    private ProgressBar uploadProgressBar;
 
     public static String getCurrentTag() {
         return currentTag;
@@ -97,7 +109,7 @@ public class MainActivity extends Activity {
             @Override
             public void onClick(View v) {
                 //上传图片开始。
-                //此处获得的bitMap并不大
+
                 imageView.setDrawingCacheEnabled(true);
                 Bitmap bitmap = imageView.getDrawingCache();
                 UploadPictureProgress uploadPictureProgress = new UploadPictureProgress(bitmap);
@@ -146,7 +158,7 @@ public class MainActivity extends Activity {
                 viewPager.setCurrentItem(mTabHost.getCurrentTab());
             }
         });
-        mTabHost.setCurrentTab(1);
+        mTabHost.setCurrentTab(0);
 
 
         changeView(LoginState.getLogined());
@@ -189,21 +201,37 @@ public class MainActivity extends Activity {
 
     }
 
+    /**
+     * 根据是否登录成功改变主页
+     * @param isLogined
+     */
     public void changeView(boolean isLogined) {
         loginView.setVisibility(isLogined ? View.GONE : View.VISIBLE);
         userOptions.setVisibility(isLogined ? View.VISIBLE : View.GONE);
     }
 
+    /**
+     * 转到注册页面
+     * @param view
+     */
     public void toLoginActivity(View view) {
         Intent intent = new Intent(this, LoginActivity.class);
         startActivity(intent);
     }
 
+    /**
+     * 转到动态页面
+     * @param view
+     */
     public void toRecentActivity(View view) {
         Intent intent = new Intent(this, RecentActivity.class);
         startActivity(intent);
     }
 
+    /**
+     * 转到我的个人主页
+     * @param view
+     */
     public void toUserPageActivity(View view) {
         Intent intent = new Intent(this, UserPageActivity.class);
         intent.putExtra("user_name", LoginState.username);
@@ -232,6 +260,10 @@ public class MainActivity extends Activity {
         return super.onOptionsItemSelected(item);
     }
 
+    /**
+     * 转到搜索界面
+     * @param view
+     */
     public void toSearchActivity(View view) {
         Intent intent = new Intent(this, SearchActivity.class);
         startActivity(intent);
@@ -249,28 +281,47 @@ public class MainActivity extends Activity {
         startActivity(intent);
     }
 
-    static final int REQUEST_IMAGE_CAPTURE = 1;
+    /**
+     * 以下是获取拍摄的照片
+     */
+    static final int REQUEST_TAKE_PHOTO = 1;
+
+    String mCurrentPhotoPath;
 
     public void dispatchTakePictureIntent(View view) {
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        // Ensure that there's a camera activity to handle the intent
         if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
-            onStop();
-            startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
+            // Create the File where the photo should go
+            File photoFile = null;
+            try {
+                photoFile = createImageFile();
+            } catch (IOException ex) {
+                // Error occurred while creating the File
+
+            }
+            // Continue only if the File was successfully created
+            if (photoFile != null) {
+                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT,
+                        Uri.fromFile(photoFile));
+                startActivityForResult(takePictureIntent, REQUEST_TAKE_PHOTO);
+            }
         }
     }
 
+    /**
+     * 从相机中获取拍摄的照片
+     * @param requestCode
+     * @param resultCode
+     * @param data
+     */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == RESULT_OK) {
-            Bitmap image = (Bitmap) data.getExtras().get("data");
-
-            Intent toEditPictureIntent = new Intent(MainActivity.this, EditPictureActivity.class);
-            toEditPictureIntent.putExtra("picture", image);
-
             switch (requestCode) {
-                case REQUEST_IMAGE_CAPTURE:
-                    imageView.setImageBitmap(image);
+                case REQUEST_TAKE_PHOTO:
+                    setPic();
                     showUploadView(true);
                     Toast.makeText(getApplicationContext(), "Picture is Taken", Toast.LENGTH_LONG).show();
                     break;
@@ -281,6 +332,60 @@ public class MainActivity extends Activity {
     }
 
 
+    /**
+     * 把拍摄的图片写入储存卡 没有问题
+     * @return
+     * @throws IOException
+     */
+    private File createImageFile() throws IOException {
+        // Create an image file name
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        String imageFileName = "JPEG_" + timeStamp + "_";
+        File storageDir = Environment.getExternalStoragePublicDirectory(
+                Environment.DIRECTORY_PICTURES);
+        File image = File.createTempFile(
+                imageFileName,  /* prefix */
+                ".jpg",         /* suffix */
+                storageDir      /* directory */
+        );
+
+        // Save a file: path for use with ACTION_VIEW intents
+        mCurrentPhotoPath = "file:" + image.getAbsolutePath();
+        return image;
+    }
+
+    /**
+     * 把从路径读到的图片压缩 (可能是这里出了问题，读得了图片，但是bitmap不能显示)
+     */
+    @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
+    private void setPic() {
+        // Get the dimensions of the View
+        int targetW = imageView.getMaxHeight();
+        int targetH = imageView.getMaxWidth();
+
+        // Get the dimensions of the bitmap
+        BitmapFactory.Options bmOptions = new BitmapFactory.Options();
+        bmOptions.inJustDecodeBounds = true;
+        BitmapFactory.decodeFile(mCurrentPhotoPath, bmOptions);
+        int photoW = bmOptions.outWidth;
+        int photoH = bmOptions.outHeight;
+
+        // Determine how much to scale down the image
+        int scaleFactor = Math.min(photoW/targetW, photoH/targetH);
+
+        // Decode the image file into a Bitmap sized to fill the View
+        bmOptions.inJustDecodeBounds = false;
+        bmOptions.inSampleSize = scaleFactor;
+        bmOptions.inPurgeable = true;
+
+        Bitmap bitmap = BitmapFactory.decodeFile(mCurrentPhotoPath, bmOptions);
+        imageView.setImageBitmap(bitmap);
+    }
+
+    /**
+     * 跳转到查看图片详细信息
+     * @param view
+     */
     public void toViewPictureActivity(View view) {
         if (((ImageView) view).getDrawable() != null) {
             Intent intent = new Intent(this, ViewPictureActivity.class);
@@ -316,6 +421,11 @@ public class MainActivity extends Activity {
         }
     }
 
+    /**
+     * 转到我的黑名单或我关注的人
+     * @param view
+     * @param x
+     */
     public void toUserListActivity(View view, int x) {
 
         Intent intent = new Intent(this, UserListActivity.class);
@@ -348,6 +458,9 @@ public class MainActivity extends Activity {
         }
     }
 
+    /**
+     * 上传图片的线程
+     */
     class UploadPictureProgress extends AsyncTask<Void, Void, Boolean> {
 
         Bitmap bitmap;

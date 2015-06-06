@@ -18,18 +18,27 @@
         android:layout_height="match_parent"
         android:background="@color/黑色"
         android:id="@+id/upload_picture_layout"
-        android:visibility="gone">
+        android:visibility="visible">
 
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
             <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="360dp"
+                android:layout_height="900dp"
                 android:id="@+id/imageView"
-                android:layout_centerVertical="true"
-                android:layout_centerHorizontal="true" />
+                android:layout_centerHorizontal="true"
+                android:scaleType="centerCrop"
+                android:adjustViewBounds="true"
+                android:maxWidth="300dp"
+                android:maxHeight="800dp"
+                android:layout_above="@+id/cancel_button"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentBottom="true"
+                android:layout_margin="20dp" />
 
             <Button
                 android:layout_width="wrap_content"
@@ -111,12 +120,6 @@
                 android:layout_width="fill_parent"
                 android:layout_gravity="center"
                 android:id="@+id/viewPager">
-                <!--<android.support.v4.view.PagerTitleStrip
-                    android:layout_height="fill_parent"
-                    android:layout_width="fill_parent"
-                    >
-
-                </android.support.v4.view.PagerTitleStrip>-->
             </android.support.v4.view.ViewPager>
         </LinearLayout>
 
