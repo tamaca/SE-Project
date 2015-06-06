@@ -8,12 +8,17 @@ public class CheckValid {
 
         return password.length() > 5 && password.length() <= 15;
     }
+
     static public boolean isEmailValid(String email) {
 
         return email.matches("^([a-zA-Z0-9_\\.\\-])+\\@(([a-zA-Z0-9\\-])+\\.)+([a-zA-Z0-9]{2,4})+$");
     }
+
     static public boolean isUserNameValid(String userName) {
         return userName.length() >= 2 && userName.length() <= 20;
     }
 
+    static public boolean isInputValid(String str) {
+        return str.length() < 20 && str.charAt(0) != ' ';
+    }
 }
