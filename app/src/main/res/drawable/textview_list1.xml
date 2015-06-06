@@ -5,6 +5,6 @@
     </item>
 
     <item
-        android:drawable="@color/背景蓝">
+        android:drawable="@color/白色">
     </item>
 </selector>
