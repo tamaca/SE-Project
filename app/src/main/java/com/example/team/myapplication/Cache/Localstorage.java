@@ -33,14 +33,14 @@ public class Localstorage {
     /**
      * 从SD卡中获取图片
      */
-    public static Bitmap getBitmapFromSDCard(String filePath){
-        Bitmap bitmap;
-       /* BitmapFactory.Options options=new BitmapFactory.Options();
+    public static Bitmap getBitmapFromSDCard(String filePath,int requestWidth){
+        Bitmap bitmap=null;
+        BitmapFactory.Options options=new BitmapFactory.Options();
         BitmapFactory.decodeFile(filePath, options);
         options.inJustDecodeBounds=true;
         options.inSampleSize=calculateInSampleSize(options,requestWidth);
-        options.inJustDecodeBounds=false;*/
-        bitmap=BitmapFactory.decodeFile(filePath);
+        options.inJustDecodeBounds=false;
+        bitmap=BitmapFactory.decodeFile(filePath, options);
         return bitmap;
     }
 
