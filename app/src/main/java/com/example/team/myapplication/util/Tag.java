@@ -23,6 +23,7 @@ public class Tag extends LinearLayout {
         View view = LayoutInflater.from(context).inflate(R.layout.layout_tag, null);
         tagView = (TextView) view.findViewById(R.id.showing_tag);
         tagView.setText(tag);
+        addView(view);
     }
     public Tag(Context context, AttributeSet attrs) {
         super(context, attrs);
