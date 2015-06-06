@@ -50,6 +50,7 @@ public class ViewPictureActivity extends GeneralActivity {
     private boolean isLike = false;
     private ScrollView scrollView;
     private LinearLayout linearLayout;
+    private getImageInformationProgress mAuthTask;
 
     @Override
 
@@ -83,8 +84,11 @@ public class ViewPictureActivity extends GeneralActivity {
         });
 
         String bigurl = (String) intent.getExtras().get("bigurl");
+        String informationurl="http://192.168.253.1/Kevin/image_detail/";
+        String imageid=(String) intent.getExtras().get("imageid");
         new ImageGet(imgview, bigurl, db, "big");
-        // getImageInformation(imageid);
+        mAuthTask=new getImageInformationProgress(informationurl,imageid,db);
+        mAuthTask.execute();
     }
 
 
@@ -154,7 +158,7 @@ public class ViewPictureActivity extends GeneralActivity {
         private JSONObject jsonObject;
         private HashMap<String, String> returnmap;
 
-        getImageInformationProgress(String url, String imageid ,DB db) {
+        getImageInformationProgress(String url,String imageid ,DB db) {
             this.url = url;
             this.imageid = imageid;
             this.db = db;
@@ -164,20 +168,19 @@ public class ViewPictureActivity extends GeneralActivity {
         protected Boolean doInBackground(Void... params) {
             try {
                 HashMap<String, String> map = new HashMap<String, String>();
-                map.put("imageid", imageid);
+                map.put("id", imageid);
                 jsonObject = new JsonPost(map, url, 4, db).getReturnjsonObject();
                 String originImageurl = jsonObject.getString("origin");
                 String _author = jsonObject.getString("author");
                 String _like = jsonObject.getString("like");
-                String _isLike = jsonObject.getString("islike");
-                String _updateTime = jsonObject.getString("updatetime");
+                String _isLike = jsonObject.getString("is_like");
+                String _updateTime = jsonObject.getString("update_time");
                 returnmap = new HashMap<String, String>();
                 returnmap.put("origin", originImageurl);
                 returnmap.put("author", _author);
                 returnmap.put("like", _like);
                 returnmap.put("islike", _isLike);
                 returnmap.put("updatetime", _updateTime);
-
             } catch (Exception e) {
                 return false;
             }
@@ -186,12 +189,13 @@ public class ViewPictureActivity extends GeneralActivity {
 
         @Override
         protected void onPostExecute(final Boolean success) {
-
+            mAuthTask=null;
             if (success) {
+                String baseurl = "http://192.168.253.1/media/";
                 author.setText(returnmap.get("author"));
-                imgview.setContentDescription(returnmap.get("origin"));
+                imgview.setContentDescription(returnmap.get(baseurl+"origin"));
                 isLike = (returnmap.get("islike").equals("true"));
-                String likenumber = returnmap.get("_like");
+                String likenumber = returnmap.get("like");
                 int _likenumber = Integer.parseInt(likenumber);
                 likeText.setText(_likenumber < 10000 ? likenumber : _likenumber / 10000 + "万+");
                 uploadTime.setText(returnmap.get("updatetime"));
