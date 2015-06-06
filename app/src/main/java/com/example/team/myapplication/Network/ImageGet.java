@@ -115,12 +115,12 @@ public class ImageGet {
     private class BitmapDownloaderTask extends AsyncTask<String, Void, Bitmap> {
         private String url = imageUrl;
         private final WeakReference<ImageView> imageViewWeakReference;
-        private final WeakReference<String> filepathWeakReference;
+        private String filepath;
         private String type;
 
         public BitmapDownloaderTask(ImageView imageView, String filepath, String type) {
             imageViewWeakReference = new WeakReference<ImageView>(imageView);
-            filepathWeakReference = new WeakReference<String>(filepath);
+            this.filepath =filepath;
             this.type = type;
         }
 
@@ -148,7 +148,7 @@ public class ImageGet {
                     bitmap = null;
                 }
                 ImageView imageView = imageViewWeakReference.get();
-                String filePath = filepathWeakReference.get();
+                String filePath = filepath;
                 if (imageView != null) {
                     BitmapDownloaderTask bitmapDownloaderTask = getBitmapDownloader(imageView);
                     if (this == bitmapDownloaderTask) {

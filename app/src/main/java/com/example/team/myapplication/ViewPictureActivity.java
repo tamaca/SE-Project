@@ -87,14 +87,12 @@ public class ViewPictureActivity extends GeneralActivity {
             String bigurl = (String) intent.getExtras().get("bigurl");
             String informationurl = "http://192.168.253.1/Kevin/image_detail/";
             String imageid = (String) intent.getExtras().get("imageid");
-            //TODO:Imageget会出错(第三或第四)
             new ImageGet(imgview, bigurl, imageid, db, "big");
-           // mAuthTask = new getImageInformationProgress(informationurl, imageid, db);
-           // mAuthTask.execute();
-        }catch (Exception e)
-        {
-            String a=e.toString();
-            Log.v("error",a);
+            mAuthTask = new getImageInformationProgress(informationurl, imageid, db);
+            mAuthTask.execute();
+        } catch (Exception e) {
+            String a = e.toString();
+            Log.v("error", a);
         }
     }
 
@@ -165,7 +163,7 @@ public class ViewPictureActivity extends GeneralActivity {
         private JSONObject jsonObject;
         private HashMap<String, String> returnmap;
 
-        getImageInformationProgress(String url,String imageid ,DB db) {
+        getImageInformationProgress(String url, String imageid, DB db) {
             this.url = url;
             this.imageid = imageid;
             this.db = db;
@@ -199,7 +197,7 @@ public class ViewPictureActivity extends GeneralActivity {
             if (success) {
                 String baseurl = "http://192.168.253.1/media/";
                 author.setText(returnmap.get("author"));
-                imgview.setContentDescription(returnmap.get(baseurl+"origin"));
+                imgview.setContentDescription(returnmap.get(baseurl + "origin"));
                 isLike = (returnmap.get("islike").equals("true"));
                 String likenumber = returnmap.get("like");
                 int _likenumber = Integer.parseInt(likenumber);
@@ -216,15 +214,17 @@ public class ViewPictureActivity extends GeneralActivity {
                     toast.show();
                 }
             }
-            mAuthTask=null;
+            mAuthTask = null;
         }
     }
+
     public class likeProgress extends AsyncTask<Void, Void, Boolean> {
 
         private String url;
         private DB db;
-        HashMap<String,String >returnmap;
-        likeProgress(String url,String imageid ,DB db) {
+        HashMap<String, String> returnmap;
+
+        likeProgress(String url, String imageid, DB db) {
             this.url = url;
             this.db = db;
         }
@@ -232,8 +232,8 @@ public class ViewPictureActivity extends GeneralActivity {
         @Override
         protected Boolean doInBackground(Void... params) {
             try {
-                String key[]={"like","islike"};
-                returnmap=new JsonGet(url,key,db).getReturnmap();
+                String key[] = {"like", "islike"};
+                returnmap = new JsonGet(url, key, db).getReturnmap();
             } catch (Exception e) {
                 return false;
             }
@@ -242,7 +242,7 @@ public class ViewPictureActivity extends GeneralActivity {
 
         @Override
         protected void onPostExecute(final Boolean success) {
-            mAuthTask=null;
+            mAuthTask = null;
             if (success) {
                 //TODO:后续处理
             } else {
