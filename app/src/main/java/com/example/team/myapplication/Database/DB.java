@@ -98,7 +98,7 @@ public class DB extends SQLiteOpenHelper {
         String tag = "CREATE TABLE " + M_TAG + " (" + M_TAG_ID
                 + " TEXT primary key," + M_TAG_NAME + " TEXT NOT NULL, " + M_TAG_IMAGEID + " TEXT NOT NULL,"
                 + "FOREIGN KEY (M_TAG_IMAGEID) REFERENCES M_IMAGE(M_IMAGE_IMAGEID) ON DELETE CASCADE);";
-        String lobbyimage = "CREATE TABLE " + M_LOBBYIMAGE + " (" + M_LOBBYIMAGE_RANK + " TEXT primary key," + M_LOBBYIMAGE_IMAGEID
+        String lobbyimage = "CREATE TABLE " + M_LOBBYIMAGE + " (" + M_LOBBYIMAGE_RANK + " INTEGER primary key," + M_LOBBYIMAGE_IMAGEID
                 + " TEXT NOT NULL," + "FOREIGN KEY (M_LOBBYIMAGE_IMAGEID) REFERENCES M_IMAGE(M_IMAGE_IMAGEID)   ON DELETE CASCADE);";
         //TODO:写软件设计说明书
         String imagecared = "CREATE TABLE " + M_IMAGECARED + " (" + M_IMAGECARED_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," + M_IMAGECARED_IMAGEID + " TEXT NOT NULL,"
@@ -424,13 +424,19 @@ public class DB extends SQLiteOpenHelper {
     }
 
     //lobbyimage
-    public Cursor lobbyimageselect() {
+   /* public Cursor lobbyimageselect() {
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db
                 .query(M_LOBBYIMAGE, null, null, null, null, null, null);
         return cursor;
+    }*/
+    public Cursor lobbyimageselectpage(int page){
+        String min=String.valueOf(4*(page));
+        String max=String.valueOf(4*(page)+3);
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cur = db.rawQuery("select * from M_LOBBYIMAGE where M_LOBBYIMAGE_RANK>='" + min.trim() + "'" + "and M_LOBBYIMAGE_RANK<='" + max.trim() + "'", null);
+        return  cur;
     }
-
     public long lobbyimageinsert(String rank, String imageid) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues cv = new ContentValues();

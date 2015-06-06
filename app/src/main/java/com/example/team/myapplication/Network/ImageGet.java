@@ -40,13 +40,12 @@ public class ImageGet {
     private String imageUrl;
     private String imageId;
     private DB db;
-
-    public ImageGet(ImageView imageView, String imageUrl, DB db, String type) {
+    public ImageGet(ImageView imageView, String imageUrl,String imageid, DB db, String type) {
         imageViewWeakReference = new WeakReference<ImageView>(imageView);
         mLoadImageAsyncTaskHashSet = new HashSet<BitmapDownloaderTask>();
         this.imageUrl = imageUrl;
         this.db = db;
-        imageId = Localstorage.getImagesId(imageUrl);
+        this.imageId=imageid;
         mLruCacheImageLoader = LruCacheImageLoader.getLruCacheImageLoaderInstance();
         Load(imageUrl, type);
     }
@@ -56,7 +55,7 @@ public class ImageGet {
         imageView = imageViewWeakReference.get();
         Bitmap bitmap = mLruCacheImageLoader.getBitmapFromLruCache(imageUrl);
         if (bitmap == null) {
-            String filePath = Localstorage.getImageFilePath(imageUrl, type);
+            String filePath = Localstorage.getImageFilePath(imageId, type);
             File imageFile = new File(filePath);
             if (!type.equals("origin") && !imageFile.exists()) {
                 if (cancelPotentialDownload(imageUrl, imageView)) {
@@ -65,7 +64,7 @@ public class ImageGet {
                     bitmapDownloaderTask.execute(imageUrl);
                 }
             }
-            if (filePath != null && imageView != null) {
+            else if (filePath != null && imageView != null) {
                 bitmap = Localstorage.getBitmapFromSDCard(filePath);
                 if (bitmap != null) {
                     BitmapShowInCache bitmapShowInCache = new BitmapShowInCache();
@@ -157,6 +156,7 @@ public class ImageGet {
                     }
                 }
                 try {
+                    mLruCacheImageLoader.addBitmapToLruCache(imageUrl, bitmap);
                     mLoadImageAsyncTaskHashSet.remove(this);
                     if (!type.equals("origin")) {
                         File imageFile = new File(filePath);

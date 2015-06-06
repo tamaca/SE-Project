@@ -3,6 +3,7 @@ package com.example.team.myapplication;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Intent;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
@@ -183,6 +184,7 @@ public class MainActivity extends Activity {
         }
         else
         {
+            Cursor cursor=db.lobbyimageselectpage(LoginState.page);
 
         }
         //  JsonGet jsonGet1 = new JsonGet(picURL1, db, squareView);

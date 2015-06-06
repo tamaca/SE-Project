@@ -52,44 +52,50 @@ public class ViewPictureActivity extends GeneralActivity {
     private ScrollView scrollView;
     private LinearLayout linearLayout;
     private getImageInformationProgress mAuthTask;
-
     @Override
 
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setTitle("查看图片");
-        Intent intent = getIntent();
+        try {
+            super.onCreate(savedInstanceState);
+            setTitle("查看图片");
+            Intent intent = getIntent();
 
-        setContentView(R.layout.activity_view_picture);
-        getActionBar().setDisplayHomeAsUpEnabled(true);
-        //变量初始化
-        imgview = (ImageView) findViewById(R.id.imageView8);
-        editText = (EditText) findViewById(R.id.comment_text);
-        commentView = (LinearLayout) findViewById(R.id.comment_view);
-        progressBar = (ProgressBar) findViewById(R.id.progressBar);
-        author = (TextView) findViewById(R.id.author);
-        like = (ImageButton) findViewById(R.id.like_button);
-        uploadTime = (TextView) findViewById(R.id.upload_time);
-        scrollView = (ScrollView) findViewById(R.id.scrollView);
-        linearLayout = (LinearLayout) findViewById(R.id.linearLayout4);
-        likeText = (TextView) findViewById(R.id.textView5);
-        ////////
+            setContentView(R.layout.activity_view_picture);
+            getActionBar().setDisplayHomeAsUpEnabled(true);
+            //变量初始化
+            imgview = (ImageView) findViewById(R.id.imageView8);
+            editText = (EditText) findViewById(R.id.comment_text);
+            commentView = (LinearLayout) findViewById(R.id.comment_view);
+            progressBar = (ProgressBar) findViewById(R.id.progressBar);
+            author = (TextView) findViewById(R.id.author);
+            like = (ImageButton) findViewById(R.id.like_button);
+            uploadTime = (TextView) findViewById(R.id.upload_time);
+            scrollView = (ScrollView) findViewById(R.id.scrollView);
+            linearLayout = (LinearLayout) findViewById(R.id.linearLayout4);
+            likeText = (TextView) findViewById(R.id.textView5);
+            ////////
 
-        comments = new ArrayList<>();
-        author.setOnClickListener(new ToUserPageListener());
-        like.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                changeLike(view);
-            }
-        });
+            comments = new ArrayList<>();
+            author.setOnClickListener(new ToUserPageListener());
+            like.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    changeLike(view);
+                }
+            });
 
-        String bigurl = (String) intent.getExtras().get("bigurl");
-        String informationurl="http://192.168.253.1/Kevin/image_detail/";
-        String imageid=(String) intent.getExtras().get("imageid");
-        new ImageGet(imgview, bigurl, db, "big");
-        mAuthTask=new getImageInformationProgress(informationurl,imageid,db);
-        mAuthTask.execute();
+            String bigurl = (String) intent.getExtras().get("bigurl");
+            String informationurl = "http://192.168.253.1/Kevin/image_detail/";
+            String imageid = (String) intent.getExtras().get("imageid");
+            //TODO:Imageget会出错(第三或第四)
+            new ImageGet(imgview, bigurl, imageid, db, "big");
+           // mAuthTask = new getImageInformationProgress(informationurl, imageid, db);
+           // mAuthTask.execute();
+        }catch (Exception e)
+        {
+            String a=e.toString();
+            Log.v("error",a);
+        }
     }
 
 
@@ -190,7 +196,6 @@ public class ViewPictureActivity extends GeneralActivity {
 
         @Override
         protected void onPostExecute(final Boolean success) {
-            mAuthTask=null;
             if (success) {
                 String baseurl = "http://192.168.253.1/media/";
                 author.setText(returnmap.get("author"));
@@ -211,6 +216,7 @@ public class ViewPictureActivity extends GeneralActivity {
                     toast.show();
                 }
             }
+            mAuthTask=null;
         }
     }
     public class likeProgress extends AsyncTask<Void, Void, Boolean> {
