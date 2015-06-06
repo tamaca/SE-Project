@@ -20,6 +20,7 @@ import android.widget.Toast;
 
 import com.example.team.myapplication.Database.DB;
 import com.example.team.myapplication.Network.ImageGet;
+import com.example.team.myapplication.Network.JsonGet;
 import com.example.team.myapplication.Network.JsonPost;
 import com.example.team.myapplication.Network.NetworkState;
 import com.example.team.myapplication.util.Comment;
@@ -198,7 +199,46 @@ public class ViewPictureActivity extends GeneralActivity {
                 String likenumber = returnmap.get("like");
                 int _likenumber = Integer.parseInt(likenumber);
                 likeText.setText(_likenumber < 10000 ? likenumber : _likenumber / 10000 + "万+");
+                //时间显示
                 uploadTime.setText(returnmap.get("updatetime"));
+            } else {
+                if (toast == null) {
+                    toast = Toast.makeText(getApplicationContext(), "获取图片信息出错", Toast.LENGTH_LONG);
+                    toast.show();
+                } else {
+                    toast.cancel();
+                    toast = Toast.makeText(getApplicationContext(), "获取图片信息出错", Toast.LENGTH_LONG);
+                    toast.show();
+                }
+            }
+        }
+    }
+    public class likeProgress extends AsyncTask<Void, Void, Boolean> {
+
+        private String url;
+        private DB db;
+        HashMap<String,String >returnmap;
+        likeProgress(String url,String imageid ,DB db) {
+            this.url = url;
+            this.db = db;
+        }
+
+        @Override
+        protected Boolean doInBackground(Void... params) {
+            try {
+                String key[]={"like","islike"};
+                returnmap=new JsonGet(url,key,db).getReturnmap();
+            } catch (Exception e) {
+                return false;
+            }
+            return true;
+        }
+
+        @Override
+        protected void onPostExecute(final Boolean success) {
+            mAuthTask=null;
+            if (success) {
+                //TODO:后续处理
             } else {
                 if (toast == null) {
                     toast = Toast.makeText(getApplicationContext(), "获取图片信息出错", Toast.LENGTH_LONG);
