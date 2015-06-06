@@ -121,14 +121,10 @@ public class LoginActivity extends GeneralActivity implements LoaderCallbacks<Cu
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
                 //b为真，表示自动登录打勾
-
-
                 if (b) {
                     rememPassword.setChecked(true);
-                    rememPassword.setEnabled(false);
                 } else {
                     rememPassword.setChecked(false);
-                    rememPassword.setEnabled(true);
                 }
             }
         });
@@ -136,6 +132,11 @@ public class LoginActivity extends GeneralActivity implements LoaderCallbacks<Cu
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
                 //b为真，表示记住密码打勾
+                if (!b) {
+                    if (autoLogin.isChecked()) {
+                        autoLogin.setChecked(false);
+                    }
+                }
 
             }
         });
@@ -404,7 +405,7 @@ public class LoginActivity extends GeneralActivity implements LoaderCallbacks<Cu
                 JsonPost post = new JsonPost(map, url, 1, autoLogin.isChecked(), rememPassword.isChecked(), db);
                 Thread.sleep(3000);
             } catch (Exception e) {
-                String name=e.getClass().getName();
+                String name = e.getClass().getName();
                 return false;
             }
 
@@ -441,4 +442,3 @@ public class LoginActivity extends GeneralActivity implements LoaderCallbacks<Cu
 
     }
 }
-

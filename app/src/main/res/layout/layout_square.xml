@@ -1,108 +1,122 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/背景蓝"
     android:orientation="vertical">
 
-    <LinearLayout
-        android:orientation="horizontal"
-        android:layout_width="fill_parent"
-        android:layout_height="160dp"
-        android:background="@color/背景蓝">
-
-        <ImageView
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
-            android:layout_weight="1"
-            android:id="@+id/imageView1"
-            android:adjustViewBounds="true"
-            android:scaleType="centerCrop"
-            android:onClick="toViewPictureActivity" />
-
-        <ImageView
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
-            android:layout_weight="1"
-            android:id="@+id/imageView2"
-            android:adjustViewBounds="true"
-            android:scaleType="centerCrop"
-            android:onClick="toViewPictureActivity" />
-    </LinearLayout>
+    <ImageButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/imageButton3"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentRight="true"
+        android:background="@android:drawable/ic_menu_search"/>
 
     <LinearLayout
-        android:orientation="horizontal"
-        android:layout_width="fill_parent"
-        android:layout_height="160dp"
-        android:background="@color/背景蓝">
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
-        <ImageView
+        <LinearLayout
+            android:orientation="horizontal"
             android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
-            android:layout_weight="1"
-            android:id="@+id/imageView3"
-            android:adjustViewBounds="true"
-            android:scaleType="centerCrop"
-            android:onClick="toViewPictureActivity" />
+            android:layout_height="160dp"
+            android:background="@color/背景蓝">
 
-        <ImageView
+            <ImageView
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:layout_weight="1"
+                android:id="@+id/imageView1"
+                android:adjustViewBounds="true"
+                android:scaleType="centerCrop"
+                android:onClick="toViewPictureActivity" />
+
+            <ImageView
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:layout_weight="1"
+                android:id="@+id/imageView2"
+                android:adjustViewBounds="true"
+                android:scaleType="centerCrop"
+                android:onClick="toViewPictureActivity" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:orientation="horizontal"
             android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
-            android:layout_weight="1"
-            android:id="@+id/imageView4"
-            android:adjustViewBounds="true"
-            android:scaleType="centerCrop"
-            android:onClick="toViewPictureActivity" />
+            android:layout_height="160dp"
+            android:background="@color/背景蓝">
+
+            <ImageView
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:layout_weight="1"
+                android:id="@+id/imageView3"
+                android:adjustViewBounds="true"
+                android:scaleType="centerCrop"
+                android:onClick="toViewPictureActivity" />
+
+            <ImageView
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:layout_weight="1"
+                android:id="@+id/imageView4"
+                android:adjustViewBounds="true"
+                android:scaleType="centerCrop"
+                android:onClick="toViewPictureActivity" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="fill_parent"
+            android:layout_height="160dp"
+            android:background="@color/背景蓝" >
+
+            <ImageView
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:layout_weight="1"
+                android:id="@+id/imageView5"
+                android:adjustViewBounds="true"
+                android:scaleType="centerCrop"
+                android:onClick="toViewPictureActivity" />
+
+            <ImageView
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:layout_weight="1"
+                android:id="@+id/imageView6"
+                android:adjustViewBounds="true"
+                android:scaleType="centerCrop"
+                android:onClick="toViewPictureActivity" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="fill_parent"
+            android:layout_height="160dp"
+            android:background="@color/背景蓝" >
+
+            <ImageView
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:layout_weight="1"
+                android:id="@+id/imageView7"
+                android:adjustViewBounds="true"
+                android:scaleType="centerCrop"
+                android:onClick="toViewPictureActivity" />
+
+            <ImageView
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:layout_weight="1"
+                android:id="@+id/imageView8"
+                android:adjustViewBounds="true"
+                android:scaleType="centerCrop"
+                android:onClick="toViewPictureActivity" />
+        </LinearLayout>
     </LinearLayout>
 
-    <LinearLayout
-        android:orientation="horizontal"
-        android:layout_width="fill_parent"
-        android:layout_height="160dp"
-        android:background="@color/背景蓝" >
-
-        <ImageView
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
-            android:layout_weight="1"
-            android:id="@+id/imageView5"
-            android:adjustViewBounds="true"
-            android:scaleType="centerCrop"
-            android:onClick="toViewPictureActivity" />
-
-        <ImageView
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
-            android:layout_weight="1"
-            android:id="@+id/imageView6"
-            android:adjustViewBounds="true"
-            android:scaleType="centerCrop"
-            android:onClick="toViewPictureActivity" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:orientation="horizontal"
-        android:layout_width="fill_parent"
-        android:layout_height="160dp"
-        android:background="@color/背景蓝" >
-
-        <ImageView
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
-            android:layout_weight="1"
-            android:id="@+id/imageView7"
-            android:adjustViewBounds="true"
-            android:scaleType="centerCrop"
-            android:onClick="toViewPictureActivity" />
-
-        <ImageView
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
-            android:layout_weight="1"
-            android:id="@+id/imageView8"
-            android:adjustViewBounds="true"
-            android:scaleType="centerCrop"
-            android:onClick="toViewPictureActivity" />
-    </LinearLayout>
-
-</LinearLayout>
+</RelativeLayout>

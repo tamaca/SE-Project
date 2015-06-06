@@ -31,6 +31,7 @@ public class UserPageActivity extends GeneralActivity implements ScrollViewListe
     private TextView name;
     private Button concernButton;
     private Button hateButton;
+    private Button uploadImageButton;
     private Button manageButton;
     private String userName;
     private LinearLayout gallery;
@@ -62,6 +63,7 @@ public class UserPageActivity extends GeneralActivity implements ScrollViewListe
         concernButton = (Button) findViewById(R.id.button6);
         hateButton = (Button) findViewById(R.id.button5);
         manageButton = (Button) findViewById(R.id.button8);
+        uploadImageButton = (Button) findViewById(R.id.button10);
         gallery = (LinearLayout) findViewById(R.id.gallery);
         galleryItems = new ArrayList<>();
         toast = null;
@@ -89,6 +91,7 @@ public class UserPageActivity extends GeneralActivity implements ScrollViewListe
             //加载别人的主页
             //TODO 获取用户和这个人的关系
             manageButton.setVisibility(View.GONE);
+            uploadImageButton.setVisibility(View.GONE);
             getInfomationtask = new GetInfomation("Kevin2");
             getInfomationtask.execute();
         }

@@ -47,37 +47,45 @@
                     android:orientation="horizontal"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:id="@+id/tags"></LinearLayout>
+                    android:id="@+id/tags">
 
-                <RelativeLayout
+                </LinearLayout>
+
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:layout_marginTop="5dp">
+                    android:layout_marginTop="5dp"
+                    android:orientation="vertical">
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/author"
-                        android:textSize="20sp"
-                        android:id="@+id/author"
-                        android:layout_alignParentLeft="true"
-                        android:layout_alignParentStart="true"
-                        android:layout_centerVertical="true"
-                        android:layout_marginLeft="10dp"
-                        android:layout_marginStart="10dp"
-                        android:textColor="@color/天依蓝"/>
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent">
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:textAppearance="?android:attr/textAppearanceLarge"
-                        android:text="@string/upload_time"
-                        android:textColor="@color/中灰色"
-                        android:textSize="20sp"
-                        android:id="@+id/upload_time"
-                        android:layout_toRightOf="@+id/author"
-                        android:layout_centerVertical="true"
-                        android:layout_marginLeft="10dp" />
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/author"
+                            android:textSize="20sp"
+                            android:id="@+id/author"
+                            android:layout_alignParentLeft="true"
+                            android:layout_alignParentStart="true"
+                            android:layout_centerVertical="true"
+                            android:layout_marginLeft="10dp"
+                            android:layout_marginStart="10dp"
+                            android:textColor="@color/天依蓝"/>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textAppearance="?android:attr/textAppearanceLarge"
+                            android:text="@string/upload_time"
+                            android:textColor="@color/中灰色"
+                            android:textSize="20sp"
+                            android:id="@+id/upload_time"
+                            android:layout_toRightOf="@+id/author"
+                            android:layout_centerVertical="true"
+                            android:layout_marginLeft="10dp" />
+                    </RelativeLayout>
 
                     <LinearLayout
                         android:orientation="horizontal"
@@ -89,7 +97,8 @@
                         android:layout_alignParentEnd="true"
                         android:layout_centerVertical="true"
                         android:layout_marginRight="10dp"
-                        android:layout_marginEnd="10dp">
+                        android:layout_marginEnd="10dp"
+                        android:layout_gravity="right">
 
                         <ImageButton
                             android:layout_weight="1"
@@ -97,7 +106,8 @@
                             android:layout_height="wrap_content"
                             android:id="@+id/like_button"
                             android:background="@drawable/like"
-                            android:scaleType="centerInside"/>
+                            android:scaleType="centerInside"
+                            android:layout_marginRight="20dp" />
 
                         <TextView
                             android:layout_width="wrap_content"
@@ -121,7 +131,7 @@
                             android:onClick="toPictureActivity"/>
 
                     </LinearLayout>
-                </RelativeLayout>
+                </LinearLayout>
 
                 <LinearLayout
                     android:layout_width="match_parent"

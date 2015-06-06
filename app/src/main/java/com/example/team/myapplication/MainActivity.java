@@ -35,7 +35,6 @@ public class MainActivity extends Activity {
     public final static int blacklist = 2;
     public View squareView;
     public View meView;
-    public View searchView;
     private View loginView;
     private View userOptions;
     private ViewPager viewPager;
@@ -56,10 +55,7 @@ public class MainActivity extends Activity {
     public static void setCurrentTag(String currentTag) {
         MainActivity.currentTag = currentTag;
     }
-
     private static String currentTag;
-
-    //private ImageView imgView;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -71,7 +67,7 @@ public class MainActivity extends Activity {
         //变量初始化
         squareView = LayoutInflater.from(MainActivity.this).inflate(R.layout.layout_square, null);
         meView = LayoutInflater.from(MainActivity.this).inflate(R.layout.layout_me, null);
-        searchView = LayoutInflater.from(MainActivity.this).inflate(R.layout.activity_search, null);
+        //searchView = LayoutInflater.from(MainActivity.this).inflate(R.layout.activity_search, null);
         userOptions = meView.findViewById(R.id.user_options);
         mTabHost = (TabHost) findViewById(R.id.tabHost2);
         viewPager = (ViewPager) findViewById(R.id.viewPager);
@@ -83,7 +79,6 @@ public class MainActivity extends Activity {
         upload = (Button) findViewById(R.id.upload_button);
         cancel = (Button) findViewById(R.id.cancel_button);
         camera = (ImageButton) findViewById(R.id.imageButton);
-
         Button myConcern = (Button) meView.findViewById(R.id.my_concern_button);
         myConcern.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -116,7 +111,6 @@ public class MainActivity extends Activity {
 
             }
         });
-        listOfViews.add(searchView);
         listOfViews.add(squareView);
         listOfViews.add(meView);
         viewPager.setAdapter(new MyPagerAdapter());
@@ -128,7 +122,7 @@ public class MainActivity extends Activity {
 
             @Override
             public void onPageSelected(int position) {
-                if (position == 0 || position == 2) {
+                if (position == 1) {
                     camera.setVisibility(View.GONE);
                 } else {
                     camera.setVisibility(View.VISIBLE);
@@ -144,7 +138,6 @@ public class MainActivity extends Activity {
         });
 
         mTabHost.setup();
-        mTabHost.addTab(mTabHost.newTabSpec("tab0").setIndicator("搜索").setContent(R.id.linearLayout));
         mTabHost.addTab(mTabHost.newTabSpec("tab1").setIndicator("广场").setContent(R.id.linearLayout));
         mTabHost.addTab(mTabHost.newTabSpec("tab2").setIndicator("我").setContent(R.id.linearLayout));
         mTabHost.setOnTabChangedListener(new TabHost.OnTabChangeListener() {

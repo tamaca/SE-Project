@@ -65,7 +65,7 @@ public class ImageGet {
                 }
             }
             if (filePath != null && imageView != null) {
-                bitmap = Localstorage.getBitmapFromSDCard(filePath);
+                bitmap = Localstorage.getBitmapFromSDCard(filePath, imageView.getWidth());
                 if (bitmap != null) {
                     BitmapShowInCache bitmapShowInCache = new BitmapShowInCache();
                     bitmapShowInCache.execute(bitmap);
