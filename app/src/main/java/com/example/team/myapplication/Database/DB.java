@@ -469,7 +469,16 @@ public class DB extends SQLiteOpenHelper {
         long row = db.insert(M_IMAGECARED, null, cv);
         return row;
     }
-
+    //TODO:软件设计说明书   需要测试
+    public boolean checkuserimage (String imageid,String userid) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cur = db.rawQuery("select * from M_IMAGECARED where M_IMAGECARED_IMAGEID='" + imageid.trim() + "'"+"and M_IMAGECARED_USERID='" + userid.trim() + "'", null);
+        if (cur.moveToFirst()) {
+            return true;
+        } else {
+            return false;
+        }
+    }
     public void imagecareddelete(String imageid, String userid) {
         SQLiteDatabase db = this.getWritableDatabase();
         String where = M_IMAGECARED_IMAGEID + " = ?" + " AND " + M_IMAGECARED_USERID + " = ?";

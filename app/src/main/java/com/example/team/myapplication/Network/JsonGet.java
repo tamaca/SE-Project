@@ -19,6 +19,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -40,14 +41,16 @@ public class JsonGet {
     public HashMap<String, String> getReturnmap() {
         return returnmap;
     }
+
     private HashMap<String, String> returnmap;
     private String type;
+
     //图片获取
-    public JsonGet(String url, DB db, View view,String type) throws Exception {
+    public JsonGet(String url, DB db, View view, String type) throws Exception {
         this.url = url;
         this.db = db;
         this.view = view;
-        this.type=type;
+        this.type = type;
         Get get = new Get();
         JSONObject jsonObject = get.GetFromServer();
         get.PostExecuteImage(jsonObject);
@@ -145,8 +148,20 @@ public class JsonGet {
                         ImageGet imageGet8 = new ImageGet(null, image_small[2], db, "small");
                         ImageGet imageGet9 = new ImageGet(null, image_small[3], db, "small");
                     }
-                    //TODO 此处需要加入本地数据库
+                    dbimagesave(image_id[0]);
+                    dbimagesave(image_id[1]);
+                    dbimagesave(image_id[2]);
+                    dbimagesave(image_id[3]);
                     HashMap<String, String> image = new HashMap<String, String>();
+                    if(type.equals("lobby"))
+                    {
+                        image.put("1",image_id[0]);
+                        image.put("2",image_id[1]);
+                        image.put("3",image_id[2]);
+                        image.put("4",image_id[3]);
+
+                    }
+
                 } else {
                     throw new executeException();
                     //TODO:接收信息错误
@@ -199,8 +214,8 @@ public class JsonGet {
                 throw new nullException();
             }
         }
-//异常类
 
+        //异常类
         class getException extends Exception {
             public String name = "get";
         }
@@ -211,6 +226,31 @@ public class JsonGet {
 
         class executeException extends Exception {
             public String name = "execute";
+        }
+    }
+
+    //数据库
+    //缩略图数据库保存
+    private void dbimagesave(String imageid) {
+        db.imageinsert(imageid);
+    }
+
+    //大厅缩略图保存
+    private void dblobbyimagesave(HashMap<String, String> image) {
+        String imageid = image.get("imageid");
+        String rank = image.get("rank");
+        db.lobbyimageinsert(rank, imageid);
+    }
+
+    //关注的人缩略图保存
+    private void imagecaredsave(HashMap<String, String> image) {
+        String imageid = image.get("imageid");
+        String updatedate = image.get("updatedate");
+        String userid = image.get("userid");
+        if (!db.checkuserimage(imageid, userid)) {
+            Timestamp updatetime = new Timestamp(System.currentTimeMillis());
+            updatetime.valueOf(updatedate);
+            db.imagecaredinsert(imageid, userid, updatetime);
         }
     }
 }
