@@ -9,9 +9,9 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
-import android.widget.Toast;
 
 import com.example.team.myapplication.util.MyScrollView;
+import com.example.team.myapplication.util.MyToast;
 import com.example.team.myapplication.util.RecentItem;
 import com.example.team.myapplication.util.RefreshableView;
 import com.example.team.myapplication.util.ScrollViewListener;
@@ -27,7 +27,7 @@ public class RecentActivity extends Activity implements ScrollViewListener {
     private ArrayList<RecentItem> recentItems;
     private MyScrollView myScrollView;
     private ProgressBar inLoadingPicture;
-    private Toast toast = null;
+    private MyToast myToast;
     private GetPicture getPicture = null;
     private int pictureCount = 0;
     private RefreshableView refreshableView;
@@ -47,6 +47,7 @@ public class RecentActivity extends Activity implements ScrollViewListener {
         refreshableView = (RefreshableView) findViewById(R.id.refreshable_view);
         scrollContentLeft = (LinearLayout) findViewById(R.id.linearLayout6);
         scrollContentRight = (LinearLayout) findViewById(R.id.linearLayout7);
+        myToast = new MyToast(getApplicationContext());
         ////////
         myScrollView.setScrollViewListener(this);
         refreshableView.setOnRefreshListener(new MyRefreshListener(), 0);
@@ -177,14 +178,7 @@ public class RecentActivity extends Activity implements ScrollViewListener {
                 });
             } catch (InterruptedException e) {
                 e.printStackTrace();
-                if (toast == null) {
-                    toast = Toast.makeText(getApplicationContext(), "刷新图片失败", Toast.LENGTH_SHORT);
-                    toast.show();
-                } else {
-                    toast.cancel();
-                    toast = Toast.makeText(getApplicationContext(), "刷新图片失败", Toast.LENGTH_SHORT);
-                    toast.show();
-                }
+                myToast.show(getString(R.string.toast_refreshing_error));
             }
             refreshableView.finishRefreshing();
         }

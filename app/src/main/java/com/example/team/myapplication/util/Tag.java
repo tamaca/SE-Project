@@ -32,4 +32,5 @@ public class Tag extends LinearLayout {
     public Tag(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
     }
+
 }

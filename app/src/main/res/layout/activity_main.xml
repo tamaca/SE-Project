@@ -134,6 +134,16 @@
             android:layout_marginBottom="5dp"
             android:layout_centerHorizontal="true"
             />
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/imageButton3"
+            android:src="@android:drawable/ic_menu_search"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
+            android:layout_marginTop="50dp"
+            android:onClick="toSearchActivity"/>
     </RelativeLayout>
 
 
