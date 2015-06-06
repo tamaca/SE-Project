@@ -107,7 +107,8 @@
         <activity
             android:name=".RecentActivity"
             android:label="@string/title_activity_recent"
-            android:theme="@style/GeneralTheme">
+            android:theme="@style/GeneralTheme"
+            android:screenOrientation="portrait">
         </activity>
     </application>
 
