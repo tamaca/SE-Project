@@ -24,6 +24,8 @@ import com.example.team.myapplication.Cache.Localstorage;
 import com.example.team.myapplication.Database.DB;
 import com.example.team.myapplication.Network.JsonGet;
 
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -46,9 +48,11 @@ public class MainActivity extends Activity {
     private DB db = null;
     private ImageButton camera;
     private Toast toast = null;
+
     public static String getCurrentTag() {
         return currentTag;
     }
+
     public static void setCurrentTag(String currentTag) {
         MainActivity.currentTag = currentTag;
     }
@@ -157,7 +161,7 @@ public class MainActivity extends Activity {
         /**
          * 如果imagedownload()的线程一直跑会占用很多cpu资源，请解决
          */
-        //imagedownload();
+        imagedownload();
         //imageview
 
     }
@@ -166,7 +170,7 @@ public class MainActivity extends Activity {
         String picURL1 = "http://192.168.253.1/square_page/1/";
         String picURL2 = "http://192.168.253.1/square_page/2/";
         DownloadPictureProgress downloadPictureProgress1 = new DownloadPictureProgress(picURL1, db, squareView);
-        DownloadPictureProgress downloadPictureProgress2 = new DownloadPictureProgress(picURL2, db,null);
+        DownloadPictureProgress downloadPictureProgress2 = new DownloadPictureProgress(picURL2, db, null);
         downloadPictureProgress1.execute();
         downloadPictureProgress2.execute();
         //  JsonGet jsonGet1 = new JsonGet(picURL1, db, squareView);
@@ -202,10 +206,11 @@ public class MainActivity extends Activity {
         startActivity(intent);
     }
 
-    public void toRecentActivity(View view){
-        Intent intent = new Intent(this,RecentActivity.class);
+    public void toRecentActivity(View view) {
+        Intent intent = new Intent(this, RecentActivity.class);
         startActivity(intent);
     }
+
     public void toUserPageActivity(View view) {
         Intent intent = new Intent(this, UserPageActivity.class);
         intent.putExtra("user_name", LoginState.username);
@@ -288,9 +293,24 @@ public class MainActivity extends Activity {
             Intent intent = new Intent(this, ViewPictureActivity.class);
             //view.setDrawingCacheEnabled(true);
             //Bitmap bitmap = view.getDrawingCache();
-            String bigurl = view.getContentDescription().toString();
-            intent.putExtra("bigurl", bigurl);
-            startActivity(intent);
+            String imageviewJsonString = view.getContentDescription().toString();
+            try {
+                JSONObject imageviewJson = new JSONObject(imageviewJsonString);
+                String bigurl = imageviewJson.getString("imagebigurl");
+                String id = imageviewJson.getString("imageid");
+                intent.putExtra("bigurl", bigurl);
+                intent.putExtra("imageid", id);
+                startActivity(intent);
+            } catch (Exception e) {
+                if (toast == null) {
+                    toast = Toast.makeText(getApplicationContext(), "图片出错", Toast.LENGTH_LONG);
+                    toast.show();
+                } else {
+                    toast.cancel();
+                    toast = Toast.makeText(getApplicationContext(), "图片出错", Toast.LENGTH_LONG);
+                    toast.show();
+                }
+            }
         } else {
             if (toast == null) {
                 toast = Toast.makeText(getApplicationContext(), "图片出错", Toast.LENGTH_LONG);
@@ -383,7 +403,7 @@ public class MainActivity extends Activity {
         @Override
         protected Boolean doInBackground(Void... params) {
             try {
-              new JsonGet(url, db, view,"lobby");
+                new JsonGet(url, db, view, "lobby");
             } catch (Exception e) {
                 return false;
             }
@@ -393,16 +413,16 @@ public class MainActivity extends Activity {
         @Override
         protected void onPostExecute(final Boolean success) {
 
-            if (!success) {
-                {
-                    if (toast == null) {
-                        toast = Toast.makeText(getApplicationContext(), "下载图片出错", Toast.LENGTH_LONG);
-                        toast.show();
-                    } else {
-                        toast.cancel();
-                        toast = Toast.makeText(getApplicationContext(), "下载图片出错", Toast.LENGTH_LONG);
-                        toast.show();
-                    }
+            if (success) {
+                squareView.postInvalidate();
+            } else {
+                if (toast == null) {
+                    toast = Toast.makeText(getApplicationContext(), "下载图片出错", Toast.LENGTH_LONG);
+                    toast.show();
+                } else {
+                    toast.cancel();
+                    toast = Toast.makeText(getApplicationContext(), "下载图片出错", Toast.LENGTH_LONG);
+                    toast.show();
                 }
             }
         }

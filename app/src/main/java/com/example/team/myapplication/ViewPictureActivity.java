@@ -50,7 +50,7 @@ public class ViewPictureActivity extends GeneralActivity {
     private boolean isLike = false;
     private ScrollView scrollView;
     private LinearLayout linearLayout;
-
+    private getImageInformationProgress mAuthTask=null;
     @Override
 
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,7 +84,7 @@ public class ViewPictureActivity extends GeneralActivity {
 
         String bigurl = (String) intent.getExtras().get("bigurl");
         new ImageGet(imgview, bigurl, db, "big");
-        // getImageInformation(imageid);
+       //  mAuthTask=new getImageInformationProgress(bigurl,imageid,db);
     }
 
 
@@ -154,7 +154,7 @@ public class ViewPictureActivity extends GeneralActivity {
         private JSONObject jsonObject;
         private HashMap<String, String> returnmap;
 
-        getImageInformationProgress(String url, String imageid ,DB db) {
+        getImageInformationProgress(String url,String imageid ,DB db) {
             this.url = url;
             this.imageid = imageid;
             this.db = db;

@@ -30,6 +30,7 @@ public class JsonGet {
     private DB db;
     private View view;
     private  String type;
+    private View squareview;
     public ArrayList<String> getUserNames() {
         return userNames;
     }
@@ -91,9 +92,11 @@ public class JsonGet {
                     String baseurl = "http://192.168.253.1/media/";
                     String image_small[] = new String[4];
                     String image_big[] = new String[4];
+                    String image_id[]=new String[4];
                     for (int i = 0; i <= 3; i++) {
                         image_small[i] = baseurl + jsonObject.getString("image" + i + "_small");
                         image_big[i] = baseurl + jsonObject.getString("image" + i + "_big");
+                        image_id[i]=jsonObject.getString("image"+i+"_id");
                     }
                     if (view != null) {
                         ImageView imageView1 = (ImageView) view.findViewById(R.id.imageView1);
@@ -104,10 +107,22 @@ public class JsonGet {
                         ImageGet imageGet2 = new ImageGet(imageView2, image_small[1], db, "small");
                         ImageGet imageGet3 = new ImageGet(imageView3, image_small[2], db, "small");
                         ImageGet imageGet4 = new ImageGet(imageView4, image_small[3], db, "small");
-                        imageView1.setContentDescription(image_big[0]);
-                        imageView2.setContentDescription(image_big[1]);
-                        imageView3.setContentDescription(image_big[2]);
-                        imageView4.setContentDescription(image_big[3]);
+                        JSONObject jsonObject1=new JSONObject();
+                        jsonObject1.put("imageid",image_id[0]);
+                        jsonObject1.put("imagebigurl",image_big[0]);
+                        JSONObject jsonObject2=new JSONObject();
+                        jsonObject2.put("imageid",image_id[1]);
+                        jsonObject2.put("imagebigurl",image_big[1]);
+                        JSONObject jsonObject3=new JSONObject();
+                        jsonObject3.put("imageid",image_id[2]);
+                        jsonObject3.put("imagebigurl",image_big[2]);
+                        JSONObject jsonObject4=new JSONObject();
+                        jsonObject4.put("imageid",image_id[3]);
+                        jsonObject4.put("imagebigurl",image_big[3]);
+                        imageView1.setContentDescription(jsonObject1.toString());
+                        imageView2.setContentDescription(jsonObject2.toString());
+                        imageView3.setContentDescription(jsonObject3.toString());
+                        imageView4.setContentDescription(jsonObject4.toString());
                     } else {
                         ImageGet imageGet6 = new ImageGet(null, image_small[0], db, "small");
                         ImageGet imageGet7 = new ImageGet(null, image_small[1], db, "small");
