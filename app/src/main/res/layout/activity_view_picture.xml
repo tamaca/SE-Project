@@ -38,6 +38,8 @@
                     android:id="@+id/imageView8"
                     android:adjustViewBounds="true"
                     android:maxHeight="320dp"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginRight="10dp"
                     android:scaleType="centerCrop"
                     android:layout_gravity="center_horizontal|top"
                     android:contentDescription="@string/OK"

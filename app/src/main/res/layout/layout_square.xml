@@ -16,7 +16,8 @@
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:paddingTop="5dp">
 
         <LinearLayout
             android:orientation="horizontal"
@@ -28,6 +29,8 @@
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent"
                 android:layout_weight="1"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="2dp"
                 android:id="@+id/imageView1"
                 android:adjustViewBounds="true"
                 android:scaleType="centerCrop"
@@ -37,6 +40,8 @@
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent"
                 android:layout_weight="1"
+                android:layout_marginLeft="2dp"
+                android:layout_marginRight="5dp"
                 android:id="@+id/imageView2"
                 android:adjustViewBounds="true"
                 android:scaleType="centerCrop"
@@ -47,12 +52,15 @@
             android:orientation="horizontal"
             android:layout_width="fill_parent"
             android:layout_height="160dp"
-            android:background="@color/背景蓝">
+            android:background="@color/背景蓝"
+            android:paddingLeft="4dp">
 
             <ImageView
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent"
                 android:layout_weight="1"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="2dp"
                 android:id="@+id/imageView3"
                 android:adjustViewBounds="true"
                 android:scaleType="centerCrop"
@@ -62,6 +70,8 @@
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent"
                 android:layout_weight="1"
+                android:layout_marginLeft="2dp"
+                android:layout_marginRight="5dp"
                 android:id="@+id/imageView4"
                 android:adjustViewBounds="true"
                 android:scaleType="centerCrop"
@@ -72,12 +82,15 @@
             android:orientation="horizontal"
             android:layout_width="fill_parent"
             android:layout_height="160dp"
+            android:paddingLeft="4dp"
             android:background="@color/背景蓝" >
 
             <ImageView
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent"
                 android:layout_weight="1"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="2dp"
                 android:id="@+id/imageView5"
                 android:adjustViewBounds="true"
                 android:scaleType="centerCrop"
@@ -87,6 +100,8 @@
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent"
                 android:layout_weight="1"
+                android:layout_marginLeft="2dp"
+                android:layout_marginRight="5dp"
                 android:id="@+id/imageView6"
                 android:adjustViewBounds="true"
                 android:scaleType="centerCrop"
@@ -97,12 +112,15 @@
             android:orientation="horizontal"
             android:layout_width="fill_parent"
             android:layout_height="160dp"
+            android:paddingLeft="4dp"
             android:background="@color/背景蓝" >
 
             <ImageView
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent"
                 android:layout_weight="1"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="2dp"
                 android:id="@+id/imageView7"
                 android:adjustViewBounds="true"
                 android:scaleType="centerCrop"
@@ -112,6 +130,8 @@
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent"
                 android:layout_weight="1"
+                android:layout_marginLeft="2dp"
+                android:layout_marginRight="5dp"
                 android:id="@+id/imageView8"
                 android:adjustViewBounds="true"
                 android:scaleType="centerCrop"
