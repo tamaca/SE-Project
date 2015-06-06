@@ -27,6 +27,7 @@ import com.example.team.myapplication.Network.NetworkState;
 import com.example.team.myapplication.util.Comment;
 import com.example.team.myapplication.util.GeneralActivity;
 import com.example.team.myapplication.util.MyToast;
+import com.example.team.myapplication.util.Tag;
 
 import org.json.JSONObject;
 
@@ -39,8 +40,10 @@ public class ViewPictureActivity extends GeneralActivity {
     ImageView imgview;
     private EditText editText;
     private LinearLayout commentView;
+    private LinearLayout tagView;
     private ProgressBar progressBar;
     private List<Comment> comments;
+    private ArrayList<Tag> tags;
     private UploadComment uploadComment = null;
     private TextView author;
     private TextView uploadTime;
@@ -48,7 +51,6 @@ public class ViewPictureActivity extends GeneralActivity {
     private int likeNumber;
     private ImageButton like;
     private MyToast myToast;
-
     private TextView likeText;
     private boolean isLike = false;
     private ScrollView scrollView;
@@ -61,13 +63,15 @@ public class ViewPictureActivity extends GeneralActivity {
         super.onCreate(savedInstanceState);
         setTitle("查看图片");
         Intent intent = getIntent();
-
         setContentView(R.layout.activity_view_picture);
         getActionBar().setDisplayHomeAsUpEnabled(true);
-        //变量初始化
+        /**
+         * 初始化变量
+         */
         imgview = (ImageView) findViewById(R.id.imageView8);
         editText = (EditText) findViewById(R.id.comment_text);
         commentView = (LinearLayout) findViewById(R.id.comment_view);
+        tagView = (LinearLayout) findViewById(R.id.tags_in_view_picture);
         progressBar = (ProgressBar) findViewById(R.id.progressBar);
         author = (TextView) findViewById(R.id.author);
         like = (ImageButton) findViewById(R.id.like_button);
@@ -75,10 +79,15 @@ public class ViewPictureActivity extends GeneralActivity {
         scrollView = (ScrollView) findViewById(R.id.scrollView);
         linearLayout = (LinearLayout) findViewById(R.id.linearLayout4);
         likeText = (TextView) findViewById(R.id.textView5);
-        ////////
-
         comments = new ArrayList<>();
+        tags = new ArrayList<>();
+        /**
+         * 给作者添加跳转到个人界面的监听器
+         */
         author.setOnClickListener(new ToUserPageListener());
+        /**
+         * 给赞按钮添加监听器
+         */
         like.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -122,6 +131,10 @@ public class ViewPictureActivity extends GeneralActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    /**
+     * 提交评论按钮的响应
+     * @param view
+     */
     public void submitComment(View view) {
         String comment = editText.getText().toString();//获取输入的评论
         if (comment.isEmpty()) {
@@ -144,6 +157,10 @@ public class ViewPictureActivity extends GeneralActivity {
 
     }
 
+    /**
+     * 将评论添加到页面中的UI操作
+     * @param comment
+     */
     public void addComment(String comment) {
         comments.add(new Comment(getApplicationContext(), LoginState.username, comment));
         commentView.addView(comments.get(comments.size() - 1));
@@ -272,10 +289,19 @@ public class ViewPictureActivity extends GeneralActivity {
           }
       }
   */
+
+    /**
+     * 点击赞的相应函数
+     * @param view
+     */
     public void changeLike(View view) {
         onLikeChange(isLike);
     }
 
+    /**
+     * 点击赞之后的UI变化
+     * @param zan
+     */
     public void onLikeChange(boolean zan) {
         if (!zan) {
             likeNumber++;
@@ -300,6 +326,10 @@ public class ViewPictureActivity extends GeneralActivity {
         progressBar.setVisibility(show ? View.VISIBLE : View.GONE);
     }
 
+    /**
+     * 跳转到查看个人主页
+     * @param view
+     */
     public void toUserPageActivity(View view) {
         Intent intent = new Intent(this, UserPageActivity.class);
         intent.putExtra("user_name", ((TextView) view).getText());
@@ -307,6 +337,10 @@ public class ViewPictureActivity extends GeneralActivity {
         startActivity(intent);
     }
 
+    /**
+     * 跳转到查看原图
+     * @param view
+     */
     public void toPictureActivity(View view) {
         if (NetworkState.isNetworkConnected(getApplicationContext())) {
             if (!NetworkState.isWifiEnable(getApplicationContext())) {
@@ -421,6 +455,9 @@ public class ViewPictureActivity extends GeneralActivity {
 
     }
 
+    /**
+     * 跳转到个人主页的监听器
+     */
     public class ToUserPageListener implements TextView.OnClickListener {
 
         @Override
