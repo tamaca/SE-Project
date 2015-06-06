@@ -5,6 +5,7 @@ import android.view.View;
 import android.widget.ImageView;
 
 import com.example.team.myapplication.Database.DB;
+import com.example.team.myapplication.LoginState;
 import com.example.team.myapplication.R;
 import com.example.team.myapplication.ViewPictureActivity;
 
@@ -153,15 +154,14 @@ public class JsonGet {
                     dbimagesave(image_id[2]);
                     dbimagesave(image_id[3]);
                     HashMap<String, String> image = new HashMap<String, String>();
-                    if(type.equals("lobby"))
-                    {
-                        image.put("1",image_id[0]);
-                        image.put("2",image_id[1]);
-                        image.put("3",image_id[2]);
-                        image.put("4",image_id[3]);
-
+                    if (type.equals("lobby")) {
+                        dblobbyimagesave(String.valueOf(LoginState.page * 4 + 1), image_id[0]);
+                        dblobbyimagesave(String.valueOf(LoginState.page * 4 + 2), image_id[1]);
+                        dblobbyimagesave(String.valueOf(LoginState.page * 4 + 3), image_id[2]);
+                        dblobbyimagesave(String.valueOf(LoginState.page * 4 + 4), image_id[3]);
+                    } else {
+                        //TODO:TA的动态数据库存储
                     }
-
                 } else {
                     throw new executeException();
                     //TODO:接收信息错误
@@ -236,17 +236,12 @@ public class JsonGet {
     }
 
     //大厅缩略图保存
-    private void dblobbyimagesave(HashMap<String, String> image) {
-        String imageid = image.get("imageid");
-        String rank = image.get("rank");
+    private void dblobbyimagesave(String rank, String imageid) {
         db.lobbyimageinsert(rank, imageid);
     }
 
     //关注的人缩略图保存
-    private void imagecaredsave(HashMap<String, String> image) {
-        String imageid = image.get("imageid");
-        String updatedate = image.get("updatedate");
-        String userid = image.get("userid");
+    private void imagecaredsave(String imageid, String updatedate, String userid) {
         if (!db.checkuserimage(imageid, userid)) {
             Timestamp updatetime = new Timestamp(System.currentTimeMillis());
             updatetime.valueOf(updatedate);
