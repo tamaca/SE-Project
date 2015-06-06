@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
@@ -24,6 +25,7 @@ import com.example.team.myapplication.Network.ImageGet;
 import com.example.team.myapplication.Network.JsonGet;
 import com.example.team.myapplication.Network.JsonPost;
 import com.example.team.myapplication.Network.NetworkState;
+import com.example.team.myapplication.util.CheckValid;
 import com.example.team.myapplication.util.Comment;
 import com.example.team.myapplication.util.GeneralActivity;
 import com.example.team.myapplication.util.MyToast;
@@ -43,10 +45,11 @@ public class ViewPictureActivity extends GeneralActivity {
     private LinearLayout tagView;
     private ProgressBar progressBar;
     private List<Comment> comments;
-    private ArrayList<Tag> tags;
+    public ArrayList<Tag> tags;
     private UploadComment uploadComment = null;
     private TextView author;
     private TextView uploadTime;
+    private TextView manageTagsButton;
     private DB db = new DB(this);
     private int likeNumber;
     private ImageButton like;
@@ -56,6 +59,11 @@ public class ViewPictureActivity extends GeneralActivity {
     private ScrollView scrollView;
     private LinearLayout linearLayout;
     private getImageInformationProgress mAuthTask;
+    private EditText editTextInDialog;
+    private boolean isEditing = false;
+
+    //TODO 当作者名和用户相同时设置为true
+    private boolean isMe = false;
 
     @Override
 
@@ -79,12 +87,104 @@ public class ViewPictureActivity extends GeneralActivity {
         scrollView = (ScrollView) findViewById(R.id.scrollView);
         linearLayout = (LinearLayout) findViewById(R.id.linearLayout4);
         likeText = (TextView) findViewById(R.id.textView5);
+        manageTagsButton = (TextView) findViewById(R.id.manage_tag);
         comments = new ArrayList<>();
         tags = new ArrayList<>();
+
+        /**
+         * 获取所有的标签控件
+         * 标签控件总共有四个状态，设置标签内容时注意设置状态。
+         */
+        tags.add((Tag) this.findViewById(R.id.tag1));
+        tags.add((Tag) this.findViewById(R.id.tag2));
+        tags.add((Tag) this.findViewById(R.id.tag3));
+        tags.add((Tag) this.findViewById(R.id.tag4));
+        tags.add((Tag) this.findViewById(R.id.tag5));
+
+        /**
+         * 给每个标签控件设置监听器
+         * 对每个添加，删除标签操作都使用对话框来确认
+         */
+        for (int i = 0; i < 5; i++) {
+            final int j = i;
+            tags.get(i).removeButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(final View view) {
+                    AlertDialog.Builder builder =
+                            new AlertDialog.Builder(ViewPictureActivity.this).setMessage("删除标签?");
+                    builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            tagView.post(new Runnable() {
+                                @Override
+                                public void run() {
+                                    String tagContent = tags.get(j).tagView.getText().toString();
+                                    tags.get(j).changeState(Tag.addable);
+                                    refreshTags();
+                                }
+                            });
+                            //TODO 删除该用户的这个tag
+
+                        }
+                    });
+                    builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+
+                        }
+                    });
+                    builder.create().show();
+                }
+            });
+
+            tags.get(i).addButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    editTextInDialog = new EditText(getApplicationContext());
+                    editTextInDialog.setTextColor(Color.argb(255,0,0,0));
+                    AlertDialog.Builder builder =
+                            new AlertDialog.Builder(ViewPictureActivity.this)
+                                    .setView(editTextInDialog)
+                                    .setMessage("请输入标签内容");
+                    builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            tagView.post(new Runnable() {
+                                @Override
+                                public void run() {
+                                    String tagContent = editTextInDialog.getText().toString();
+                                    if (!CheckValid.isTagUnique(tags, tagContent)) {
+                                        return;
+                                    }
+                                    if (!CheckValid.isTagValid(tagContent)) {
+                                        return;
+                                    }
+                                    if (tagContent.isEmpty()) {
+                                        return;
+                                    }
+                                    //TODO 将tag上传 下面是UI操作
+                                    tags.get(j).tagView.setText(tagContent);
+                                    tags.get(j).changeState(Tag.removable);
+                                    refreshTags();
+                                }
+                            });
+                        }
+                    });
+                    builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+
+                        }
+                    });
+                    builder.create().show();
+                }
+            });
+        }
         /**
          * 给作者添加跳转到个人界面的监听器
          */
         author.setOnClickListener(new ToUserPageListener());
+
         /**
          * 给赞按钮添加监听器
          */
@@ -95,14 +195,45 @@ public class ViewPictureActivity extends GeneralActivity {
             }
         });
 
+        /**
+         * 给编辑标签添加监听器
+         */
+        manageTagsButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                isEditing = !isEditing;
+                for (int i = 0; i < 5; i++) {
+                    tags.get(i).changeToEditState(isEditing);
+                }
+                manageTagsButton.setText(isEditing?"确定":"管理标签");
+            }
+        });
+
         String bigurl = (String) intent.getExtras().get("bigurl");
-        String informationurl="http://192.168.253.1/Kevin/image_detail/";
-        String imageid=(String) intent.getExtras().get("imageid");
+        String informationurl = "http://192.168.253.1/Kevin/image_detail/";
+        String imageid = (String) intent.getExtras().get("imageid");
         new ImageGet(imgview, bigurl, db, "big");
-        mAuthTask=new getImageInformationProgress(informationurl,imageid,db);
+        mAuthTask = new getImageInformationProgress(informationurl, imageid, db);
         mAuthTask.execute();
     }
 
+    public void refreshTags() {
+        int i = 0, j = 0;
+        while (j < 5) {
+            if (tags.get(j).currentState == Tag.showingTag || tags.get(j).currentState == Tag.removable) {
+                if (i == j) {
+                    i++;
+                } else {
+                    tags.get(i).tagView.setText(tags.get(j).tagView.getText().toString());
+                    int y = tags.get(j).currentState;
+                    tags.get(j).changeState(tags.get(i).currentState);
+                    tags.get(i).changeState(y);
+                    i++;
+                }
+            }
+            j++;
+        }
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -133,6 +264,7 @@ public class ViewPictureActivity extends GeneralActivity {
 
     /**
      * 提交评论按钮的响应
+     *
      * @param view
      */
     public void submitComment(View view) {
@@ -153,12 +285,11 @@ public class ViewPictureActivity extends GeneralActivity {
         } else {
             Toast.makeText(getApplicationContext(), "5秒内只能上传一次评论", Toast.LENGTH_SHORT).show();
         }
-
-
     }
 
     /**
      * 将评论添加到页面中的UI操作
+     *
      * @param comment
      */
     public void addComment(String comment) {
@@ -178,7 +309,7 @@ public class ViewPictureActivity extends GeneralActivity {
         private JSONObject jsonObject;
         private HashMap<String, String> returnmap;
 
-        getImageInformationProgress(String url,String imageid ,DB db) {
+        getImageInformationProgress(String url, String imageid, DB db) {
             this.url = url;
             this.imageid = imageid;
             this.db = db;
@@ -209,11 +340,14 @@ public class ViewPictureActivity extends GeneralActivity {
 
         @Override
         protected void onPostExecute(final Boolean success) {
-            mAuthTask=null;
+            mAuthTask = null;
             if (success) {
                 String baseurl = "http://192.168.253.1/media/";
                 author.setText(returnmap.get("author"));
-                imgview.setContentDescription(returnmap.get(baseurl+"origin"));
+                if (LoginState.username.equals(returnmap.get("author"))) {
+                    manageTagsButton.setVisibility(View.VISIBLE);
+                }
+                imgview.setContentDescription(returnmap.get(baseurl + "origin"));
                 isLike = (returnmap.get("islike").equals("true"));
                 String likenumber = returnmap.get("like");
                 int _likenumber = Integer.parseInt(likenumber);
@@ -225,12 +359,14 @@ public class ViewPictureActivity extends GeneralActivity {
             }
         }
     }
+
     public class likeProgress extends AsyncTask<Void, Void, Boolean> {
 
         private String url;
         private DB db;
-        HashMap<String,String >returnmap;
-        likeProgress(String url,String imageid ,DB db) {
+        HashMap<String, String> returnmap;
+
+        likeProgress(String url, String imageid, DB db) {
             this.url = url;
             this.db = db;
         }
@@ -238,8 +374,8 @@ public class ViewPictureActivity extends GeneralActivity {
         @Override
         protected Boolean doInBackground(Void... params) {
             try {
-                String key[]={"like","islike"};
-                returnmap=new JsonGet(url,key,db).getReturnmap();
+                String key[] = {"like", "islike"};
+                returnmap = new JsonGet(url, key, db).getReturnmap();
             } catch (Exception e) {
                 return false;
             }
@@ -248,7 +384,7 @@ public class ViewPictureActivity extends GeneralActivity {
 
         @Override
         protected void onPostExecute(final Boolean success) {
-            mAuthTask=null;
+            mAuthTask = null;
             if (success) {
                 //TODO:后续处理
             } else {
@@ -292,6 +428,7 @@ public class ViewPictureActivity extends GeneralActivity {
 
     /**
      * 点击赞的相应函数
+     *
      * @param view
      */
     public void changeLike(View view) {
@@ -300,6 +437,7 @@ public class ViewPictureActivity extends GeneralActivity {
 
     /**
      * 点击赞之后的UI变化
+     *
      * @param zan
      */
     public void onLikeChange(boolean zan) {
@@ -328,6 +466,7 @@ public class ViewPictureActivity extends GeneralActivity {
 
     /**
      * 跳转到查看个人主页
+     *
      * @param view
      */
     public void toUserPageActivity(View view) {
@@ -339,6 +478,7 @@ public class ViewPictureActivity extends GeneralActivity {
 
     /**
      * 跳转到查看原图
+     *
      * @param view
      */
     public void toPictureActivity(View view) {
@@ -369,10 +509,10 @@ public class ViewPictureActivity extends GeneralActivity {
                 startActivity(intent);
             }
         } else {
-            Intent intent = new Intent(this,PictureActivity.class);
+            Intent intent = new Intent(this, PictureActivity.class);
             view.setDrawingCacheEnabled(true);
             Bitmap bitmap = view.getDrawingCache();
-            intent.putExtra("pic",bitmap);
+            intent.putExtra("pic", bitmap);
             startActivity(intent);
         }
 
@@ -465,5 +605,4 @@ public class ViewPictureActivity extends GeneralActivity {
             toUserPageActivity(view);
         }
     }
-
 }

@@ -1,5 +1,7 @@
 package com.example.team.myapplication.util;
 
+import java.util.ArrayList;
+
 public class CheckValid {
     static public boolean isPasswordValid(String password) {
 
@@ -17,5 +19,19 @@ public class CheckValid {
 
     static public boolean isInputValid(String str) {
         return str.length() < 20 && str.charAt(0) != ' ';
+    }
+
+    static public boolean isTagUnique(ArrayList<Tag> tags, String tagContent){
+        for(int i = 0;i < 5;i++){
+            if(tags.get(i).tagView.getText().toString().equals(tagContent)){
+                return false;
+            }
+        }
+        return true;
+    }
+
+    static public boolean isTagValid(String tagContent) {
+        byte[] x = tagContent.getBytes();
+        return x.length <= 10 && !tagContent.contains(" ");
     }
 }

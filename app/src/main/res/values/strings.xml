@@ -95,4 +95,8 @@
     <string name="no_search_result_tags">没有找到图片…</string>
     <string name="invalid_input_in_search">输入不合法</string>
     <string name="search_content_missing">缺少搜索内容</string>
+    <string name="manage_tags">管理标签</string>
+    <string name="toast_tag_not_unique">存在相同的标签</string>
+    <string name="toast_tag_invalid">标签应为10字节以内，不含空格的字符串</string>
+    <string name="toast_tag_is_empty">标签不能为空</string>
 </resources>
