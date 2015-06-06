@@ -12,6 +12,7 @@ import android.widget.ImageView;
 import com.example.team.myapplication.Cache.Localstorage;
 import com.example.team.myapplication.Cache.LruCacheImageLoader;
 import com.example.team.myapplication.Database.DB;
+import com.example.team.myapplication.R;
 
 import org.apache.http.HttpEntity;
 import org.apache.http4.client.methods.CloseableHttpResponse;
@@ -235,7 +236,7 @@ public class ImageGet {
         private final WeakReference<BitmapDownloaderTask> bitmapDownloaderTaskWeakReference;
 
         public DownloadDrawable(BitmapDownloaderTask bitmapDownloaderTask) {
-            super(Color.BLACK);
+            super(Color.argb(0x00,0xf0,0xf8,0xf8));
             bitmapDownloaderTaskWeakReference = new WeakReference<BitmapDownloaderTask>(bitmapDownloaderTask);
         }
 

@@ -26,14 +26,12 @@ import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TabHost;
 import android.widget.Toast;
-
 import com.example.team.myapplication.Cache.Localstorage;
 import com.example.team.myapplication.Database.DB;
 import com.example.team.myapplication.Network.JsonGet;
 import com.example.team.myapplication.util.MyToast;
-
+import com.example.team.myapplication.Network.NetworkState;
 import org.json.JSONObject;
-
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -202,12 +200,18 @@ public class MainActivity extends Activity {
     }
 
     public void imagedownload() {
-        String picURL1 = "http://192.168.253.1/square_page/1/";
-        String picURL2 = "http://192.168.253.1/square_page/2/";
-        DownloadPictureProgress downloadPictureProgress1 = new DownloadPictureProgress(picURL1, db, squareView);
-        DownloadPictureProgress downloadPictureProgress2 = new DownloadPictureProgress(picURL2, db, null);
-        downloadPictureProgress1.execute();
-        downloadPictureProgress2.execute();
+        if(NetworkState.isNetworkConnected(this)) {
+            String picURL1 = "http://192.168.253.1/square_page/1/";
+            String picURL2 = "http://192.168.253.1/square_page/2/";
+            DownloadPictureProgress downloadPictureProgress1 = new DownloadPictureProgress(picURL1, db, squareView);
+            DownloadPictureProgress downloadPictureProgress2 = new DownloadPictureProgress(picURL2, db, null);
+            downloadPictureProgress1.execute();
+            downloadPictureProgress2.execute();
+        }
+        else
+        {
+
+        }
         //  JsonGet jsonGet1 = new JsonGet(picURL1, db, squareView);
         // JsonGet jsonGet2 = new JsonGet(picURL2, db);
         //String picURL1 = "http://192.168.253.1/square_page/1/";
