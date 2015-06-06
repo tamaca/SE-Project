@@ -11,12 +11,12 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.team.myapplication.Network.JsonPost;
 import com.example.team.myapplication.util.GalleryItem;
 import com.example.team.myapplication.util.GeneralActivity;
 import com.example.team.myapplication.util.MyScrollView;
+import com.example.team.myapplication.util.MyToast;
 import com.example.team.myapplication.util.ScrollViewListener;
 
 import org.json.JSONObject;
@@ -35,7 +35,7 @@ public class UserPageActivity extends GeneralActivity implements ScrollViewListe
     private Button manageButton;
     private String userName;
     private LinearLayout gallery;
-    private Toast toast;
+    private MyToast myToast;
     private ProgressBar inLoadingPicture;
     private ProgressBar inChangingRelationship;
     private GetPicture getPicture = null;
@@ -49,7 +49,13 @@ public class UserPageActivity extends GeneralActivity implements ScrollViewListe
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user_page);
+        /**
+         * 由intent的信息来决定是自己的主页还是别人的主页
+         */
         Intent intent = getIntent();
+        /**
+         * userName 是这个主页的所有者
+         */
         userName = intent.getExtras().get("user_name").toString();
         name = (TextView) findViewById(R.id.name);
         name.setText(userName);
@@ -59,25 +65,32 @@ public class UserPageActivity extends GeneralActivity implements ScrollViewListe
         setTitle((isMe ? "我" : userName) + "的个人主页");
         getActionBar().setDisplayHomeAsUpEnabled(true);
 
-        //初始化变量
+        /**
+         * 初始化变量
+         */
         concernButton = (Button) findViewById(R.id.button6);
         hateButton = (Button) findViewById(R.id.button5);
         manageButton = (Button) findViewById(R.id.button8);
         uploadImageButton = (Button) findViewById(R.id.button10);
         gallery = (LinearLayout) findViewById(R.id.gallery);
         galleryItems = new ArrayList<>();
-        toast = null;
         inLoadingPicture = (ProgressBar) findViewById(R.id.progressBar4);
         inChangingRelationship = (ProgressBar) findViewById(R.id.progressBar5);
         scrollContent = (LinearLayout) findViewById(R.id.scroll_content);
+        myToast = new MyToast(this);
         //////////
         concernButton.setOnClickListener(new OnClickConcernListener());
         hateButton.setOnClickListener(new OnClickHateListener());
+        /**
+         * 根据isMe变量来判断是加载我的主页还是别人的主页
+         */
         loadView(isMe);
-
-
     }
 
+    /**
+     * 加载主页
+     * @param my
+     */
     public void loadView(boolean my) {
         if (my) {
             //加载我的个人主页
@@ -97,6 +110,11 @@ public class UserPageActivity extends GeneralActivity implements ScrollViewListe
         }
     }
 
+    /**
+     * 加载主页内容
+     * @param concern
+     * @param blacklist
+     */
     public void loadContent(boolean concern, boolean blacklist) {
         if (concern) {
             gallery.setVisibility(View.VISIBLE);
@@ -115,36 +133,6 @@ public class UserPageActivity extends GeneralActivity implements ScrollViewListe
         } else {
             hateButton.setText(getString(R.string.add_to_blacklist));
         }
-          /*  case normal:
-                gallery.setVisibility(View.GONE);
-                findViewById(R.id.textView3).setVisibility(View.VISIBLE);
-                concernButton.setText(getString(R.string.concern));
-                hateButton.setText(getString(R.string.add_to_blacklist));
-                break;
-            case concern:
-                gallery.setVisibility(View.VISIBLE);
-                if (!getGallery(userName)) {
-                    findViewById(R.id.textView4).setVisibility(View.VISIBLE);
-                }
-                findViewById(R.id.textView3).setVisibility(View.GONE);
-                concernButton.setText(getString(R.string.remove_from_concern));
-                hateButton.setText(getString(R.string.add_to_blacklist));
-                break;
-            case hate:
-                gallery.setVisibility(View.GONE);
-                findViewById(R.id.textView3).setVisibility(View.VISIBLE);
-                concernButton.setText(getString(R.string.concern));
-                hateButton.setText(getString(R.string.remove_from_blackList));
-                break;
-            case hate | concern:
-                gallery.setVisibility(View.VISIBLE);
-                if (!getGallery(userName)) {
-                    findViewById(R.id.textView4).setVisibility(View.VISIBLE);
-                }
-                findViewById(R.id.textView3).setVisibility(View.GONE);
-                concernButton.setText(getString(R.string.remove_from_concern));
-                hateButton.setText(getString(R.string.remove_from_blackList));
-*/
     }
 
     @Override
@@ -174,6 +162,10 @@ public class UserPageActivity extends GeneralActivity implements ScrollViewListe
         return super.onOptionsItemSelected(item);
     }
 
+    /**
+     * 跳转到查看图片详细信息
+     * @param view
+     */
     public void toViewPictureActivity(View view) {
         Intent intent = new Intent(this, ViewPictureActivity.class);
         //view.setDrawingCacheEnabled(true);
@@ -183,7 +175,10 @@ public class UserPageActivity extends GeneralActivity implements ScrollViewListe
         startActivity(intent);
     }
 
-    //添加图片进gallery的方法
+    /**
+     * 添加图片进gallery，每次加一张
+     * @param bitmap
+     */
     public void addGalleryItem(Bitmap bitmap) {
         GalleryItem galleryItem = new GalleryItem(this, bitmap);
         galleryItem.imageView.setOnClickListener(new View.OnClickListener() {
@@ -194,10 +189,17 @@ public class UserPageActivity extends GeneralActivity implements ScrollViewListe
         });
 
         galleryItems.add(galleryItem);
-        gallery.addView(galleryItems.get(galleryItems.size() - 1));
-
     }
 
+    /**
+     * 第一次加载ta的图片完成之后在UI线程刷新gallery
+     */
+    public void refreshGallery(){
+        gallery.removeAllViews();
+        for(int i = 0;i<galleryItems.size();i++){
+            gallery.addView(galleryItems.get(i));
+        }
+    }
     public boolean getGallery(String userName) {
         //TODO 在这里加载该用户的图片，如果用户没有图片，返回false,如果有，把 pictureCount 设置为该用户照片总数；
         // addGalleryItem(bitmap);
@@ -226,7 +228,7 @@ public class UserPageActivity extends GeneralActivity implements ScrollViewListe
         public void onClick(View view) {
             //点击 关注/取消关注 按钮
 
-            mAuthTask = new BlackConcerenTask("Kevin2",1);
+            mAuthTask = new BlackConcerenTask("Kevin2", 1);
             mAuthTask.execute();
         }
     }
@@ -289,7 +291,7 @@ public class UserPageActivity extends GeneralActivity implements ScrollViewListe
             Boolean a = success;
             mAuthTask = null;
             if (success) {
-                if(type==1) {
+                if (type == 1) {
                     if (concern) {
                         concern = !concern;
                         concernButton.setText(getString(R.string.remove_from_concern));
@@ -298,8 +300,7 @@ public class UserPageActivity extends GeneralActivity implements ScrollViewListe
                         concernButton.setText(getString(R.string.concern));
                     }
                     loadContent(concern, blacklist);
-                }else
-                {
+                } else {
                     if (blacklist) {
                         blacklist = !blacklist;
                         hateButton.setText(getString(R.string.remove_from_blackList));
@@ -310,7 +311,7 @@ public class UserPageActivity extends GeneralActivity implements ScrollViewListe
                     loadContent(concern, blacklist);
                 }
             } else {
-                    Toast.makeText(getApplicationContext(), "操作失败", Toast.LENGTH_LONG).show();
+                myToast.show(getString(R.string.toast_operation_error));
             }
         }
 
@@ -381,17 +382,8 @@ public class UserPageActivity extends GeneralActivity implements ScrollViewListe
             if (success) {
                 gallery.postInvalidate();
             } else {
-                if (toast == null) {
-                    toast = Toast.makeText(getApplicationContext(), "刷新图片失败", Toast.LENGTH_SHORT);
-                    toast.show();
-                } else {
-                    toast.cancel();
-                    toast = Toast.makeText(getApplicationContext(), "刷新图片失败", Toast.LENGTH_SHORT);
-                    toast.show();
-                }
+                myToast.show(getString(R.string.toast_refreshing_error));
             }
         }
     }
-
-
 }

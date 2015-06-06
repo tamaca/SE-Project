@@ -16,6 +16,7 @@ import android.widget.Toast;
 
 import com.example.team.myapplication.Network.JsonGet;
 import com.example.team.myapplication.util.GeneralActivity;
+import com.example.team.myapplication.util.MyToast;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -27,6 +28,7 @@ import java.util.Map;
 public class UserListActivity extends GeneralActivity {
     private ListView listView;
     private ArrayList<String> userNames;
+    private MyToast myToast;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,13 +46,11 @@ public class UserListActivity extends GeneralActivity {
                 setTitle("我关注的人");
                 if(actionBar!=null)
                     actionBar.setLogo(R.mipmap.ic_user_like);
-                //Toast.makeText(getApplicationContext(), "将会列出关注的人的名单！", Toast.LENGTH_LONG).show();
                 break;
             case MainActivity.blacklist:
                 setTitle("黑名单");
                 if(actionBar!=null)
                     actionBar.setLogo(R.mipmap.ic_blacklist);
-                //Toast.makeText(getApplicationContext(),"将会列出黑名单！",Toast.LENGTH_LONG).show();
                 break;
             default:
                 break;
@@ -206,14 +206,7 @@ public class UserListActivity extends GeneralActivity {
                 });
             } else {
                 {
-                    if (toast == null) {
-                        toast = Toast.makeText(getApplicationContext(), "获取列表出错", Toast.LENGTH_LONG);
-                        toast.show();
-                    } else {
-                        toast.cancel();
-                        toast = Toast.makeText(getApplicationContext(), "获取列表出错", Toast.LENGTH_LONG);
-                        toast.show();
-                    }
+                    myToast.show(getString(R.string.toast_fetching_list_error));
                 }
             }
         }

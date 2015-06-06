@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -29,6 +30,7 @@ import android.widget.Toast;
 import com.example.team.myapplication.Cache.Localstorage;
 import com.example.team.myapplication.Database.DB;
 import com.example.team.myapplication.Network.JsonGet;
+import com.example.team.myapplication.util.MyToast;
 
 import org.json.JSONObject;
 
@@ -43,7 +45,6 @@ public class MainActivity extends Activity {
     private TabHost mTabHost;
     public final static int concernList = 1;
     public final static int blacklist = 2;
-    private String capturePath = null;
     public View squareView;
     public View meView;
     private View loginView;
@@ -53,11 +54,12 @@ public class MainActivity extends Activity {
     private RelativeLayout mainLayout;
     private RelativeLayout uploadPictureLayout;
     private ImageView imageView;
+    private ImageButton search;
     private Button upload;
     private Button cancel;
     private DB db = null;
     private ImageButton camera;
-    private Toast toast = null;
+    private MyToast myToast;
     private ProgressBar uploadProgressBar;
 
     public static String getCurrentTag() {
@@ -76,10 +78,11 @@ public class MainActivity extends Activity {
         db = new DB(this);
         //
         setContentView(R.layout.activity_main);
-        //变量初始化
+        /**
+         * 初始化变量
+         */
         squareView = LayoutInflater.from(MainActivity.this).inflate(R.layout.layout_square, null);
         meView = LayoutInflater.from(MainActivity.this).inflate(R.layout.layout_me, null);
-        //searchView = LayoutInflater.from(MainActivity.this).inflate(R.layout.activity_search, null);
         userOptions = meView.findViewById(R.id.user_options);
         mTabHost = (TabHost) findViewById(R.id.tabHost2);
         viewPager = (ViewPager) findViewById(R.id.viewPager);
@@ -91,6 +94,15 @@ public class MainActivity extends Activity {
         upload = (Button) findViewById(R.id.upload_button);
         cancel = (Button) findViewById(R.id.cancel_button);
         camera = (ImageButton) findViewById(R.id.imageButton);
+        search = (ImageButton)findViewById(R.id.imageButton3);
+        myToast = new MyToast(this);
+        /**
+         * 设置搜索按钮背景为透明
+         */
+        search.setBackgroundColor(Color.argb(0, 0, 0, 0));
+        /**
+         * 我关注的人的按钮添加监听器
+         */
         Button myConcern = (Button) meView.findViewById(R.id.my_concern_button);
         myConcern.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -98,6 +110,9 @@ public class MainActivity extends Activity {
                 toUserListActivity(view, concernList);
             }
         });
+        /**
+         * 黑名单按钮添加监听器
+         */
         Button myBlacklist = (Button) meView.findViewById(R.id.my_blacklist_button);
         myBlacklist.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -105,6 +120,9 @@ public class MainActivity extends Activity {
                 toUserListActivity(view, blacklist);
             }
         });
+        /**
+         * 上传图片按钮添加监听器
+         */
         upload.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -116,6 +134,9 @@ public class MainActivity extends Activity {
                 uploadPictureProgress.execute((Void) null);
             }
         });
+        /**
+         * 取消上传按钮添加监听器
+         */
         cancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -123,6 +144,9 @@ public class MainActivity extends Activity {
 
             }
         });
+        /**
+         * 初始化ViewPager
+         */
         listOfViews.add(squareView);
         listOfViews.add(meView);
         viewPager.setAdapter(new MyPagerAdapter());
@@ -136,8 +160,10 @@ public class MainActivity extends Activity {
             public void onPageSelected(int position) {
                 if (position == 1) {
                     camera.setVisibility(View.GONE);
+                    search.setVisibility(View.GONE);
                 } else {
                     camera.setVisibility(View.VISIBLE);
+                    search.setVisibility(View.VISIBLE);
                 }
                 mTabHost.setCurrentTab(position);
 
@@ -148,7 +174,9 @@ public class MainActivity extends Activity {
 
             }
         });
-
+        /**
+         * 初始化TabHost
+         */
         mTabHost.setup();
         mTabHost.addTab(mTabHost.newTabSpec("tab1").setIndicator("广场").setContent(R.id.linearLayout));
         mTabHost.addTab(mTabHost.newTabSpec("tab2").setIndicator("我").setContent(R.id.linearLayout));
@@ -158,15 +186,17 @@ public class MainActivity extends Activity {
                 viewPager.setCurrentItem(mTabHost.getCurrentTab());
             }
         });
+
         mTabHost.setCurrentTab(0);
-
-
+        /**
+         * 展示出相应的界面
+         */
         changeView(LoginState.getLogined());
         //Toast.makeText(getBaseContext(),"isLogin?"+LoginState.logined,Toast.LENGTH_LONG).show();
         /**
          * 如果imagedownload()的线程一直跑会占用很多cpu资源，请解决
          */
-        imagedownload();
+        //imagedownload();
         //imageview
 
     }
@@ -184,11 +214,18 @@ public class MainActivity extends Activity {
         //ImageGet imageGet=new ImageGet((ImageView)squareView.findViewById(R.id.imageView1),picURL1,db);
     }
 
+    /**
+     * 切换到上传图片页面
+     * @param show
+     */
     public void showUploadView(boolean show) {
         uploadPictureLayout.setVisibility(show ? View.VISIBLE : View.GONE);
         mainLayout.setVisibility(show ? View.GONE : View.VISIBLE);
     }
 
+    /**
+     * 重写函数，当返回到MainActivity的时候显示相应的界面
+     */
     @Override
     public void onResume() {
         super.onResume();
@@ -261,24 +298,97 @@ public class MainActivity extends Activity {
     }
 
     /**
-     * 转到搜索界面
+     * 转到搜索页面
      * @param view
      */
     public void toSearchActivity(View view) {
-        Intent intent = new Intent(this, SearchActivity.class);
-        startActivity(intent);
-        /*CharSequence text = ((Button)view).getText();
-        Toast.makeText(this, text, Toast.LENGTH_SHORT).show();*/
+        if(LoginState.getLogined()){
+            Intent intent = new Intent(this, SearchActivity.class);
+            startActivity(intent);
+        }
+        else{
+            myToast.show(getString(R.string.toast_before_login));
+        }
     }
 
+    /**
+     * 转到查看大图页面
+     * @param view
+     */
     public void toPictureActivity(View view) {
         Intent intent = new Intent(this, PictureActivity.class);
         startActivity(intent);
     }
 
+    /**
+     * 转到更改密码页面
+     * @param view
+     */
     public void toChangePasswordActivity(View view) {
         Intent intent = new Intent(this, ChangePasswordActivity.class);
         startActivity(intent);
+    }
+
+    /**
+     * 跳转到查看图片详细信息
+     * @param view
+     */
+    public void toViewPictureActivity(View view) {
+        if (((ImageView) view).getDrawable() != null) {
+            Intent intent = new Intent(this, ViewPictureActivity.class);
+            //view.setDrawingCacheEnabled(true);
+            //Bitmap bitmap = view.getDrawingCache();
+            String imageviewJsonString = view.getContentDescription().toString();
+            try {
+                JSONObject imageviewJson = new JSONObject(imageviewJsonString);
+                String bigurl = imageviewJson.getString("imagebigurl");
+                String id = imageviewJson.getString("imageid");
+                intent.putExtra("bigurl", bigurl);
+                intent.putExtra("imageid", id);
+                startActivity(intent);
+            } catch (Exception e) {
+                myToast.show(getString(R.string.toast_picture_error));
+            }
+        } else {
+            myToast.show(getString(R.string.toast_picture_error));
+        }
+    }
+
+    /**
+     * 转到我的黑名单或我关注的人
+     * @param view
+     * @param x
+     */
+    public void toUserListActivity(View view, int x) {
+
+        Intent intent = new Intent(this, UserListActivity.class);
+        intent.putExtra("message", x);
+        startActivity(intent);
+    }
+
+    class MyPagerAdapter extends PagerAdapter {
+
+        @Override
+        public int getCount() {
+            return listOfViews.size();
+        }
+
+        @Override
+        public boolean isViewFromObject(View view, Object object) {
+            return view == object;
+        }
+
+        @Override
+        public Object instantiateItem(ViewGroup container, int position) {
+            ((ViewPager) container).addView(listOfViews.get(position));
+            return listOfViews.get(position);
+        }
+
+        @Override
+        public void destroyItem(View container, int position, Object object) {
+
+            ((ViewPager) container).removeView(listOfViews.get(position));
+        }
     }
 
     /**
@@ -355,7 +465,7 @@ public class MainActivity extends Activity {
     }
 
     /**
-     * 把从路径读到的图片压缩 (可能是这里出了问题，读得了图片，但是bitmap不能显示)
+     * 把从路径读到的图片压缩 (可能是这里出了问题，读得了图片，但是不能获得真实图片的宽高)
      */
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
     private void setPic() {
@@ -382,81 +492,9 @@ public class MainActivity extends Activity {
         imageView.setImageBitmap(bitmap);
     }
 
-    /**
-     * 跳转到查看图片详细信息
-     * @param view
-     */
-    public void toViewPictureActivity(View view) {
-        if (((ImageView) view).getDrawable() != null) {
-            Intent intent = new Intent(this, ViewPictureActivity.class);
-            //view.setDrawingCacheEnabled(true);
-            //Bitmap bitmap = view.getDrawingCache();
-            String imageviewJsonString = view.getContentDescription().toString();
-            try {
-                JSONObject imageviewJson = new JSONObject(imageviewJsonString);
-                String bigurl = imageviewJson.getString("imagebigurl");
-                String id = imageviewJson.getString("imageid");
-                intent.putExtra("bigurl", bigurl);
-                intent.putExtra("imageid", id);
-                startActivity(intent);
-            } catch (Exception e) {
-                if (toast == null) {
-                    toast = Toast.makeText(getApplicationContext(), "图片出错", Toast.LENGTH_LONG);
-                    toast.show();
-                } else {
-                    toast.cancel();
-                    toast = Toast.makeText(getApplicationContext(), "图片出错", Toast.LENGTH_LONG);
-                    toast.show();
-                }
-            }
-        } else {
-            if (toast == null) {
-                toast = Toast.makeText(getApplicationContext(), "图片出错", Toast.LENGTH_LONG);
-                toast.show();
-            } else {
-                toast.cancel();
-                toast = Toast.makeText(getApplicationContext(), "图片出错", Toast.LENGTH_LONG);
-                toast.show();
-            }
-        }
-    }
 
-    /**
-     * 转到我的黑名单或我关注的人
-     * @param view
-     * @param x
-     */
-    public void toUserListActivity(View view, int x) {
 
-        Intent intent = new Intent(this, UserListActivity.class);
-        intent.putExtra("message", x);
-        startActivity(intent);
-    }
 
-    class MyPagerAdapter extends PagerAdapter {
-
-        @Override
-        public int getCount() {
-            return listOfViews.size();
-        }
-
-        @Override
-        public boolean isViewFromObject(View view, Object object) {
-            return view == object;
-        }
-
-        @Override
-        public Object instantiateItem(ViewGroup container, int position) {
-            ((ViewPager) container).addView(listOfViews.get(position));
-            return listOfViews.get(position);
-        }
-
-        @Override
-        public void destroyItem(View container, int position, Object object) {
-
-            ((ViewPager) container).removeView(listOfViews.get(position));
-        }
-    }
 
     /**
      * 上传图片的线程
@@ -522,14 +560,7 @@ public class MainActivity extends Activity {
             if (success) {
                 squareView.postInvalidate();
             } else {
-                if (toast == null) {
-                    toast = Toast.makeText(getApplicationContext(), "下载图片出错", Toast.LENGTH_LONG);
-                    toast.show();
-                } else {
-                    toast.cancel();
-                    toast = Toast.makeText(getApplicationContext(), "下载图片出错", Toast.LENGTH_LONG);
-                    toast.show();
-                }
+                myToast.show(getString(R.string.toast_downloading_picture_error));
             }
         }
     }

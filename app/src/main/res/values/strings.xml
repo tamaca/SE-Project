@@ -77,4 +77,22 @@
     <string name="updated_at">上次更新于%1$s前</string>
     <string name="updated_just_now">刚刚更新</string>
     <string name="time_error">时间有问题</string>
+
+    <string name="toast_in_searching">正在搜索中</string>
+    <string name="toast_picture_error">图片出错！</string>
+    <string name="toast_downloading_picture_error">下载图片出错！</string>
+    <string name="toast_refreshing_error">刷新出错！</string>
+    <string name="toast_comment_failed">评论失败</string>
+    <string name="toast_operation_error">操作失败</string>
+    <string name="toast_register_failed">注册失败</string>
+    <string name="toast_losing_connection">没有网络连接</string>
+    <string name="toast_fetching_list_error">获取列表失败</string>
+    <string name="toast_fetching_information_failed">获取信息失败</string>
+    <string name="toast_search_failed">搜索失败</string>
+    <string name="toast_before_login">您还未登录！</string>
+
+    <string name="no_search_result_users">没有找到用户…</string>
+    <string name="no_search_result_tags">没有找到图片…</string>
+    <string name="invalid_input_in_search">输入不合法</string>
+    <string name="search_content_missing">缺少搜索内容</string>
 </resources>
