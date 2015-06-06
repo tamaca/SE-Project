@@ -20,7 +20,6 @@ import android.widget.Toast;
 import com.example.team.myapplication.Database.DB;
 import com.example.team.myapplication.Network.JsonPost;
 import com.example.team.myapplication.util.GeneralActivity;
-import com.example.team.myapplication.util.MyToast;
 
 import java.util.HashMap;
 
@@ -34,7 +33,6 @@ public class RegisterActivity extends GeneralActivity {
     private EditText secondPassword;
     private View progressView;
     private View registerView;
-    private MyToast myToast;
     private DB db;
 
     @Override
@@ -55,7 +53,6 @@ public class RegisterActivity extends GeneralActivity {
         secondPassword = (EditText) findViewById(R.id.register_password_again);
         progressView = findViewById(R.id.login_progress);
         registerView = findViewById(R.id.register_view);
-        myToast = new MyToast(getApplicationContext());
         okButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -282,7 +279,7 @@ public class RegisterActivity extends GeneralActivity {
                 RegisterActivity.this.finish();
 
             } else {
-                myToast.show(getString(R.string.toast_register_failed));
+                Toast.makeText(getApplicationContext(), "注册失败", Toast.LENGTH_LONG).show();
             }
         }
 

@@ -17,7 +17,6 @@ import com.example.team.myapplication.Network.JsonPost;
 import com.example.team.myapplication.util.GalleryItem;
 import com.example.team.myapplication.util.GeneralActivity;
 import com.example.team.myapplication.util.MyScrollView;
-import com.example.team.myapplication.util.MyToast;
 import com.example.team.myapplication.util.ScrollViewListener;
 
 import org.json.JSONObject;
@@ -36,7 +35,7 @@ public class UserPageActivity extends GeneralActivity implements ScrollViewListe
     private Button manageButton;
     private String userName;
     private LinearLayout gallery;
-    private MyToast myToast;
+    private Toast toast;
     private ProgressBar inLoadingPicture;
     private ProgressBar inChangingRelationship;
     private GetPicture getPicture = null;
@@ -67,7 +66,7 @@ public class UserPageActivity extends GeneralActivity implements ScrollViewListe
         uploadImageButton = (Button) findViewById(R.id.button10);
         gallery = (LinearLayout) findViewById(R.id.gallery);
         galleryItems = new ArrayList<>();
-        myToast = new MyToast(getApplicationContext());
+        toast = null;
         inLoadingPicture = (ProgressBar) findViewById(R.id.progressBar4);
         inChangingRelationship = (ProgressBar) findViewById(R.id.progressBar5);
         scrollContent = (LinearLayout) findViewById(R.id.scroll_content);
@@ -195,18 +194,13 @@ public class UserPageActivity extends GeneralActivity implements ScrollViewListe
         });
 
         galleryItems.add(galleryItem);
-    }
-    public void refreshGallery(){
-        gallery.removeAllViews();
-        for(int i = 0;i<galleryItems.size();i++){
-            gallery.addView(galleryItems.get(i));
-        }
-        gallery.postInvalidate();
+        gallery.addView(galleryItems.get(galleryItems.size() - 1));
+
     }
 
     public boolean getGallery(String userName) {
         //TODO 在这里加载该用户的图片，如果用户没有图片，返回false,如果有，把 pictureCount 设置为该用户照片总数；
-
+        // addGalleryItem(bitmap);
         pictureCount = 0;
         return false;
     }
@@ -385,9 +379,16 @@ public class UserPageActivity extends GeneralActivity implements ScrollViewListe
             inLoadingPicture.setVisibility(View.GONE);
             getPicture = null;
             if (success) {
-                refreshGallery();
+                gallery.postInvalidate();
             } else {
-                myToast.show(getString(R.string.toast_refreshing_error));
+                if (toast == null) {
+                    toast = Toast.makeText(getApplicationContext(), "刷新图片失败", Toast.LENGTH_SHORT);
+                    toast.show();
+                } else {
+                    toast.cancel();
+                    toast = Toast.makeText(getApplicationContext(), "刷新图片失败", Toast.LENGTH_SHORT);
+                    toast.show();
+                }
             }
         }
     }

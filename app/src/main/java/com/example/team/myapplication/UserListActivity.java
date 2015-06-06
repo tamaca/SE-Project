@@ -16,7 +16,6 @@ import android.widget.Toast;
 
 import com.example.team.myapplication.Network.JsonGet;
 import com.example.team.myapplication.util.GeneralActivity;
-import com.example.team.myapplication.util.MyToast;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -28,7 +27,6 @@ import java.util.Map;
 public class UserListActivity extends GeneralActivity {
     private ListView listView;
     private ArrayList<String> userNames;
-    private MyToast myToast;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,7 +34,7 @@ public class UserListActivity extends GeneralActivity {
         Intent intent = getIntent();
         setContentView(R.layout.activity_user_list);
         ActionBar actionBar = getActionBar();
-        myToast = new MyToast(getApplicationContext());
+
         listView = (ListView)findViewById(R.id.user_name_list);
         userNames = new ArrayList<String>();
 
@@ -208,7 +206,14 @@ public class UserListActivity extends GeneralActivity {
                 });
             } else {
                 {
-                    myToast.show(getString(R.string.toast_fetching_list_error));
+                    if (toast == null) {
+                        toast = Toast.makeText(getApplicationContext(), "获取列表出错", Toast.LENGTH_LONG);
+                        toast.show();
+                    } else {
+                        toast.cancel();
+                        toast = Toast.makeText(getApplicationContext(), "获取列表出错", Toast.LENGTH_LONG);
+                        toast.show();
+                    }
                 }
             }
         }

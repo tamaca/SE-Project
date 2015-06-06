@@ -3,7 +3,6 @@ package com.example.team.myapplication;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
@@ -26,7 +25,6 @@ import com.example.team.myapplication.Network.JsonPost;
 import com.example.team.myapplication.Network.NetworkState;
 import com.example.team.myapplication.util.Comment;
 import com.example.team.myapplication.util.GeneralActivity;
-import com.example.team.myapplication.util.MyToast;
 
 import org.json.JSONObject;
 
@@ -47,7 +45,7 @@ public class ViewPictureActivity extends GeneralActivity {
     private DB db = new DB(this);
     private int likeNumber;
     private ImageButton like;
-    private MyToast myToast;
+    private Toast toast = null;
 
     private TextView likeText;
     private boolean isLike = false;
@@ -75,7 +73,6 @@ public class ViewPictureActivity extends GeneralActivity {
         scrollView = (ScrollView) findViewById(R.id.scrollView);
         linearLayout = (LinearLayout) findViewById(R.id.linearLayout4);
         likeText = (TextView) findViewById(R.id.textView5);
-        myToast = new MyToast(getApplicationContext());
         ////////
 
         comments = new ArrayList<>();
@@ -122,8 +119,6 @@ public class ViewPictureActivity extends GeneralActivity {
 
         return super.onOptionsItemSelected(item);
     }
-
-
 
     public void submitComment(View view) {
         String comment = editText.getText().toString();//获取输入的评论
@@ -207,7 +202,14 @@ public class ViewPictureActivity extends GeneralActivity {
                 //时间显示
                 uploadTime.setText(returnmap.get("updatetime"));
             } else {
-                myToast.show(getString(R.string.toast_fetching_information_failed));
+                if (toast == null) {
+                    toast = Toast.makeText(getApplicationContext(), "获取图片信息出错", Toast.LENGTH_LONG);
+                    toast.show();
+                } else {
+                    toast.cancel();
+                    toast = Toast.makeText(getApplicationContext(), "获取图片信息出错", Toast.LENGTH_LONG);
+                    toast.show();
+                }
             }
         }
     }
@@ -325,10 +327,10 @@ public class ViewPictureActivity extends GeneralActivity {
                 builder.setPositiveButton("继续", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-                        Intent intent = new Intent(getApplicationContext(), PictureActivity.class);
+                        /*Intent intent = new Intent(getApplicationContext(), PictureActivity.class);
                         //TODO 在这里添加想传入查看原图页面的信息，比如图片主人的名字，图片ID 啥的。
 
-                        startActivity(intent);
+                        startActivity(intent);*/
                     }
                 });
                 builder.setNegativeButton("不了", new DialogInterface.OnClickListener() {
@@ -339,17 +341,17 @@ public class ViewPictureActivity extends GeneralActivity {
                 });
                 builder.create().show();
             } else {
-                Intent intent = new Intent(getApplicationContext(), PictureActivity.class);
+                /*Intent intent = new Intent(getApplicationContext(), PictureActivity.class);
                 //TODO 在这里添加想传入查看原图页面的信息，比如图片主人的名字，图片ID 啥的。
 
-                startActivity(intent);
+                startActivity(intent);*/
             }
         } else {
-            Intent intent = new Intent(this,PictureActivity.class);
+            /*Intent intent = new Intent(this,PictureActivity.class);
             view.setDrawingCacheEnabled(true);
             Bitmap bitmap = view.getDrawingCache();
             intent.putExtra("pic",bitmap);
-            startActivity(intent);
+            startActivity(intent);*/
         }
 
 
@@ -424,7 +426,7 @@ public class ViewPictureActivity extends GeneralActivity {
                 thread.start();
 
             } else {
-                myToast.show(getString(R.string.toast_comment_error));
+                Toast.makeText(getApplicationContext(), "评论失败", Toast.LENGTH_SHORT).show();
                 uploadComment = null;
             }
         }

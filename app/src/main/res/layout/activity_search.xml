@@ -20,7 +20,7 @@
         <EditText
             android:layout_marginLeft="25dp"
             android:layout_marginRight="25dp"
-            android:layout_marginTop="0dp"
+            android:layout_marginTop="10dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textSize="20sp"
@@ -39,7 +39,7 @@
                 android:layout_weight="1"
                 android:text="@string/searchByName"
                 android:textSize="20sp"
-                android:id="@+id/search_user_button"
+                android:id="@+id/button3"
                 android:textColor="@color/白色"
                 android:background="@drawable/button_style2"
                 android:layout_marginLeft="25dp"
@@ -52,53 +52,13 @@
                 android:layout_weight="1"
                 android:text="@string/searchByTab"
                 android:textSize="20sp"
-                android:id="@+id/search_tag_button"
+                android:id="@+id/button4"
                 android:textColor="@color/白色"
                 android:background="@drawable/button_style3"
                 android:layout_marginRight="25dp"
                 android:layout_marginEnd="25dp"
                 android:layout_marginTop="10dp" />
-
         </LinearLayout>
 
-        <ListView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/user_name_listView"
-            android:layout_marginTop="10dp"
-            />
-
-        <com.example.team.myapplication.util.MyScrollView
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/picture_scrollView" >
-
-            <LinearLayout
-                android:orientation="vertical"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:id="@+id/scroll_content_in_search_activity"/>
-        </com.example.team.myapplication.util.MyScrollView>
-
     </LinearLayout>
-
-    <ProgressBar
-        style="?android:attr/progressBarStyleLarge"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/progressBar7"
-        android:layout_centerInParent="true"
-        android:visibility="gone"
-        android:layout_marginTop="40dp" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="@string/no_search_result_tags"
-        android:id="@+id/textView8"
-        android:layout_centerInParent="true"
-        android:layout_marginTop="40dp"
-        android:textColor="@color/深灰色"
-        android:visibility="gone"/>
 </RelativeLayout>
