@@ -431,8 +431,8 @@ public class DB extends SQLiteOpenHelper {
         return cursor;
     }*/
     public Cursor lobbyimageselectpage(int page){
-        String min=String.valueOf(4*(page));
-        String max=String.valueOf(4*(page)+3);
+        String min=String.valueOf(4*(page)+1);
+        String max=String.valueOf(4*(page)+4);
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor cur = db.rawQuery("select * from M_LOBBYIMAGE where M_LOBBYIMAGE_RANK>='" + min.trim() + "'" + "and M_LOBBYIMAGE_RANK<='" + max.trim() + "'", null);
         return  cur;

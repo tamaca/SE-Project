@@ -20,6 +20,7 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.team.myapplication.Cache.Localstorage;
 import com.example.team.myapplication.Database.DB;
 import com.example.team.myapplication.Network.ImageGet;
 import com.example.team.myapplication.Network.JsonGet;
@@ -33,6 +34,7 @@ import com.example.team.myapplication.util.Tag;
 
 import org.json.JSONObject;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -70,7 +72,6 @@ public class ViewPictureActivity extends GeneralActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setTitle("查看图片");
-        Intent intent = getIntent();
         setContentView(R.layout.activity_view_picture);
         getActionBar().setDisplayHomeAsUpEnabled(true);
         /**
@@ -205,18 +206,46 @@ public class ViewPictureActivity extends GeneralActivity {
                 for (int i = 0; i < 5; i++) {
                     tags.get(i).changeToEditState(isEditing);
                 }
-                manageTagsButton.setText(isEditing?"确定":"管理标签");
+                manageTagsButton.setText(isEditing ? "确定" : "管理标签");
             }
         });
-
-        String bigurl = (String) intent.getExtras().get("bigurl");
-        String informationurl = "http://192.168.253.1/Kevin/image_detail/";
-        String imageid = (String) intent.getExtras().get("imageid");
-        new ImageGet(imgview, bigurl, imageid, db, "big");
-        mAuthTask = new getImageInformationProgress(informationurl, imageid, db);
-        mAuthTask.execute();
+        getData();
     }
-
+    //获取图片和信息
+    public void getData()
+    {
+        try {
+            Intent intent = getIntent();
+            String type = (String) intent.getExtras().get("type");
+            if (type.equals("online")) {
+                //联网获取图片信息
+                String bigurl = (String) intent.getExtras().get("bigurl");
+                String informationurl = "http://192.168.253.1/Kevin/image_detail/";
+                String imageid = (String) intent.getExtras().get("imageid");
+                new ImageGet(imgview, bigurl, imageid, db, "big");
+                mAuthTask = new getImageInformationProgress(informationurl, imageid, db);
+                mAuthTask.execute();
+            } else {
+                //未联网 先读取数据库中数据
+                String filepath=(String) intent.getExtras().get("filepath");
+                String imageid = (String) intent.getExtras().get("imageid");
+                File imageFile = new File(filepath);
+                if (imageFile.exists()) {
+                    //数据库中有该图片
+                    Bitmap bitmap = Localstorage.getBitmapFromSDCard(filepath);
+                    imgview.setImageBitmap(bitmap);
+                }
+                else
+                {
+                    //TODO: 未联网 页面错误 显示让用户重试 TO孙晓宇
+                }
+            }
+        }catch (Exception e)
+        {
+            //TODO:获取失败
+           e.printStackTrace();
+        }
+    }
     public void refreshTags() {
         int i = 0, j = 0;
         while (j < 5) {

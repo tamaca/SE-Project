@@ -123,20 +123,24 @@ public class JsonGet {
                         ImageView imageView2 = (ImageView) view.findViewById(R.id.imageView2);
                         ImageView imageView3 = (ImageView) view.findViewById(R.id.imageView3);
                         ImageView imageView4 = (ImageView) view.findViewById(R.id.imageView4);
-                        ImageGet imageGet1 = new ImageGet(imageView1, image_small[0],image_id[0], db, "small");
-                        ImageGet imageGet2 = new ImageGet(imageView2, image_small[1],image_id[1], db, "small");
-                        ImageGet imageGet3 = new ImageGet(imageView3, image_small[2],image_id[2], db, "small");
-                        ImageGet imageGet4 = new ImageGet(imageView4, image_small[3],image_id[3], db, "small");
+                        ImageGet imageGet1 = new ImageGet(imageView1, image_small[0], image_id[0], db, "small");
+                        ImageGet imageGet2 = new ImageGet(imageView2, image_small[1], image_id[1], db, "small");
+                        ImageGet imageGet3 = new ImageGet(imageView3, image_small[2], image_id[2], db, "small");
+                        ImageGet imageGet4 = new ImageGet(imageView4, image_small[3], image_id[3], db, "small");
                         JSONObject jsonObject1 = new JSONObject();
+                        jsonObject1.put("type","online");
                         jsonObject1.put("imageid", image_id[0]);
                         jsonObject1.put("imagebigurl", image_big[0]);
                         JSONObject jsonObject2 = new JSONObject();
+                        jsonObject2.put("type","online");
                         jsonObject2.put("imageid", image_id[1]);
                         jsonObject2.put("imagebigurl", image_big[1]);
                         JSONObject jsonObject3 = new JSONObject();
+                        jsonObject3.put("type","online");
                         jsonObject3.put("imageid", image_id[2]);
                         jsonObject3.put("imagebigurl", image_big[2]);
                         JSONObject jsonObject4 = new JSONObject();
+                        jsonObject4.put("type","online");
                         jsonObject4.put("imageid", image_id[3]);
                         jsonObject4.put("imagebigurl", image_big[3]);
                         imageView1.setContentDescription(jsonObject1.toString());
@@ -144,10 +148,10 @@ public class JsonGet {
                         imageView3.setContentDescription(jsonObject3.toString());
                         imageView4.setContentDescription(jsonObject4.toString());
                     } else {
-                        ImageGet imageGet6 = new ImageGet(null, image_small[0],image_id[0], db, "small");
-                        ImageGet imageGet7 = new ImageGet(null, image_small[1],image_id[1], db, "small");
-                        ImageGet imageGet8 = new ImageGet(null, image_small[2],image_id[2], db, "small");
-                        ImageGet imageGet9 = new ImageGet(null, image_small[3],image_id[3], db, "small");
+                        ImageGet imageGet6 = new ImageGet(null, image_small[0], image_id[0], db, "small");
+                        ImageGet imageGet7 = new ImageGet(null, image_small[1], image_id[1], db, "small");
+                        ImageGet imageGet8 = new ImageGet(null, image_small[2], image_id[2], db, "small");
+                        ImageGet imageGet9 = new ImageGet(null, image_small[3], image_id[3], db, "small");
                     }
                     dbimagesave(image_id[0]);
                     dbimagesave(image_id[1]);
@@ -155,10 +159,10 @@ public class JsonGet {
                     dbimagesave(image_id[3]);
                     HashMap<String, String> image = new HashMap<String, String>();
                     if (type.equals("lobby")) {
-                        dblobbyimagesave(String.valueOf(LoginState.page * 4 ), image_id[0]);
-                        dblobbyimagesave(String.valueOf(LoginState.page * 4 +1), image_id[1]);
-                        dblobbyimagesave(String.valueOf(LoginState.page * 4 +2), image_id[2]);
-                        dblobbyimagesave(String.valueOf(LoginState.page * 4 +3), image_id[3]);
+                        dblobbyimagesave(String.valueOf(LoginState.page * 4 + 1), image_id[0]);
+                        dblobbyimagesave(String.valueOf(LoginState.page * 4 + 2), image_id[1]);
+                        dblobbyimagesave(String.valueOf(LoginState.page * 4 + 3), image_id[2]);
+                        dblobbyimagesave(String.valueOf(LoginState.page * 4 + 4), image_id[3]);
                     } else {
                         //TODO:TA的动态数据库存储
                     }

@@ -3,6 +3,7 @@ package com.example.team.myapplication;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -32,6 +33,8 @@ import com.example.team.myapplication.Database.DB;
 import com.example.team.myapplication.Network.JsonGet;
 import com.example.team.myapplication.util.MyToast;
 import com.example.team.myapplication.Network.NetworkState;
+
+import org.json.JSONException;
 import org.json.JSONObject;
 import java.io.File;
 import java.io.IOException;
@@ -211,7 +214,26 @@ public class MainActivity extends Activity {
         }
         else
         {
-            Cursor cursor=db.lobbyimageselectpage(LoginState.page);
+            Cursor mCursor=db.lobbyimageselectpage(LoginState.page);
+            for (mCursor.moveToFirst(); !mCursor.isAfterLast(); mCursor.moveToNext()) {
+                String id = mCursor.getString((mCursor.getColumnIndex("m_lobbyimage_imageid")));
+                String rank = mCursor.getString((mCursor.getColumnIndex("m_lobbyimage_rank")));
+                String smallfilepath=Localstorage.getImageFilePath(id, "small");
+                Bitmap bitmap=Localstorage.getBitmapFromSDCard(smallfilepath);
+                Resources res=getResources();
+                int imageviewid= res.getIdentifier("imageView"+ rank,"id",getPackageName());
+                ImageView _imageView = (ImageView) squareView.findViewById(imageviewid);
+                _imageView.setImageBitmap(bitmap);
+                JSONObject jsonObject=new JSONObject();
+                try {
+                    jsonObject.put("type","offline");
+                    jsonObject.put("imageid",id);
+                } catch (JSONException e) {
+                    //TODO:数据传递错误（一般很少发生） TO孙晓宇
+                    e.printStackTrace();
+                }
+                _imageView.setContentDescription(jsonObject.toString());
+            }
         }
         //  JsonGet jsonGet1 = new JsonGet(picURL1, db, squareView);
         // JsonGet jsonGet2 = new JsonGet(picURL2, db);
@@ -346,11 +368,35 @@ public class MainActivity extends Activity {
             String imageviewJsonString = view.getContentDescription().toString();
             try {
                 JSONObject imageviewJson = new JSONObject(imageviewJsonString);
-                String bigurl = imageviewJson.getString("imagebigurl");
-                String id = imageviewJson.getString("imageid");
-                intent.putExtra("bigurl", bigurl);
-                intent.putExtra("imageid", id);
-                startActivity(intent);
+                //获取大图时联网
+                if(NetworkState.isNetworkConnected(this)) {
+                    String type=imageviewJson.getString("type");
+                    if(type.equals("online")) {
+                        //获取缩略图时联网 直接有大图地址
+                        String bigurl = imageviewJson.getString("imagebigurl");
+                        String id = imageviewJson.getString("imageid");
+                        intent.putExtra("type", "online");
+                        intent.putExtra("bigurl", bigurl);
+                        intent.putExtra("imageid", id);
+                        startActivity(intent);
+                    }
+                    else
+                    {
+                        String id = imageviewJson.getString("imageid");
+                        //获取缩略图时未联网 现在要联网获取大图
+                    }
+                }
+                //获取大图时未联网
+                //直接获取id找数据库
+                else
+                {
+                    String id = imageviewJson.getString("imageid");
+                    String filePath = Localstorage.getImageFilePath(id, "big");
+                    intent.putExtra("type", "offline");
+                    intent.putExtra("filepath", filePath);
+                    intent.putExtra("imageid", id);
+                    startActivity(intent);
+                }
             } catch (Exception e) {
                 myToast.show(getString(R.string.toast_picture_error));
             }

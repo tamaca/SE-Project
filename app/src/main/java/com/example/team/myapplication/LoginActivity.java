@@ -381,15 +381,15 @@ public class LoginActivity extends GeneralActivity implements LoaderCallbacks<Cu
 
 
             try {
-                String encryptEmail = "";
+                String encryptuserName = "";
                 String encryptPassword = "";
                 if (1 == type) {
-                    encryptEmail = AES.encrypt(mUserName);
-                    encryptPassword = AES.encrypt(mPassword);
+                  //  encryptuserName = AES.encrypt(mUserName);
+                   // encryptPassword = AES.encrypt(mPassword);
 
                 } else if (2 == type) {
-                    encryptEmail = mUserName;
-                    encryptPassword = mPassword;
+                 //   encryptuserName = mUserName;
+                  //  encryptPassword = mPassword;
                 } else {
                     try {
                         throw new Exception("参数错误");
@@ -398,10 +398,12 @@ public class LoginActivity extends GeneralActivity implements LoaderCallbacks<Cu
 
                     }
                 }
-                String url = "http://192.168.137.1/php2/index.php";
+                String url = "http://192.168.253.1/login/";
                 HashMap<String, String> map = new HashMap<String, String>();
-                map.put("email", encryptEmail);
-                map.put("password", encryptPassword);
+               // map.put("username", encryptuserName);
+               // map.put("password", encryptPassword);
+                 map.put("username", mUserName);
+                 map.put("password", mPassword);
                 JsonPost post = new JsonPost(map, url, 1, autoLogin.isChecked(), rememPassword.isChecked(), db);
                 Thread.sleep(3000);
             } catch (Exception e) {
