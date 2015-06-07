@@ -64,17 +64,18 @@ public class Localstorage {
     /**
      * 依据图片的Url获取其在SDCard的存储路径
      */
-    public static String getImageFilePath(String imageUrl,String type){
+    public static String getImageFilePath(String imageName,String type){
         File dir=new File(IMAGES_DIR_PATH);
         if (!dir.exists()) {
             dir.mkdirs();
         }
         String imageFilePath=null;
-        String imageName=null;
-        imageName=getImagesId(imageUrl);
+        //    String imageName=null;
+        //  imageName=getImagesId(imageUrl);
         imageFilePath=IMAGES_DIR_PATH+File.separator+imageName+"_"+type+".jpg";
         return imageFilePath;
     }
+    /*
     public static String getImagesId(String imageUrl)
     {
         int start=imageUrl.lastIndexOf("/");
@@ -82,6 +83,7 @@ public class Localstorage {
         String imageId=imageUrl.substring(start+1, end);
         return imageId;
     }
+    */
 
     /**
      * 从网络获取图片且保存至SD卡

@@ -3,6 +3,7 @@ package com.example.team.myapplication;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Intent;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
@@ -194,7 +195,7 @@ public class MainActivity extends Activity {
         /**
          * 如果imagedownload()的线程一直跑会占用很多cpu资源，请解决
          */
-        //imagedownload();
+        imagedownload();
         //imageview
 
     }
@@ -210,7 +211,7 @@ public class MainActivity extends Activity {
         }
         else
         {
-
+            Cursor cursor=db.lobbyimageselectpage(LoginState.page);
         }
         //  JsonGet jsonGet1 = new JsonGet(picURL1, db, squareView);
         // JsonGet jsonGet2 = new JsonGet(picURL2, db);

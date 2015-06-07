@@ -212,7 +212,7 @@ public class ViewPictureActivity extends GeneralActivity {
         String bigurl = (String) intent.getExtras().get("bigurl");
         String informationurl = "http://192.168.253.1/Kevin/image_detail/";
         String imageid = (String) intent.getExtras().get("imageid");
-        new ImageGet(imgview, bigurl, db, "big");
+        new ImageGet(imgview, bigurl, imageid, db, "big");
         mAuthTask = new getImageInformationProgress(informationurl, imageid, db);
         mAuthTask.execute();
     }
@@ -340,7 +340,6 @@ public class ViewPictureActivity extends GeneralActivity {
 
         @Override
         protected void onPostExecute(final Boolean success) {
-            mAuthTask = null;
             if (success) {
                 String baseurl = "http://192.168.253.1/media/";
                 author.setText(returnmap.get("author"));
@@ -357,6 +356,7 @@ public class ViewPictureActivity extends GeneralActivity {
             } else {
                 myToast.show(getString(R.string.toast_fetching_information_failed));
             }
+            mAuthTask = null;
         }
     }
 
@@ -384,12 +384,12 @@ public class ViewPictureActivity extends GeneralActivity {
 
         @Override
         protected void onPostExecute(final Boolean success) {
-            mAuthTask = null;
             if (success) {
                 //TODO:后续处理
             } else {
                 myToast.show(getString(R.string.toast_fetching_information_failed));
             }
+            mAuthTask = null;
         }
     }
     /*public void getImageInformation(String imageid) {
