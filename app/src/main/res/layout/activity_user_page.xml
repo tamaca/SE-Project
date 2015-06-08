@@ -45,13 +45,7 @@
                     android:gravity="center"
                     android:layout_gravity="center|right"
                     android:layout_marginBottom="16dp"
-                    android:alpha="0.85"
-                    android:theme="@style/Base.TextAppearance.AppCompat"
-                    android:elegantTextHeight="false"
-                    android:editable="false"
-                    android:clickable="false"
-                    android:textColorHighlight="@color/material_deep_teal_200"
-                    android:textColorHint="@color/common_signin_btn_text_dark" />
+                    android:alpha="0.85" />
 
                 <LinearLayout
                     android:orientation="horizontal"
