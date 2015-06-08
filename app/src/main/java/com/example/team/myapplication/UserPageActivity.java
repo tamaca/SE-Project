@@ -40,6 +40,7 @@ public class UserPageActivity extends GeneralActivity implements ScrollViewListe
     private ProgressBar inChangingRelationship;
     private GetPicture getPicture = null;
     private LinearLayout scrollContent;
+    private Button pickPictures;
     private int pictureCount;
     public ArrayList<GalleryItem> galleryItems = null;
     private BlackConcerenTask mAuthTask = null;
@@ -78,9 +79,16 @@ public class UserPageActivity extends GeneralActivity implements ScrollViewListe
         inChangingRelationship = (ProgressBar) findViewById(R.id.progressBar5);
         scrollContent = (LinearLayout) findViewById(R.id.scroll_content);
         myToast = new MyToast(this);
+        pickPictures = (Button) findViewById(R.id.button10);
         //////////
         concernButton.setOnClickListener(new OnClickConcernListener());
         hateButton.setOnClickListener(new OnClickHateListener());
+        pickPictures.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                getImageFromAlbum(view);
+            }
+        });
         /**
          * 根据isMe变量来判断是加载我的主页还是别人的主页
          */
@@ -107,6 +115,22 @@ public class UserPageActivity extends GeneralActivity implements ScrollViewListe
             uploadImageButton.setVisibility(View.GONE);
             getInfomationtask = new GetInfomation("Kevin2");
             getInfomationtask.execute();
+        }
+    }
+    static final int REQUEST_CODE_PICK_IMAGE = 2;
+
+    protected void getImageFromAlbum(View view) {
+        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+        intent.setType("image/*");//相片类型
+        startActivityForResult(intent, REQUEST_CODE_PICK_IMAGE);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        switch (resultCode){
+            case REQUEST_CODE_PICK_IMAGE:
+                break;
         }
     }
 
