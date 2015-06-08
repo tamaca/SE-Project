@@ -24,7 +24,7 @@
         android:layout_alignParentTop="true"
         android:layout_toRightOf="@+id/textView"
         android:layout_toEndOf="@+id/textView"
-        android:background="@drawable/textview_list1"/>
+        android:background="@drawable/textstyle_comment"/>
 
     <TextView
         android:layout_width="wrap_content"

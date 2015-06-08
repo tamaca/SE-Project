@@ -71,7 +71,9 @@ public class MainActivity extends Activity {
     public static void setCurrentTag(String currentTag) {
         MainActivity.currentTag = currentTag;
     }
+
     private static String currentTag;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -95,8 +97,8 @@ public class MainActivity extends Activity {
         imageView = (ImageView) findViewById(R.id.imageView);
         upload = (Button) findViewById(R.id.upload_button);
         cancel = (Button) findViewById(R.id.cancel_button);
-        camera = (ImageButton) findViewById(R.id.imageButton);
-        search = (ImageButton)findViewById(R.id.imageButton3);
+        camera = (ImageButton) squareView.findViewById(R.id.imageButton);
+        search = (ImageButton) squareView.findViewById(R.id.imageButton3);
         myToast = new MyToast(this);
         /**
          * 设置搜索按钮背景为透明
@@ -160,15 +162,7 @@ public class MainActivity extends Activity {
 
             @Override
             public void onPageSelected(int position) {
-                if (position == 1) {
-                    camera.setVisibility(View.GONE);
-                    search.setVisibility(View.GONE);
-                } else {
-                    camera.setVisibility(View.VISIBLE);
-                    search.setVisibility(View.VISIBLE);
-                }
                 mTabHost.setCurrentTab(position);
-
             }
 
             @Override
@@ -204,30 +198,28 @@ public class MainActivity extends Activity {
     }
 
     public void imagedownload() {
-        if(NetworkState.isNetworkConnected(this)) {
+        if (NetworkState.isNetworkConnected(this)) {
             String picURL1 = "http://192.168.253.1/square_page/1/";
             String picURL2 = "http://192.168.253.1/square_page/2/";
             DownloadPictureProgress downloadPictureProgress1 = new DownloadPictureProgress(picURL1, db, squareView);
             DownloadPictureProgress downloadPictureProgress2 = new DownloadPictureProgress(picURL2, db, null);
             downloadPictureProgress1.execute();
             downloadPictureProgress2.execute();
-        }
-        else
-        {
-            Cursor mCursor=db.lobbyimageselectpage(LoginState.page);
+        } else {
+            Cursor mCursor = db.lobbyimageselectpage(LoginState.page);
             for (mCursor.moveToFirst(); !mCursor.isAfterLast(); mCursor.moveToNext()) {
                 String id = mCursor.getString((mCursor.getColumnIndex("m_lobbyimage_imageid")));
                 String rank = mCursor.getString((mCursor.getColumnIndex("m_lobbyimage_rank")));
-                String smallfilepath=Localstorage.getImageFilePath(id, "small");
-                Bitmap bitmap=Localstorage.getBitmapFromSDCard(smallfilepath);
-                Resources res=getResources();
-                int imageviewid= res.getIdentifier("imageView"+ rank,"id",getPackageName());
+                String smallfilepath = Localstorage.getImageFilePath(id, "small");
+                Bitmap bitmap = Localstorage.getBitmapFromSDCard(smallfilepath);
+                Resources res = getResources();
+                int imageviewid = res.getIdentifier("imageView" + rank, "id", getPackageName());
                 ImageView _imageView = (ImageView) squareView.findViewById(imageviewid);
                 _imageView.setImageBitmap(bitmap);
-                JSONObject jsonObject=new JSONObject();
+                JSONObject jsonObject = new JSONObject();
                 try {
-                    jsonObject.put("type","offline");
-                    jsonObject.put("imageid",id);
+                    jsonObject.put("type", "offline");
+                    jsonObject.put("imageid", id);
                 } catch (JSONException e) {
                     //TODO:数据传递错误（一般很少发生） TO孙晓宇
                     e.printStackTrace();
@@ -243,6 +235,7 @@ public class MainActivity extends Activity {
 
     /**
      * 切换到上传图片页面
+     *
      * @param show
      */
     public void showUploadView(boolean show) {
@@ -267,6 +260,7 @@ public class MainActivity extends Activity {
 
     /**
      * 根据是否登录成功改变主页
+     *
      * @param isLogined
      */
     public void changeView(boolean isLogined) {
@@ -276,6 +270,7 @@ public class MainActivity extends Activity {
 
     /**
      * 转到注册页面
+     *
      * @param view
      */
     public void toLoginActivity(View view) {
@@ -285,6 +280,7 @@ public class MainActivity extends Activity {
 
     /**
      * 转到动态页面
+     *
      * @param view
      */
     public void toRecentActivity(View view) {
@@ -294,6 +290,7 @@ public class MainActivity extends Activity {
 
     /**
      * 转到我的个人主页
+     *
      * @param view
      */
     public void toUserPageActivity(View view) {
@@ -326,20 +323,21 @@ public class MainActivity extends Activity {
 
     /**
      * 转到搜索页面
+     *
      * @param view
      */
     public void toSearchActivity(View view) {
-        if(LoginState.getLogined()){
+        if (LoginState.getLogined()) {
             Intent intent = new Intent(this, SearchActivity.class);
             startActivity(intent);
-        }
-        else{
+        } else {
             myToast.show(getString(R.string.toast_before_login));
         }
     }
 
     /**
      * 转到查看大图页面
+     *
      * @param view
      */
     public void toPictureActivity(View view) {
@@ -349,6 +347,7 @@ public class MainActivity extends Activity {
 
     /**
      * 转到更改密码页面
+     *
      * @param view
      */
     public void toChangePasswordActivity(View view) {
@@ -358,6 +357,7 @@ public class MainActivity extends Activity {
 
     /**
      * 跳转到查看图片详细信息
+     *
      * @param view
      */
     public void toViewPictureActivity(View view) {
@@ -369,9 +369,9 @@ public class MainActivity extends Activity {
             try {
                 JSONObject imageviewJson = new JSONObject(imageviewJsonString);
                 //获取大图时联网
-                if(NetworkState.isNetworkConnected(this)) {
-                    String type=imageviewJson.getString("type");
-                    if(type.equals("online")) {
+                if (NetworkState.isNetworkConnected(this)) {
+                    String type = imageviewJson.getString("type");
+                    if (type.equals("online")) {
                         //获取缩略图时联网 直接有大图地址
                         String bigurl = imageviewJson.getString("imagebigurl");
                         String id = imageviewJson.getString("imageid");
@@ -379,17 +379,14 @@ public class MainActivity extends Activity {
                         intent.putExtra("bigurl", bigurl);
                         intent.putExtra("imageid", id);
                         startActivity(intent);
-                    }
-                    else
-                    {
+                    } else {
                         String id = imageviewJson.getString("imageid");
                         //获取缩略图时未联网 现在要联网获取大图
                     }
                 }
                 //获取大图时未联网
                 //直接获取id找数据库
-                else
-                {
+                else {
                     String id = imageviewJson.getString("imageid");
                     String filePath = Localstorage.getImageFilePath(id, "big");
                     intent.putExtra("type", "offline");
@@ -407,6 +404,7 @@ public class MainActivity extends Activity {
 
     /**
      * 转到我的黑名单或我关注的人
+     *
      * @param view
      * @param x
      */
@@ -472,6 +470,7 @@ public class MainActivity extends Activity {
 
     /**
      * 从相机中获取拍摄的照片
+     *
      * @param requestCode
      * @param resultCode
      * @param data
@@ -495,6 +494,7 @@ public class MainActivity extends Activity {
 
     /**
      * 把拍摄的图片写入储存卡 没有问题
+     *
      * @return
      * @throws IOException
      */
@@ -532,7 +532,7 @@ public class MainActivity extends Activity {
         int photoH = bmOptions.outHeight;
 
         // Determine how much to scale down the image
-        int scaleFactor = Math.min(photoW/targetW, photoH/targetH);
+        int scaleFactor = Math.min(photoW / targetW, photoH / targetH);
 
         // Decode the image file into a Bitmap sized to fill the View
         bmOptions.inJustDecodeBounds = false;
@@ -542,9 +542,6 @@ public class MainActivity extends Activity {
         Bitmap bitmap = BitmapFactory.decodeFile(mCurrentPhotoPath, bmOptions);
         imageView.setImageBitmap(bitmap);
     }
-
-
-
 
 
     /**

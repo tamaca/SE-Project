@@ -5,14 +5,6 @@
     android:background="@color/背景蓝"
     android:orientation="vertical">
 
-    <ImageButton
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/imageButton3"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentRight="true"
-        android:background="@android:drawable/ic_menu_search"/>
-
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="match_parent"
@@ -138,5 +130,27 @@
                 android:onClick="toViewPictureActivity" />
         </LinearLayout>
     </LinearLayout>
+
+    <ImageButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/imageButton3"
+        android:src="@android:drawable/ic_menu_search"
+        android:onClick="toSearchActivity"
+        android:layout_alignParentBottom="false"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="false"
+        android:layout_alignParentTop="true"/>
+
+    <ImageButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/imageButton"
+        android:src="@drawable/camera_normal"
+        android:background="@drawable/button_camera"
+        android:onClick="dispatchTakePictureIntent"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="5dp"
+        android:layout_centerHorizontal="true" />
 
 </RelativeLayout>

@@ -40,10 +40,18 @@
                     android:textAppearance="?android:attr/textAppearanceLarge"
                     android:text="@string/author"
                     android:id="@+id/name"
-                    android:textColor="@color/蓝色"
-                    android:textSize="24sp"
+                    android:textColor="@color/用户蓝"
+                    android:textSize="36sp"
                     android:gravity="center"
-                    android:layout_gravity="center" />
+                    android:layout_gravity="center|right"
+                    android:layout_marginBottom="16dp"
+                    android:alpha="0.85"
+                    android:theme="@style/Base.TextAppearance.AppCompat"
+                    android:elegantTextHeight="false"
+                    android:editable="false"
+                    android:clickable="false"
+                    android:textColorHighlight="@color/material_deep_teal_200"
+                    android:textColorHint="@color/common_signin_btn_text_dark" />
 
                 <LinearLayout
                     android:orientation="horizontal"

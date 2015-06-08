@@ -26,6 +26,7 @@
             android:textSize="20sp"
             android:id="@+id/editText"
             android:hint="@string/search"
+            android:maxLines="1"
             android:background="@drawable/textview_style4"/>
 
         <LinearLayout
