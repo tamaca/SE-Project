@@ -63,6 +63,8 @@ public class ViewPictureActivity extends GeneralActivity {
     private EditText editTextInDialog;
     private boolean isEditing = false;
     private View showFail;
+    private UploadTagProgress uploadTagProgress = null;
+    private String imageid = null;
 
     @Override
 
@@ -116,13 +118,14 @@ public class ViewPictureActivity extends GeneralActivity {
                         public void onClick(DialogInterface dialogInterface, int i) {
 
                             //TODO 删除该用户的这个标签，请把UI操作放在删除完成之后
-
+                            uploadTagProgress = new UploadTagProgress(editTextInDialog.getText().toString(), imageid,"delete");
+                            uploadTagProgress.execute();
 
                             /**
                              * 这是在删除后的UI操作
                              * tagContent是标签内容
                              */
-
+/*
                             tagView.post(new Runnable() {
                                 @Override
                                 public void run() {
@@ -131,7 +134,7 @@ public class ViewPictureActivity extends GeneralActivity {
                                     refreshTags();
                                 }
                             });
-
+*/
 
                         }
                     });
@@ -157,14 +160,11 @@ public class ViewPictureActivity extends GeneralActivity {
                     builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialogInterface, int i) {
-
-                            tagView.post(new Runnable() {
+                            uploadTagProgress = new UploadTagProgress(editTextInDialog.getText().toString(), imageid,"insert");
+                            uploadTagProgress.execute();
+                            /*tagView.post(new Runnable() {
                                 @Override
                                 public void run() {
-
-                                    /**
-                                     * 检查输入合法性
-                                     */
                                     final String tagContent = editTextInDialog.getText().toString();
                                     if (!CheckValid.isTagUnique(tags, tagContent)) {
                                         return;
@@ -176,17 +176,12 @@ public class ViewPictureActivity extends GeneralActivity {
                                         return;
                                     }
                                     //TODO 将标签上传 UI操作放在上传完成之后
-
-                                    /**
-                                     * 这是添加标签的UI操作
-                                     * tagContent是标签内容
-                                     */
                                     tags.get(j).tagText.setText(tagContent);
                                     tags.get(j).changeState(Tag.removable);
                                     refreshTags();
 
                                 }
-                            });
+                            });*/
                         }
                     });
                     builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
@@ -255,51 +250,47 @@ public class ViewPictureActivity extends GeneralActivity {
                 //联网获取图片信息
                 String bigurl = (String) intent.getExtras().get("bigurl");
                 String informationurl = "http://192.168.253.1/Kevin/image_detail/";
-                String imageid = (String) intent.getExtras().get("imageid");
+                imageid = (String) intent.getExtras().get("imageid");
                 new ImageGet(imgview, bigurl, imageid, db, "big");
                 mAuthTask = new getImageInformationProgress(informationurl, imageid, db);
                 mAuthTask.execute();
             } else if (type.equals("offline")) {
                 //未联网 先读取数据库中数据
                 String filepath = (String) intent.getExtras().get("filepath");
-                String imageid = (String) intent.getExtras().get("imageid");
+                imageid = (String) intent.getExtras().get("imageid");
                 File imageFile = new File(filepath);
                 if (imageFile.exists()) {
                     //数据库中有该图片
                     Bitmap bitmap = Localstorage.getBitmapFromSDCard(filepath);
                     imgview.setImageBitmap(bitmap);
                     Cursor mCursor = db.imageselect(imageid);
-                   if(mCursor.moveToFirst()) {
-                       String userid = mCursor.getString((mCursor.getColumnIndex("m_image_userid")));
-                       String islike = mCursor.getString((mCursor.getColumnIndex("m_image_islike")));
-                       String likenumber = mCursor.getString((mCursor.getColumnIndex("m_image_likenumber")));
-                       String updatedate = mCursor.getString((mCursor.getColumnIndex("m_image_updatedate")));
-                       author.setText(userid);
-                       if (LoginState.username.equals(userid)) {
-                           manageTagsButton.setVisibility(View.VISIBLE);
-                       }
-                       imgview.setContentDescription(null);
-                       isLike = (islike.equals("true"));
-                       int _likenumber = Integer.parseInt(likenumber);
-                       likeText.setText(_likenumber < 10000 ? likenumber : _likenumber / 10000 + "万+");
-                       //时间显示
-                       uploadTime.setText(updatedate);
-                   }
-                    else
-                   {
-                       //数据库存储错误
-                       throw new Exception();
-                   }
+                    if (mCursor.moveToFirst()) {
+                        String userid = mCursor.getString((mCursor.getColumnIndex("m_image_userid")));
+                        String islike = mCursor.getString((mCursor.getColumnIndex("m_image_islike")));
+                        String likenumber = mCursor.getString((mCursor.getColumnIndex("m_image_likenumber")));
+                        String updatedate = mCursor.getString((mCursor.getColumnIndex("m_image_updatedate")));
+                        author.setText(userid);
+                        if (LoginState.username.equals(userid)) {
+                            manageTagsButton.setVisibility(View.VISIBLE);
+                        }
+                        imgview.setContentDescription(null);
+                        isLike = (islike.equals("true"));
+                        int _likenumber = Integer.parseInt(likenumber);
+                        likeText.setText(_likenumber < 10000 ? likenumber : _likenumber / 10000 + "万+");
+                        //时间显示
+                        uploadTime.setText(updatedate);
+                    } else {
+                        //数据库存储错误
+                        throw new Exception();
+                    }
                     refreshingProgressBar.setVisibility(View.GONE);
-                }
-                else
-                {
+                } else {
                     throw new Exception();
                 }
             } else {
-                String imageid = (String) intent.getExtras().get("imageid");
+                imageid = (String) intent.getExtras().get("imageid");
                 String url = "http://192.168.253.1/big_get/" + imageid + "/";
-               getImageFromIdProgress getImageFromIdProgress= new getImageFromIdProgress(url, imageid);
+                getImageFromIdProgress getImageFromIdProgress = new getImageFromIdProgress(url, imageid);
                 getImageFromIdProgress.execute();
             }
         } catch (Exception e) {
@@ -739,30 +730,51 @@ public class ViewPictureActivity extends GeneralActivity {
     }
 
     class UploadTagProgress extends AsyncTask<Void, Void, Boolean> {
-        private String comment;
+        private String tagname;
+        private String imageid;
+        private String type;
 
-        public UploadTagProgress(String comment) {
-            this.comment = comment;
+        public UploadTagProgress(String tagname, String imageid,String type) {
+            this.tagname = tagname;
+            this.imageid = imageid;
+            this.type = type;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            showProgress(true);
         }
 
         @Override
         protected Boolean doInBackground(Void... voids) {
             try {
-                /*String key = "1234567891234567";
-                String username= LoginState.username;
-                AES aesEncrypt = new AES(key);
-                String encryptUsername=aesEncrypt.encrypt(username);
-                String url = "http://192.168.137.1/php22/index.php";
+                String url = "";
+                if (type.equals("insert")) {//插入TAG
+                    //TODO:错误监测返回提示给用户  TO孙晓宇
+                    if (!CheckValid.isTagUnique(tags, tagname)) {
+                        throw new Exception();
+                    }
+                    if (!CheckValid.isTagValid(tagname)) {
+                        throw new Exception();
+                    }
+                    if (tagname.isEmpty()) {
+                        throw new Exception();
+                    }
+                    url = "";
+                } else {//删除TAG
+                    url = "";
+                }
                 HashMap<String, String> map = new HashMap<String, String>();
-                map.put("username", encryptUsername);
-                map.put("content", comment);
-                JsonPost post = new JsonPost(map, url,3,db);*/
-                Thread.sleep(100);
+                map.put("tagname", tagname);
+                map.put("imageid", imageid);
+                if (imageid == null) {
+                    //图片ID获取错误
+                    throw new Exception();
+                }
+                JsonPost post = new JsonPost(map, url);
             } catch (Exception e) {
                 return false;
             }
-
-
             return true;
         }
 
@@ -771,25 +783,18 @@ public class ViewPictureActivity extends GeneralActivity {
 
             showProgress(false);
             if (success) {
-                Toast.makeText(getApplicationContext(), "评论成功", Toast.LENGTH_SHORT).show();
-                addComment(comment);
-                editText.setText(null);
-                Thread thread = new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            Thread.sleep(5000);
-                            uploadComment = null;
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                });
-                thread.start();
-
+                if(type.equals("insert"))
+                {
+                    //TODO:添加标签  TO孙晓宇
+                }
+               else
+                {
+                    //TODO:删除标签  TO孙晓宇
+                }
             } else {
-                myToast.show(getString(R.string.toast_comment_failed));
-                uploadComment = null;
+                //TODO:tag传输错误
+                //myToast.show(getString(R.string.toast_comment_failed));
+                uploadTagProgress = null;
             }
         }
 

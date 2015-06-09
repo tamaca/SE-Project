@@ -514,7 +514,7 @@ public class MainActivity extends Activity {
         );
 
         // Save a file: path for use with ACTION_VIEW intents
-        mCurrentPhotoPath = "file:" + image.getAbsolutePath();
+        mCurrentPhotoPath = "file://" + image.getAbsolutePath();
         return image;
     }
 
@@ -530,6 +530,7 @@ public class MainActivity extends Activity {
         // Get the dimensions of the bitmap
         BitmapFactory.Options bmOptions = new BitmapFactory.Options();
         bmOptions.inJustDecodeBounds = true;
+        bmOptions.inSampleSize=2;
         BitmapFactory.decodeFile(mCurrentPhotoPath, bmOptions);
         int photoW = bmOptions.outWidth;
         int photoH = bmOptions.outHeight;
