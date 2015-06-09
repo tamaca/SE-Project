@@ -30,46 +30,61 @@ import java.util.Map;
  */
 public class JsonPost {
     private String url;
-    private int type;
     boolean autoLogin;
     boolean rememPassword;
     private DB db;
     private ViewPictureActivity view;
+    private JSONObject returnjsonObject = null;
 
-    public JSONObject getReturnjsonObject() {
-        return returnjsonObject;
+    public HashMap<String, String> getReturnmap() {
+        return returnmap;
     }
 
-    private JSONObject returnjsonObject=null;
+    private HashMap<String, String> returnmap;
     //多种处理方式
     //登录
-    public JsonPost(HashMap<String, String> map, String url, int type, boolean autoLogin, boolean rememPassword, DB db) throws Exception {
+    public JsonPost(HashMap<String, String> map, String url, boolean autoLogin, boolean rememPassword, DB db) throws Exception {
         this.url = url;
-        this.type = type;
         this.autoLogin = autoLogin;
         this.rememPassword = rememPassword;
         this.db = db;
         Post post = new Post(map);
         returnjsonObject = post.PostToServer();
-        post.PostExecute(returnjsonObject);
+        post.PostExecuteLogin(returnjsonObject);
     }
 
     //注册、修改密码 图片信息获取
-    public JsonPost(HashMap<String, String> map, String url, int type, DB db) throws Exception {
+    public JsonPost(HashMap<String, String> map, String url, String type, DB db) throws Exception {
         this.url = url;
-        this.type = type;
         this.db = db;
+        Post post = new Post(map);
+        returnjsonObject = post.PostToServer();
+        if(type.equals("register")) {
+            post.PostExecute(returnjsonObject);
+        }
+        else if(type.equals("pwdchange"))
+        {
+            post.PostExecuteChangePassword(returnjsonObject);
+        }
+        else if(type.equals("imageinfo"))
+        {
+            post.PostExecuteImageInformation(returnjsonObject);
+        }
+    }
+
+    //添加关注 黑名单
+    public JsonPost(HashMap<String, String> map, String url) throws Exception {
+        this.url = url;
         Post post = new Post(map);
         returnjsonObject = post.PostToServer();
         post.PostExecute(returnjsonObject);
     }
-    //添加关注 黑名单 获取关注和黑名单信息
-    public JsonPost(HashMap<String, String> map, String url, int type) throws Exception {
+    // 获取关注和黑名单信息
+    public JsonPost(HashMap<String, String> map, String url,String type) throws Exception {
         this.url = url;
-        this.type = type;
         Post post = new Post(map);
         returnjsonObject = post.PostToServer();
-        post.PostExecute(returnjsonObject);
+        post.PostExecuteRelation(returnjsonObject);
     }
     //数据库储存用户
     private void dbsaveuser(String id, String password) {
@@ -99,12 +114,14 @@ public class JsonPost {
             db.lastuserdelete();
         }
     }
+
     //数据库存储图片
     private void dbimagesave(HashMap<String, String> image) {
         Timestamp updatetime = new Timestamp(System.currentTimeMillis());
         updatetime.valueOf(image.get("updatetime"));
         db.imageinsert(image.get("imageid"), image.get("userid"), image.get("islike"), image.get("likenumber"), updatetime);
     }
+    //数据库存储评论
     private void dbcommentsave(HashMap<String, String> commentmap) {
         String _commentnum = commentmap.get("commentnum");
         int commentnum = Integer.parseInt(_commentnum);
@@ -115,22 +132,30 @@ public class JsonPost {
             db.commentinsert(commentmap.get("commentid" + String.valueOf(i - 1)), commentmap.get("userid" + String.valueOf(i - 1)), imageid, commentmap.get("commentid" + String.valueOf(i - 1)), updatetime);
         }
     }
-
+    //数据库存储标签
+    private void dbtagsave(HashMap<String, String> tag) {
+        String _tagnum=tag.get("tagnum");
+        int tagnum=Integer.parseInt(_tagnum);
+        for(int i=0;i<tagnum;i++) {
+            db.taginsert(tag.get("tagid"+i), tag.get("tagname"+i), tag.get("imageid"));
+        }
+    }
     //UI处理图片信息
-    private void getImageInformation(JSONObject info,int type) throws Exception {
+    private HashMap<String,String> getImageInformation(JSONObject info) throws Exception {
+        String originImageurl = info.getString("origin");
         String imageId = info.getString("image_id");
         String _author = info.getString("author");
         String _like = info.getString("like");
         String _isLike = info.getString("is_like");
         String _updateTime = info.getString("update_time");
-     //   String _commentnum = info.getString("commentnum");
-     //   String _comment = info.getString("comment");
-     //  int commentnum = Integer.parseInt(_commentnum);
-    //    JSONObject commentJson = new JSONObject(_comment);
-     //   String commenter[] = new String[6];
-     //   String comment[] = new String[6];
-   //     String commentid[] = new String[6];
-   //     String updatedate[] = new String[6];
+        //   String _commentnum = info.getString("commentnum");
+        //   String _comment = info.getString("comment");
+        //  int commentnum = Integer.parseInt(_commentnum);
+        //    JSONObject commentJson = new JSONObject(_comment);
+        //   String commenter[] = new String[6];
+        //   String comment[] = new String[6];
+        //     String commentid[] = new String[6];
+        //     String updatedate[] = new String[6];
    /*     for (int i = 1; i <= commentnum; i++) {
             commenter[i - 1] = commentJson.getString("name" + String.valueOf(i));
             comment[i - 1] = commentJson.getString("comment" + String.valueOf(i));
@@ -138,6 +163,7 @@ public class JsonPost {
             updatedate[i - 1] = commentJson.getString("updatedate" + String.valueOf(i));
         }*/
         HashMap<String, String> image = new HashMap<String, String>();
+        image.put("origin",originImageurl);
         image.put("imageid", imageId);
         image.put("userid", _author);
         image.put("islike", _isLike);
@@ -153,8 +179,33 @@ public class JsonPost {
             commentmap.put("context" + String.valueOf(i), commentid[i - 1]);
             commentmap.put("updatedate" + String.valueOf(i), updatedate[i - 1]);
         }*/
+        return image;
     }
-
+    private HashMap<String,String> getTag(JSONObject info) throws Exception {
+        String tag_status=info.getString("tag_status");
+        String tagid[]=new String[5];
+        String tagname[]=new String[5];
+        int tagnum=0;
+        if(tag_status.equals("normal"))
+        {
+            tagnum=5;
+        }
+        else
+        {
+            String _tagnum=info.getString("count");
+            tagnum=Integer.parseInt(_tagnum);
+        }
+        HashMap<String,String>tag=new HashMap<String,String>();
+        tag.put("tagnum",String.valueOf(tagnum));
+        tag.put("imageid",info.getString("image_id"));
+        for (int i = 0; i < tagnum; i++) {
+            tag.put("tagname"+i,info.getString("tag" + String.valueOf(i)));
+            tag.put("tagid"+i,info.getString("tag" + String.valueOf(i)));
+        }
+        dbtagsave(tag);
+        //TODO:数据库
+        return tag;
+    }
     private class Post {
         //  HttpClient client = new DefaultHttpClient();
         CloseableHttpClient client = HttpClients.custom().useSystemProperties().build();
@@ -189,7 +240,7 @@ public class JsonPost {
                 httpPost.setHeader("Content-type", "application/json");
                 httpPost.setEntity(new UrlEncodedFormEntityHC4(nameValuePair, "UTF-8"));
                 response = client.execute(httpPost);
-                int a=response.getStatusLine().getStatusCode();
+                int a = response.getStatusLine().getStatusCode();
                 StringBuilder builder = new StringBuilder();
                 BufferedReader reader = new BufferedReader(new InputStreamReader(
                         response.getEntity().getContent()));
@@ -207,70 +258,111 @@ public class JsonPost {
             }
         }
 
+        protected void PostExecuteLogin(JSONObject jsonObject) throws Exception {
+            if (jsonObject == null) {
+                throw new nullException();
+                //TODO:网络通信错误
+            }
+            else
+            {
+                String status = jsonObject.getString("status");
+                if (status.equals("normal")) {
+                    String _username = jsonObject.getString("username");
+                    dbsaveuser(_username, this.jsonObject.getString("password"));
+                }
+                else
+                {
+                    throw new executeException();
+                }
+            }
+        }
+        protected void PostExecuteComment(JSONObject jsonObject) throws Exception {
+            if (jsonObject == null) {
+                throw new nullException();
+                //TODO:网络通信错误
+            }
+            else
+            {
+                String status = jsonObject.getString("status");
+                if (status.equals("normal")) {
+                    String username = jsonObject.getString("user_name");
+                    String content = jsonObject.getString("user_content");
+                }
+                else
+                {
+                    throw new executeException();
+                }
+            }
+        }
+        protected void PostExecuteImageInformation(JSONObject jsonObject) throws Exception {
+            if (jsonObject == null) {
+                throw new nullException();
+                //TODO:网络通信错误
+            }
+            else
+            {
+                String status = jsonObject.getString("status");
+                if (status.equals("normal")) {
+                    returnmap=new HashMap<String,String>();
+                    returnmap.putAll(getImageInformation(jsonObject));
+                    returnmap.putAll(getTag(jsonObject));
+                }
+                else
+                {
+                    throw new executeException();
+                }
+            }
+        }
+        protected void PostExecuteChangePassword(JSONObject jsonObject) throws Exception {
+            if (jsonObject == null) {
+                throw new nullException();
+                //TODO:网络通信错误
+            }
+            else
+            {
+                String status = jsonObject.getString("status");
+                if (status.equals("normal")) {
+                    //  String email=jsonObject.getString("email");
+                    // String oldpassword=jsonObject.getString("oldpassword");
+                    //String newpassword=jsonObject.getString("newpassword");
+                        /*  if(db.checklastuserpassword())//有可能出错
+                          {
+                              db.lastuserupdatepassword(map.get("password"));
+                          }*/
+                }
+                else
+                {
+                    throw new executeException();
+                }
+            }
+        }
+        protected void PostExecuteRelation(JSONObject jsonObject) throws Exception {
+            if (jsonObject == null) {
+                throw new nullException();
+                //TODO:网络通信错误
+            }
+            else
+            {
+                String status = jsonObject.getString("status");
+                if (status.equals("normal")) {
+                    String _concern = jsonObject.getString("concern");
+                    String _blacklist = jsonObject.getString("blacklist");
+                    returnmap.put("concern",_concern);
+                    returnmap.put("blacklist", _blacklist);
+                }
+                else
+                {
+                    throw new executeException();
+                }
+            }
+        }
         protected void PostExecute(JSONObject jsonObject) throws Exception {
             if (jsonObject == null) {
                 throw new nullException();
                 //TODO:网络通信错误
             }
-            try {
-                switch (type) {
-                    //多种处理方式
-                    //登录
-                    case 1: {
-                        String status = jsonObject.getString("status");
-                        if (status.equals("normal")) {
-                            String _username = jsonObject.getString("username");
-                            dbsaveuser(_username, this.jsonObject.getString("password"));
-                        }
-                        //这里写跳转代码
-                        //loginActivity.showProgress(false);
-                        break;
-                    }
-                    //注册
-                    case 2: {
-                        String status = jsonObject.getString("status");
-                        Log.v("status", "status=" + status);
-                        break;
-                    }
-                    //提交评论
-                    case 3: {
-                        String username = jsonObject.getString("user_name");
-                        String content = jsonObject.getString("user_content");
-                        Log.v("content", "content" + content);
-                        break;
-                    }
-                    //获取图片信息
-                    case 4: {
-                        //直接获取原图的URL
-                        //图片的评论以JSON格式收取
-                        getImageInformation(jsonObject,4);
-                        break;
-                    }
-                    //修改密码
-                    case 5: {
-                        String status = jsonObject.getString("status");
-                        //  String email=jsonObject.getString("email");
-                        // String oldpassword=jsonObject.getString("oldpassword");
-                        //String newpassword=jsonObject.getString("newpassword");
-                        /*if(status.equal("normal"))
-                        {
-                          if(db.checklastuserpassword())//有可能出错
-                          {
-                              db.lastuserupdatepassword(map.get("password"));
-                          }
-                        }*/
-                    }
-                    case 0:{
-                        String status=jsonObject.getString("status");
-                        if(!status.equals("normal"))
-                        {
-                            throw new executeException();
-                        }
-                    }
-                    default:
-                        return;
-                }
-            } catch (Exception e) {
+            String status = jsonObject.getString("status");
+            if (!status.equals("normal")) {
                 throw new executeException();
             }
         }

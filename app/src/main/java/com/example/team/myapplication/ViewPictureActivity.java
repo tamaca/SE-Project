@@ -237,12 +237,12 @@ public class ViewPictureActivity extends GeneralActivity {
                 }
             } else {
                 String imageid = (String) intent.getExtras().get("imageid");
-                String url = "http://192.168.253.1/big_get/" + imageid + "/";//TODO:500 错误
+                String url = "http://192.168.253.1/big_get/" + imageid + "/";
                  mAuthTask2 = new getImageFromIdProgress(url, imageid);
                 mAuthTask2.execute();
             }
         } catch (Exception e) {
-            //TODO:获取失败
+            //TODO:获取失败 让用户联网刷新页面 TO孙晓宇
             e.printStackTrace();
         }
     }
@@ -336,7 +336,6 @@ public class ViewPictureActivity extends GeneralActivity {
         private String url;
         private DB db;
         private String imageid;
-        private JSONObject jsonObject;
         private HashMap<String, String> returnmap;
 
         getImageInformationProgress(String url, String imageid, DB db) {
@@ -350,18 +349,7 @@ public class ViewPictureActivity extends GeneralActivity {
             try {
                 HashMap<String, String> map = new HashMap<String, String>();
                 map.put("id", imageid);
-                jsonObject = new JsonPost(map, url, 4, db).getReturnjsonObject();
-                String originImageurl = jsonObject.getString("origin");
-                String _author = jsonObject.getString("author");
-                String _like = jsonObject.getString("like");
-                String _isLike = jsonObject.getString("is_like");
-                String _updateTime = jsonObject.getString("update_time");
-                returnmap = new HashMap<String, String>();
-                returnmap.put("origin", originImageurl);
-                returnmap.put("author", _author);
-                returnmap.put("like", _like);
-                returnmap.put("islike", _isLike);
-                returnmap.put("updatetime", _updateTime);
+                returnmap = new JsonPost(map, url, "imageinfo", db).getReturnmap();
             } catch (Exception e) {
                 return false;
             }
@@ -372,17 +360,24 @@ public class ViewPictureActivity extends GeneralActivity {
         protected void onPostExecute(final Boolean success) {
             if (success) {
                 String baseurl = "http://192.168.253.1/media/";
-                author.setText(returnmap.get("author"));
-                if (LoginState.username.equals(returnmap.get("author"))) {
+                author.setText(returnmap.get("userid"));
+                if (LoginState.username.equals(returnmap.get("userid"))) {
                     manageTagsButton.setVisibility(View.VISIBLE);
                 }
                 imgview.setContentDescription(returnmap.get(baseurl + "origin"));
                 isLike = (returnmap.get("islike").equals("true"));
-                String likenumber = returnmap.get("like");
+                String likenumber = returnmap.get("likenumber");
                 int _likenumber = Integer.parseInt(likenumber);
                 likeText.setText(_likenumber < 10000 ? likenumber : _likenumber / 10000 + "万+");
                 //时间显示
                 uploadTime.setText(returnmap.get("updatetime"));
+                String _tagnum=returnmap.get("tagnum");
+                int tagnum=Integer.parseInt(_tagnum);
+                for(int i=0;i<tagnum;i++)
+                {
+                    tags.get(i).tagView.setText(returnmap.get("tagname"+i));
+                    //TODO:初始化TAG TO孙晓宇
+                }
             } else {
                 myToast.show(getString(R.string.toast_fetching_information_failed));
             }
@@ -458,39 +453,6 @@ public class ViewPictureActivity extends GeneralActivity {
             mAuthTask = null;
         }
     }
-
-    public class getTagProgress extends AsyncTask<Void, Void, Boolean> {
-
-        private String url;
-        private DB db;
-        HashMap<String, String> returnmap;
-
-        getTagProgress(String url, String imageid, DB db) {
-            this.url = url;
-            this.db = db;
-        }
-
-        @Override
-        protected Boolean doInBackground(Void... params) {
-            try {
-              //  returnmap = new JsonGet(url, db).getReturnmap();
-            } catch (Exception e) {
-                return false;
-            }
-            return true;
-        }
-
-        @Override
-        protected void onPostExecute(final Boolean success) {
-            if (success) {
-                //TODO:后续处理
-            } else {
-                myToast.show(getString(R.string.toast_fetching_information_failed));
-            }
-            mAuthTask = null;
-        }
-    }
-
     /**
      * 点击赞的相应函数
      *
@@ -705,7 +667,62 @@ public class ViewPictureActivity extends GeneralActivity {
         }
 
     }
+    class UploadTagProgress extends AsyncTask<Void, Void, Boolean> {
+        private String comment;
 
+        public UploadTagProgress(String comment) {
+            this.comment = comment;
+        }
+
+        @Override
+        protected Boolean doInBackground(Void... voids) {
+            try {
+                /*String key = "1234567891234567";
+                String username= LoginState.username;
+                AES aesEncrypt = new AES(key);
+                String encryptUsername=aesEncrypt.encrypt(username);
+                String url = "http://192.168.137.1/php22/index.php";
+                HashMap<String, String> map = new HashMap<String, String>();
+                map.put("username", encryptUsername);
+                map.put("content", comment);
+                JsonPost post = new JsonPost(map, url,3,db);*/
+                Thread.sleep(100);
+            } catch (Exception e) {
+                return false;
+            }
+
+
+            return true;
+        }
+
+        @Override
+        protected void onPostExecute(final Boolean success) {
+
+            showProgress(false);
+            if (success) {
+                Toast.makeText(getApplicationContext(), "评论成功", Toast.LENGTH_SHORT).show();
+                addComment(comment);
+                editText.setText(null);
+                Thread thread = new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            Thread.sleep(5000);
+                            uploadComment = null;
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                });
+                thread.start();
+
+            } else {
+                myToast.show(getString(R.string.toast_comment_failed));
+                uploadComment = null;
+            }
+        }
+
+    }
     /**
      * 跳转到个人主页的监听器
      */

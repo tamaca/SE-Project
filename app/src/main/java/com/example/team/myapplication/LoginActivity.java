@@ -404,7 +404,7 @@ public class LoginActivity extends GeneralActivity implements LoaderCallbacks<Cu
                // map.put("password", encryptPassword);
                  map.put("username", mUserName);
                  map.put("password", mPassword);
-                JsonPost post = new JsonPost(map, url, 1, autoLogin.isChecked(), rememPassword.isChecked(), db);
+                JsonPost post = new JsonPost(map, url, autoLogin.isChecked(), rememPassword.isChecked(), db);
                 Thread.sleep(3000);
             } catch (Exception e) {
                 String name = e.getClass().getName();

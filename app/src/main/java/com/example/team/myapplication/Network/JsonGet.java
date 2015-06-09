@@ -61,7 +61,7 @@ public class JsonGet {
         this.url=url;
         Get get = new Get();
         JSONObject jsonObject = get.GetFromServer();
-        returnmap=get.PostExecuteString(jsonObject,key);
+        get.PostExecuteString(jsonObject,key);
     }
     //关注的人获取 或 黑名单获取
     public JsonGet(String url) throws Exception {
@@ -77,9 +77,8 @@ public class JsonGet {
         this.db = db;
         Get get = new Get();
         JSONObject jsonObject = get.GetFromServer();
-        returnmap = get.PostExecuteString(jsonObject, key);
+        get.PostExecuteString(jsonObject, key);
     }
-
     private class Get {
         CloseableHttpClient client = HttpClients.custom().useSystemProperties().build();
         HttpGetHC4 httpget = new HttpGetHC4(url);
@@ -162,7 +161,6 @@ public class JsonGet {
                     dbimagesave(image_id[1]);
                     dbimagesave(image_id[2]);
                     dbimagesave(image_id[3]);
-                    HashMap<String, String> image = new HashMap<String, String>();
                     if (type.equals("lobby")) {
                         dblobbyimagesave(String.valueOf(LoginState.page * 4 + 1), image_id[0]);
                         dblobbyimagesave(String.valueOf(LoginState.page * 4 + 2), image_id[1]);
@@ -205,16 +203,16 @@ public class JsonGet {
         }
 
         //赞或取消赞
-        protected HashMap<String, String> PostExecuteString(JSONObject jsonObject, String key[]) throws Exception {
+        protected void PostExecuteString(JSONObject jsonObject, String key[]) throws Exception {
             if (jsonObject != null) {
                 String status = jsonObject.getString("status");
                 if (status.equals("normal")) {
-                    HashMap<String, String> returnmap = new HashMap<String, String>();
+                   // HashMap<String, String> returnmap = new HashMap<String, String>();
                     for (String x : key) {
                         String value = jsonObject.getString(x);
                         returnmap.put(x, value);
                     }
-                    return returnmap;
+                    //return returnmap;
                 } else {
                     throw new executeException();
                 }
@@ -223,7 +221,6 @@ public class JsonGet {
                 throw new nullException();
             }
         }
-
         //异常类
         class getException extends Exception {
             public String name = "get";

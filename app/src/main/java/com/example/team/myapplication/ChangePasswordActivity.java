@@ -140,12 +140,12 @@ public class ChangePasswordActivity extends GeneralActivity {
         @Override
         protected Boolean doInBackground(Void... voids) {
             try {
-                String url = "http://192.168.253.1/password_change/Kev2in/";
+                String url = "http://192.168.253.1/password_change/"+LoginState.username+"/";
                 HashMap<String, String> map = new HashMap<String, String>();
                 map.put("email",email);
                 map.put("old_password",oldPassword);
                 map.put("new_password", newPassword);
-                JsonPost post = new JsonPost(map,url,5,db);
+                JsonPost post = new JsonPost(map,url,"pwdchange",db);
                 Thread.sleep(1000);
             } catch (Exception e) {
                 return false;

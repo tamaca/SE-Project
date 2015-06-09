@@ -301,7 +301,7 @@ public class UserPageActivity extends GeneralActivity implements ScrollViewListe
                 }
                 HashMap<String, String> map = new HashMap<String, String>();
                 map.put("username", otherUsername);
-                new JsonPost(map, url, 0);
+                new JsonPost(map, url);
                 Thread.sleep(100);
 
             } catch (Exception e) {
@@ -355,17 +355,19 @@ public class UserPageActivity extends GeneralActivity implements ScrollViewListe
 
         @Override
         protected Boolean doInBackground(Void... params) {
-            try {
+            try{
                 String url = "http://192.168.253.1/Kevin/relation_page/";
                 HashMap<String, String> map = new HashMap<String, String>();
                 map.put("username", otherUsername);
-                JsonPost jsonPost = new JsonPost(map, url, 0);
+                HashMap<String,String> returnmap=new JsonPost(map, url, "relation").getReturnmap();
+                /*
                 JSONObject jsonObject = jsonPost.getReturnjsonObject();
                 String _concern = jsonObject.getString("concern");
-                String _blacklist = jsonObject.getString("blacklist");
-                concern = _concern.equals("true");
-                blacklist = _blacklist.equals("true");
-            } catch (Exception e) {
+                String _blacklist = jsonObject.getString("blacklist");*/
+                concern = returnmap.get("concern").equals("true");
+                blacklist = returnmap.get("blacklist").equals("true");
+            }catch (Exception e)
+            {
                 return false;
             }
             return true;
