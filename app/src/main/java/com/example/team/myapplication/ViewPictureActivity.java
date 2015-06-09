@@ -62,7 +62,6 @@ public class ViewPictureActivity extends GeneralActivity {
     private getImageInformationProgress mAuthTask;
     private EditText editTextInDialog;
     private boolean isEditing = false;
-    private getImageFromIdProgress mAuthTask2;
     private View showFail;
 
     @Override
@@ -291,13 +290,17 @@ public class ViewPictureActivity extends GeneralActivity {
                        //数据库存储错误
                        throw new Exception();
                    }
+                    refreshingProgressBar.setVisibility(View.GONE);
                 }
-                refreshingProgressBar.setVisibility(View.GONE);
+                else
+                {
+                    throw new Exception();
+                }
             } else {
                 String imageid = (String) intent.getExtras().get("imageid");
                 String url = "http://192.168.253.1/big_get/" + imageid + "/";
-                mAuthTask2 = new getImageFromIdProgress(url, imageid);
-                mAuthTask2.execute();
+               getImageFromIdProgress getImageFromIdProgress= new getImageFromIdProgress(url, imageid);
+                getImageFromIdProgress.execute();
             }
         } catch (Exception e) {
             showFail.setVisibility(View.VISIBLE);
@@ -481,7 +484,6 @@ public class ViewPictureActivity extends GeneralActivity {
             } else {
                 myToast.show(getString(R.string.toast_downloading_picture_error));
             }
-            mAuthTask2 = null;
         }
     }
 

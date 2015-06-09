@@ -207,6 +207,7 @@ public class JsonGet {
             if (jsonObject != null) {
                 String status = jsonObject.getString("status");
                 if (status.equals("normal")) {
+                    returnmap=new HashMap<String,String>();
                    // HashMap<String, String> returnmap = new HashMap<String, String>();
                     for (String x : key) {
                         String value = jsonObject.getString(x);
