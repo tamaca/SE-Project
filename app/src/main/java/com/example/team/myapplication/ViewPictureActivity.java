@@ -3,6 +3,7 @@ package com.example.team.myapplication;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.AsyncTask;
@@ -63,8 +64,6 @@ public class ViewPictureActivity extends GeneralActivity {
     private boolean isEditing = false;
     private getImageFromIdProgress mAuthTask2;
     private View showFail;
-    //TODO 当作者名和用户相同时设置为true
-    private boolean isMe = false;
 
     @Override
 
@@ -232,7 +231,7 @@ public class ViewPictureActivity extends GeneralActivity {
         /**
          * 设置点击刷新界面的背景色为灰色
          */
-        showFail.setBackgroundColor(Color.argb(0xff,0xcc,0xcc,0xcc));
+        showFail.setBackgroundColor(Color.argb(0xff, 0xcc, 0xcc, 0xcc));
         /**
          * 给点击刷新界面添加监听器
          */
@@ -270,12 +269,34 @@ public class ViewPictureActivity extends GeneralActivity {
                     //数据库中有该图片
                     Bitmap bitmap = Localstorage.getBitmapFromSDCard(filepath);
                     imgview.setImageBitmap(bitmap);
+                    Cursor mCursor = db.imageselect(imageid);
+                   if(mCursor.moveToFirst()) {
+                       String userid = mCursor.getString((mCursor.getColumnIndex("m_image_userid")));
+                       String islike = mCursor.getString((mCursor.getColumnIndex("m_image_islike")));
+                       String likenumber = mCursor.getString((mCursor.getColumnIndex("m_image_likenumber")));
+                       String updatedate = mCursor.getString((mCursor.getColumnIndex("m_image_updatedate")));
+                       author.setText(userid);
+                       if (LoginState.username.equals(userid)) {
+                           manageTagsButton.setVisibility(View.VISIBLE);
+                       }
+                       imgview.setContentDescription(null);
+                       isLike = (islike.equals("true"));
+                       int _likenumber = Integer.parseInt(likenumber);
+                       likeText.setText(_likenumber < 10000 ? likenumber : _likenumber / 10000 + "万+");
+                       //时间显示
+                       uploadTime.setText(updatedate);
+                   }
+                    else
+                   {
+                       //数据库存储错误
+                       throw new Exception();
+                   }
                 }
                 refreshingProgressBar.setVisibility(View.GONE);
             } else {
                 String imageid = (String) intent.getExtras().get("imageid");
                 String url = "http://192.168.253.1/big_get/" + imageid + "/";
-                 mAuthTask2 = new getImageFromIdProgress(url, imageid);
+                mAuthTask2 = new getImageFromIdProgress(url, imageid);
                 mAuthTask2.execute();
             }
         } catch (Exception e) {
@@ -412,11 +433,10 @@ public class ViewPictureActivity extends GeneralActivity {
                 likeText.setText(_likenumber < 10000 ? likenumber : _likenumber / 10000 + "万+");
                 //时间显示
                 uploadTime.setText(returnmap.get("updatetime"));
-                String _tagnum=returnmap.get("tagnum");
-                int tagnum=Integer.parseInt(_tagnum);
-                for(int i=0;i<tagnum;i++)
-                {
-                    tags.get(i).tagText.setText(returnmap.get("tagname"+i));
+                String _tagnum = returnmap.get("tagnum");
+                int tagnum = Integer.parseInt(_tagnum);
+                for (int i = 0; i < tagnum; i++) {
+                    tags.get(i).tagText.setText(returnmap.get("tagname" + i));
                     tags.get(i).changeState(Tag.showingTag);
                 }
                 refreshTags();
@@ -456,7 +476,7 @@ public class ViewPictureActivity extends GeneralActivity {
             if (success) {
                 String bigurl = returnmap.get("image_big");
                 String baseurl = "http://192.168.253.1/media/";
-                new ImageGet(imgview, baseurl+bigurl, imageid, db, "big");
+                new ImageGet(imgview, baseurl + bigurl, imageid, db, "big");
                 //TODO:后续处理
             } else {
                 myToast.show(getString(R.string.toast_downloading_picture_error));
@@ -497,6 +517,7 @@ public class ViewPictureActivity extends GeneralActivity {
             mAuthTask = null;
         }
     }
+
     /**
      * 点击赞的相应函数
      *
@@ -607,12 +628,14 @@ public class ViewPictureActivity extends GeneralActivity {
             }
         }
     }
+
     class GetCommentProgress extends AsyncTask<Void, Void, Boolean> {
         private String url;
         private DB db;
-        public GetCommentProgress(String url,DB db) {
-            this.url=url;
-            this.db=db;
+
+        public GetCommentProgress(String url, DB db) {
+            this.url = url;
+            this.db = db;
         }
 
         @Override
@@ -654,6 +677,7 @@ public class ViewPictureActivity extends GeneralActivity {
         }
 
     }
+
     class UploadComment extends AsyncTask<Void, Void, Boolean> {
         private String comment;
 
@@ -711,6 +735,7 @@ public class ViewPictureActivity extends GeneralActivity {
         }
 
     }
+
     class UploadTagProgress extends AsyncTask<Void, Void, Boolean> {
         private String comment;
 
@@ -767,6 +792,7 @@ public class ViewPictureActivity extends GeneralActivity {
         }
 
     }
+
     /**
      * 跳转到个人主页的监听器
      */

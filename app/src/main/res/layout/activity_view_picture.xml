@@ -89,7 +89,9 @@
                             android:gravity="center_horizontal"
                             android:id="@+id/manage_tag"
                             android:layout_weight="1"
-                            android:layout_gravity="center" />
+                            android:layout_gravity="center"
+                            android:visibility="visible"
+                            />
                     </LinearLayout>
                 </LinearLayout>
 
