@@ -43,7 +43,7 @@ public class ViewPictureActivity extends GeneralActivity {
     private EditText editText;
     private LinearLayout commentView;
     private LinearLayout tagView;
-    private ProgressBar progressBar;
+    private ProgressBar refreshingProgressBar;
     private List<Comment> comments;
     public ArrayList<Tag> tags;
     private UploadComment uploadComment = null;
@@ -62,6 +62,7 @@ public class ViewPictureActivity extends GeneralActivity {
     private EditText editTextInDialog;
     private boolean isEditing = false;
     private getImageFromIdProgress mAuthTask2;
+    private View showFail;
     //TODO 当作者名和用户相同时设置为true
     private boolean isMe = false;
 
@@ -79,7 +80,7 @@ public class ViewPictureActivity extends GeneralActivity {
         editText = (EditText) findViewById(R.id.comment_text);
         commentView = (LinearLayout) findViewById(R.id.comment_view);
         tagView = (LinearLayout) findViewById(R.id.tags_in_view_picture);
-        progressBar = (ProgressBar) findViewById(R.id.progressBar);
+        refreshingProgressBar = (ProgressBar) findViewById(R.id.progressBar);
         author = (TextView) findViewById(R.id.author);
         like = (ImageButton) findViewById(R.id.like_button);
         uploadTime = (TextView) findViewById(R.id.upload_time);
@@ -87,6 +88,7 @@ public class ViewPictureActivity extends GeneralActivity {
         linearLayout = (LinearLayout) findViewById(R.id.linearLayout4);
         likeText = (TextView) findViewById(R.id.textView5);
         manageTagsButton = (TextView) findViewById(R.id.manage_tag);
+        showFail = findViewById(R.id.show_fail_layout);
         comments = new ArrayList<>();
         tags = new ArrayList<>();
         myToast = new MyToast(this);
@@ -227,6 +229,22 @@ public class ViewPictureActivity extends GeneralActivity {
                 manageTagsButton.setText(isEditing ? "确定" : "管理标签");
             }
         });
+        /**
+         * 设置点击刷新界面的背景色为灰色
+         */
+        showFail.setBackgroundColor(Color.argb(0xff,0xcc,0xcc,0xcc));
+        /**
+         * 给点击刷新界面添加监听器
+         */
+
+        showFail.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                showFail.setVisibility(View.GONE);
+                refreshingProgressBar.setVisibility(View.VISIBLE);
+                getData();
+            }
+        });
         getData();
     }
 
@@ -253,6 +271,7 @@ public class ViewPictureActivity extends GeneralActivity {
                     Bitmap bitmap = Localstorage.getBitmapFromSDCard(filepath);
                     imgview.setImageBitmap(bitmap);
                 }
+                refreshingProgressBar.setVisibility(View.GONE);
             } else {
                 String imageid = (String) intent.getExtras().get("imageid");
                 String url = "http://192.168.253.1/big_get/" + imageid + "/";
@@ -260,7 +279,7 @@ public class ViewPictureActivity extends GeneralActivity {
                 mAuthTask2.execute();
             }
         } catch (Exception e) {
-            //TODO:获取失败 让用户联网刷新页面 TO孙晓宇
+            showFail.setVisibility(View.VISIBLE);
             e.printStackTrace();
         }
     }
@@ -379,6 +398,7 @@ public class ViewPictureActivity extends GeneralActivity {
 
         @Override
         protected void onPostExecute(final Boolean success) {
+            refreshingProgressBar.setVisibility(View.GONE);
             if (success) {
                 String baseurl = "http://192.168.253.1/media/";
                 author.setText(returnmap.get("userid"));
@@ -400,6 +420,7 @@ public class ViewPictureActivity extends GeneralActivity {
                     tags.get(i).changeState(Tag.showingTag);
                 }
                 refreshTags();
+
             } else {
                 myToast.show(getString(R.string.toast_fetching_information_failed));
             }
@@ -431,6 +452,7 @@ public class ViewPictureActivity extends GeneralActivity {
 
         @Override
         protected void onPostExecute(final Boolean success) {
+            refreshingProgressBar.setVisibility(View.GONE);
             if (success) {
                 String bigurl = returnmap.get("image_big");
                 String baseurl = "http://192.168.253.1/media/";
@@ -510,7 +532,7 @@ public class ViewPictureActivity extends GeneralActivity {
 
     public void showProgress(boolean show) {
 
-        progressBar.setVisibility(show ? View.VISIBLE : View.GONE);
+        refreshingProgressBar.setVisibility(show ? View.VISIBLE : View.GONE);
     }
 
     /**

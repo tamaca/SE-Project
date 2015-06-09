@@ -99,4 +99,6 @@
     <string name="toast_tag_not_unique">存在相同的标签</string>
     <string name="toast_tag_invalid">标签应为10字节以内，不含空格的字符串</string>
     <string name="toast_tag_is_empty">标签不能为空</string>
+
+    <string name="click_to_refresh">获取图片信息失败，点击刷新</string>
 </resources>
