@@ -32,14 +32,14 @@ public class Tag extends LinearLayout {
     /**
      * 组件设置为public利于编写
      */
-    public TextView tagView = null;
+    public TextView tagText = null;
     public ImageButton removeButton = null;
     public ImageButton addButton = null;
 
     public Tag(Context context) {
         super(context);
         View view = LayoutInflater.from(context).inflate(R.layout.layout_tag, null);
-        tagView = (TextView) view.findViewById(R.id.showing_tag);
+        tagText = (TextView) view.findViewById(R.id.showing_tag);
         removeButton = (ImageButton) view.findViewById(R.id.imageButton4);
         addButton = (ImageButton) view.findViewById(R.id.imageButton5);
         addView(view);
@@ -48,25 +48,25 @@ public class Tag extends LinearLayout {
     public void changeState(int state) {
         switch (state) {
             case showingTag:
-                tagView.setVisibility(VISIBLE);
+                tagText.setVisibility(VISIBLE);
                 removeButton.setVisibility(GONE);
                 addButton.setVisibility(GONE);
                 currentState = showingTag;
                 break;
             case removable:
-                tagView.setVisibility(VISIBLE);
+                tagText.setVisibility(VISIBLE);
                 removeButton.setVisibility(VISIBLE);
                 addButton.setVisibility(GONE);
                 currentState = removable;
                 break;
             case addable:
-                tagView.setVisibility(GONE);
+                tagText.setVisibility(GONE);
                 removeButton.setVisibility(GONE);
                 addButton.setVisibility(VISIBLE);
                 currentState = addable;
                 break;
             case showNothing:
-                tagView.setVisibility(GONE);
+                tagText.setVisibility(GONE);
                 removeButton.setVisibility(GONE);
                 addButton.setVisibility(GONE);
                 currentState = showNothing;
@@ -96,7 +96,7 @@ public class Tag extends LinearLayout {
     public Tag(Context context, AttributeSet attrs) {
         super(context, attrs);
         View view = LayoutInflater.from(context).inflate(R.layout.layout_tag, null);
-        tagView = (TextView) view.findViewById(R.id.showing_tag);
+        tagText = (TextView) view.findViewById(R.id.showing_tag);
         removeButton = (ImageButton) view.findViewById(R.id.imageButton4);
         addButton = (ImageButton) view.findViewById(R.id.imageButton5);
         addView(view);
@@ -105,7 +105,7 @@ public class Tag extends LinearLayout {
     public Tag(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         View view = LayoutInflater.from(context).inflate(R.layout.layout_tag, null);
-        tagView = (TextView) view.findViewById(R.id.showing_tag);
+        tagText = (TextView) view.findViewById(R.id.showing_tag);
         removeButton = (ImageButton) view.findViewById(R.id.imageButton4);
         addButton = (ImageButton) view.findViewById(R.id.imageButton5);
         addView(view);

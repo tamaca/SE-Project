@@ -23,7 +23,7 @@ public class CheckValid {
 
     static public boolean isTagUnique(ArrayList<Tag> tags, String tagContent){
         for(int i = 0;i < 5;i++){
-            if(tags.get(i).tagView.getText().toString().equals(tagContent)){
+            if(tags.get(i).tagText.getText().toString().equals(tagContent)){
                 return false;
             }
         }

@@ -32,8 +32,6 @@ import com.example.team.myapplication.util.GeneralActivity;
 import com.example.team.myapplication.util.MyToast;
 import com.example.team.myapplication.util.Tag;
 
-import org.json.JSONObject;
-
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -116,15 +114,24 @@ public class ViewPictureActivity extends GeneralActivity {
                     builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialogInterface, int i) {
+
+                            //TODO 删除该用户的这个标签，请把UI操作放在删除完成之后
+
+
+                            /**
+                             * 这是在删除后的UI操作
+                             * tagContent是标签内容
+                             */
+
                             tagView.post(new Runnable() {
                                 @Override
                                 public void run() {
-                                    String tagContent = tags.get(j).tagView.getText().toString();
+                                    String tagContent = tags.get(j).tagText.getText().toString();
                                     tags.get(j).changeState(Tag.addable);
                                     refreshTags();
                                 }
                             });
-                            //TODO 删除该用户的这个tag
+
 
                         }
                     });
@@ -150,10 +157,15 @@ public class ViewPictureActivity extends GeneralActivity {
                     builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialogInterface, int i) {
+
                             tagView.post(new Runnable() {
                                 @Override
                                 public void run() {
-                                    String tagContent = editTextInDialog.getText().toString();
+
+                                    /**
+                                     * 检查输入合法性
+                                     */
+                                    final String tagContent = editTextInDialog.getText().toString();
                                     if (!CheckValid.isTagUnique(tags, tagContent)) {
                                         return;
                                     }
@@ -163,10 +175,16 @@ public class ViewPictureActivity extends GeneralActivity {
                                     if (tagContent.isEmpty()) {
                                         return;
                                     }
-                                    //TODO 将tag上传 下面是UI操作
-                                    tags.get(j).tagView.setText(tagContent);
+                                    //TODO 将标签上传 UI操作放在上传完成之后
+
+                                    /**
+                                     * 这是添加标签的UI操作
+                                     * tagContent是标签内容
+                                     */
+                                    tags.get(j).tagText.setText(tagContent);
                                     tags.get(j).changeState(Tag.removable);
                                     refreshTags();
+
                                 }
                             });
                         }
@@ -247,6 +265,9 @@ public class ViewPictureActivity extends GeneralActivity {
         }
     }
 
+    /**
+     * 让有内容的tag标签排在前边
+     */
     public void refreshTags() {
         int i = 0, j = 0;
         while (j < 5) {
@@ -254,7 +275,7 @@ public class ViewPictureActivity extends GeneralActivity {
                 if (i == j) {
                     i++;
                 } else {
-                    tags.get(i).tagView.setText(tags.get(j).tagView.getText().toString());
+                    tags.get(i).tagText.setText(tags.get(j).tagText.getText().toString());
                     int y = tags.get(j).currentState;
                     tags.get(j).changeState(tags.get(i).currentState);
                     tags.get(i).changeState(y);
@@ -375,9 +396,10 @@ public class ViewPictureActivity extends GeneralActivity {
                 int tagnum=Integer.parseInt(_tagnum);
                 for(int i=0;i<tagnum;i++)
                 {
-                    tags.get(i).tagView.setText(returnmap.get("tagname"+i));
-                    //TODO:初始化TAG TO孙晓宇
+                    tags.get(i).tagText.setText(returnmap.get("tagname"+i));
+                    tags.get(i).changeState(Tag.showingTag);
                 }
+                refreshTags();
             } else {
                 myToast.show(getString(R.string.toast_fetching_information_failed));
             }
