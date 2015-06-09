@@ -285,7 +285,7 @@ public class UserPageActivity extends GeneralActivity implements ScrollViewListe
         @Override
         protected Boolean doInBackground(Void... params) {
             try {
-                String url = null;
+                String url ;
                 if (type == 1) {
                     if (concern) {
                         url = "http://192.168.253.1/Kevin/concern/delete/";

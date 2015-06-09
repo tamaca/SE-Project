@@ -31,7 +31,6 @@ public class JsonGet {
     private String url;
     private DB db;
     private View view;
-
     //关注或黑名单中的人
     public ArrayList<String> getUserNames() {
         return userNames;
@@ -46,7 +45,7 @@ public class JsonGet {
     private HashMap<String, String> returnmap;
     private String type;
 
-    //图片获取
+    //图片获取(url)
     public JsonGet(String url, DB db, View view, String type) throws Exception {
         this.url = url;
         this.db = db;
@@ -54,9 +53,16 @@ public class JsonGet {
         this.type = type;
         Get get = new Get();
         JSONObject jsonObject = get.GetFromServer();
-        get.PostExecuteImage(jsonObject);
+        get.PostExecuteImageUrl(jsonObject);
     }
-
+    //图片获取(id)
+    public JsonGet(String url,String key[]) throws Exception
+    {
+        this.url=url;
+        Get get = new Get();
+        JSONObject jsonObject = get.GetFromServer();
+        returnmap=get.PostExecuteString(jsonObject,key);
+    }
     //关注的人获取 或 黑名单获取
     public JsonGet(String url) throws Exception {
         this.url = url;
@@ -102,9 +108,8 @@ public class JsonGet {
                 throw new getException();
             }
         }
-
-        //接收图片
-        protected void PostExecuteImage(JSONObject jsonObject) throws Exception {
+        //接收图片(url)
+        protected void PostExecuteImageUrl(JSONObject jsonObject) throws Exception {
             if (jsonObject != null) {
                 String status = jsonObject.getString("status");
                 if (status.equals("normal")) {

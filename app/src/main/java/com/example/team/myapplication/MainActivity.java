@@ -380,8 +380,11 @@ public class MainActivity extends Activity {
                         intent.putExtra("imageid", id);
                         startActivity(intent);
                     } else {
+                        //获取缩略图时未联网 无大图地址 获取大图时联网
                         String id = imageviewJson.getString("imageid");
-                        //获取缩略图时未联网 现在要联网获取大图
+                        intent.putExtra("type", "halfline");
+                        intent.putExtra("imageid", id);
+                        startActivity(intent);
                     }
                 }
                 //获取大图时未联网

@@ -63,7 +63,7 @@ public class ViewPictureActivity extends GeneralActivity {
     private getImageInformationProgress mAuthTask;
     private EditText editTextInDialog;
     private boolean isEditing = false;
-
+    private getImageFromIdProgress mAuthTask2;
     //TODO 当作者名和用户相同时设置为true
     private boolean isMe = false;
 
@@ -91,7 +91,7 @@ public class ViewPictureActivity extends GeneralActivity {
         manageTagsButton = (TextView) findViewById(R.id.manage_tag);
         comments = new ArrayList<>();
         tags = new ArrayList<>();
-
+        myToast = new MyToast(this);
         /**
          * 获取所有的标签控件
          * 标签控件总共有四个状态，设置标签内容时注意设置状态。
@@ -142,7 +142,7 @@ public class ViewPictureActivity extends GeneralActivity {
                 @Override
                 public void onClick(View view) {
                     editTextInDialog = new EditText(getApplicationContext());
-                    editTextInDialog.setTextColor(Color.argb(255,0,0,0));
+                    editTextInDialog.setTextColor(Color.argb(255, 0, 0, 0));
                     AlertDialog.Builder builder =
                             new AlertDialog.Builder(ViewPictureActivity.this)
                                     .setView(editTextInDialog)
@@ -211,9 +211,9 @@ public class ViewPictureActivity extends GeneralActivity {
         });
         getData();
     }
+
     //获取图片和信息
-    public void getData()
-    {
+    public void getData() {
         try {
             Intent intent = getIntent();
             String type = (String) intent.getExtras().get("type");
@@ -225,9 +225,9 @@ public class ViewPictureActivity extends GeneralActivity {
                 new ImageGet(imgview, bigurl, imageid, db, "big");
                 mAuthTask = new getImageInformationProgress(informationurl, imageid, db);
                 mAuthTask.execute();
-            } else {
+            } else if (type.equals("offline")) {
                 //未联网 先读取数据库中数据
-                String filepath=(String) intent.getExtras().get("filepath");
+                String filepath = (String) intent.getExtras().get("filepath");
                 String imageid = (String) intent.getExtras().get("imageid");
                 File imageFile = new File(filepath);
                 if (imageFile.exists()) {
@@ -235,17 +235,18 @@ public class ViewPictureActivity extends GeneralActivity {
                     Bitmap bitmap = Localstorage.getBitmapFromSDCard(filepath);
                     imgview.setImageBitmap(bitmap);
                 }
-                else
-                {
-                    //TODO: 未联网 页面错误 显示让用户重试 TO孙晓宇
-                }
+            } else {
+                String imageid = (String) intent.getExtras().get("imageid");
+                String url = "http://192.168.253.1/big_get/" + imageid + "/";//TODO:500 错误
+                 mAuthTask2 = new getImageFromIdProgress(url, imageid);
+                mAuthTask2.execute();
             }
-        }catch (Exception e)
-        {
+        } catch (Exception e) {
             //TODO:获取失败
-           e.printStackTrace();
+            e.printStackTrace();
         }
     }
+
     public void refreshTags() {
         int i = 0, j = 0;
         while (j < 5) {
@@ -389,6 +390,42 @@ public class ViewPictureActivity extends GeneralActivity {
         }
     }
 
+    public class getImageFromIdProgress extends AsyncTask<Void, Void, Boolean> {
+
+        private String url;
+        private String imageid;
+        HashMap<String, String> returnmap;
+
+        getImageFromIdProgress(String url, String imageid) {
+            this.url = url;
+            this.imageid = imageid;
+        }
+
+        @Override
+        protected Boolean doInBackground(Void... params) {
+            try {
+                String key[] = {"image_big"};
+                returnmap = new JsonGet(url, key).getReturnmap();
+            } catch (Exception e) {
+                return false;
+            }
+            return true;
+        }
+
+        @Override
+        protected void onPostExecute(final Boolean success) {
+            if (success) {
+                String bigurl = returnmap.get("image_big");
+                String baseurl = "http://192.168.253.1/media/";
+                new ImageGet(imgview, baseurl+bigurl, imageid, db, "big");
+                //TODO:后续处理
+            } else {
+                myToast.show(getString(R.string.toast_downloading_picture_error));
+            }
+            mAuthTask2 = null;
+        }
+    }
+
     public class likeProgress extends AsyncTask<Void, Void, Boolean> {
 
         private String url;
@@ -421,39 +458,38 @@ public class ViewPictureActivity extends GeneralActivity {
             mAuthTask = null;
         }
     }
-    /*public void getImageInformation(String imageid) {
-        String url = "http://192.168.137.1/php23/index.php";
-        HashMap<String, String> map = new HashMap<String, String>();
-        map.put("imageid", imageid);
-        JsonPost post = new JsonPost(map, url, 4, db, this);
-    }*/
 
-    /*  public void getImageInformation() {
+    public class getTagProgress extends AsyncTask<Void, Void, Boolean> {
 
-          String _author = "The Hammer";
-          author.setText(_author);
+        private String url;
+        private DB db;
+        HashMap<String, String> returnmap;
 
+        getTagProgress(String url, String imageid, DB db) {
+            this.url = url;
+            this.db = db;
+        }
 
-          isLike = false;//测试用, false 代表没有赞过
-          likeNumber = 999;//测试用
-          like.setText(isLike ? "取消赞\n" : "赞\n" + "(" + likeNumber + ")");
+        @Override
+        protected Boolean doInBackground(Void... params) {
+            try {
+              //  returnmap = new JsonGet(url, db).getReturnmap();
+            } catch (Exception e) {
+                return false;
+            }
+            return true;
+        }
 
-
-          String _uploadTime = "2月1日";
-          uploadTime.setText(_uploadTime);
-
-
-          String commenter = "sxy";
-          String comment = "评论在这里（5毛一条，括号里不要复制）";
-          comments.add(new Comment(getApplicationContext(),
-                  commenter, comment));
-
-          for (int i = 0; i < comments.size(); i++) {
-              commentView.addView(comments.get(i));
-              comments.get(i).textView1.setOnClickListener(new ToUserPageListener());
-          }
-      }
-  */
+        @Override
+        protected void onPostExecute(final Boolean success) {
+            if (success) {
+                //TODO:后续处理
+            } else {
+                myToast.show(getString(R.string.toast_fetching_information_failed));
+            }
+            mAuthTask = null;
+        }
+    }
 
     /**
      * 点击赞的相应函数
@@ -565,7 +601,53 @@ public class ViewPictureActivity extends GeneralActivity {
             }
         }
     }
+    class GetCommentProgress extends AsyncTask<Void, Void, Boolean> {
+        private String url;
+        private DB db;
+        public GetCommentProgress(String url,DB db) {
+            this.url=url;
+            this.db=db;
+        }
 
+        @Override
+        protected Boolean doInBackground(Void... voids) {
+            try {
+
+            } catch (Exception e) {
+                return false;
+            }
+
+
+            return true;
+        }
+
+        @Override
+        protected void onPostExecute(final Boolean success) {
+
+            showProgress(false);
+            if (success) {
+                //addComment(comment);
+                editText.setText(null);
+                Thread thread = new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            Thread.sleep(5000);
+                            uploadComment = null;
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                });
+                thread.start();
+
+            } else {
+                myToast.show(getString(R.string.toast_comment_failed));
+                uploadComment = null;
+            }
+        }
+
+    }
     class UploadComment extends AsyncTask<Void, Void, Boolean> {
         private String comment;
 
