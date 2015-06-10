@@ -12,7 +12,6 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.team.myapplication.Network.JsonGet;
 import com.example.team.myapplication.util.GeneralActivity;
@@ -28,7 +27,7 @@ public class UserListActivity extends GeneralActivity {
     private ListView listView;
     private ArrayList<String> userNames;
     private MyToast myToast;
-    private DownloadList downloadList = null;
+    // private DownloadList downloadList = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,7 +38,7 @@ public class UserListActivity extends GeneralActivity {
 
         listView = (ListView) findViewById(R.id.user_name_list);
         userNames = new ArrayList<String>();
-
+        myToast = new MyToast(this);
         int message = (int) intent.getExtras().get("message");
         switch (message) {
             case MainActivity.concernList:
@@ -58,7 +57,8 @@ public class UserListActivity extends GeneralActivity {
 
 
         showList(message);
-        getActionBar().setDisplayHomeAsUpEnabled(true);
+        if (actionBar != null)
+            actionBar.setDisplayHomeAsUpEnabled(true);
 
     }
 
@@ -126,8 +126,8 @@ public class UserListActivity extends GeneralActivity {
                     toUserPageActivity(view, name);
                 }
             });*/
-            downloadList = new DownloadList("concern", this);
-            downloadList.execute();
+            DownloadList downloadList = new DownloadList("concern", this);
+            downloadList.execute((Void) null);
         }
         if (type == MainActivity.blacklist) {
             /*//获得黑名单，名单是Arraylist<String>数组,放置到userName里
@@ -160,7 +160,7 @@ public class UserListActivity extends GeneralActivity {
                 }
             });
             */
-            downloadList = new DownloadList("black", this);
+            DownloadList downloadList = new DownloadList("black", this);
             downloadList.execute();
         }
     }
@@ -169,23 +169,22 @@ public class UserListActivity extends GeneralActivity {
 
         private String type;
         private Context context;
-        private List<Map<String, Object>> listItems = new ArrayList<Map<String, Object>>();
+        private List<Map<String, Object>> listItems;
 
-        DownloadList(String type, Context context) {
+        public DownloadList(String type, Context context) {
             this.type = type;
             this.context = context;
+            listItems = new ArrayList<Map<String, Object>>();
         }
 
         @Override
         protected Boolean doInBackground(Void... params) {
             try {
                 String url;
-                if(type.equals("concern")) {
-                    url="";
-                }
-                else
-                {
-                    url="";
+                if (type.equals("concern")) {
+                    url = "";
+                } else {
+                    url = "";
                 }
                 userNames = new JsonGet(url).getUserNames();
                 for (int i = 0; i < userNames.size(); i++) {
@@ -212,11 +211,9 @@ public class UserListActivity extends GeneralActivity {
                     }
                 });
             } else {
-                {
-                    myToast.show(getString(R.string.toast_fetching_list_error));
-                }
+                myToast.show(getString(R.string.toast_fetching_list_error));
             }
-            downloadList=null;
+            //downloadList=null;
         }
     }
 }
