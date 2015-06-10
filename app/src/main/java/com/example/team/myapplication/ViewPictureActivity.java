@@ -17,7 +17,6 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
-import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -30,7 +29,10 @@ import com.example.team.myapplication.Network.NetworkState;
 import com.example.team.myapplication.util.CheckValid;
 import com.example.team.myapplication.util.Comment;
 import com.example.team.myapplication.util.GeneralActivity;
+import com.example.team.myapplication.util.LoadingView;
+import com.example.team.myapplication.util.MyScrollView;
 import com.example.team.myapplication.util.MyToast;
+import com.example.team.myapplication.util.ScrollViewListener;
 import com.example.team.myapplication.util.Tag;
 
 import java.io.File;
@@ -39,7 +41,7 @@ import java.util.HashMap;
 import java.util.List;
 
 
-public class ViewPictureActivity extends GeneralActivity {
+public class ViewPictureActivity extends GeneralActivity implements ScrollViewListener{
     ImageView imgview;
     private EditText editText;
     private LinearLayout commentView;
@@ -57,8 +59,8 @@ public class ViewPictureActivity extends GeneralActivity {
     private MyToast myToast;
     private TextView likeText;
     private boolean isLike = false;
-    private ScrollView scrollView;
-    private LinearLayout linearLayout;
+    private MyScrollView scrollView;
+    private LinearLayout scrollContent;
     private getImageInformationProgress mAuthTask;
     private EditText editTextInDialog;
     private boolean isEditing = false;
@@ -66,6 +68,7 @@ public class ViewPictureActivity extends GeneralActivity {
     private UploadTagProgress uploadTagProgress = null;
     private String imageid = null;
     private LikeProgress likeProgress = null;
+    private LoadingView loadingView;
 
     @Override
 
@@ -85,14 +88,16 @@ public class ViewPictureActivity extends GeneralActivity {
         author = (TextView) findViewById(R.id.author);
         like = (ImageButton) findViewById(R.id.like_button);
         uploadTime = (TextView) findViewById(R.id.upload_time);
-        scrollView = (ScrollView) findViewById(R.id.scrollView);
-        linearLayout = (LinearLayout) findViewById(R.id.linearLayout4);
+        scrollView = (MyScrollView) findViewById(R.id.scrollView);
+        scrollContent = (LinearLayout) findViewById(R.id.linearLayout4);
         likeText = (TextView) findViewById(R.id.textView5);
         manageTagsButton = (TextView) findViewById(R.id.manage_tag);
         showFail = findViewById(R.id.show_fail_layout);
         comments = new ArrayList<>();
         tags = new ArrayList<>();
+        scrollView.setScrollViewListener(this);
         myToast = new MyToast(this);
+        loadingView = new LoadingView(this);
         /**
          * 获取所有的标签控件
          * 标签控件总共有四个状态，设置标签内容时注意设置状态。
@@ -206,9 +211,10 @@ public class ViewPictureActivity extends GeneralActivity {
         like.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                likeProgress = new LikeProgress(imageid, db);
-                likeProgress.execute();
-                //changeLike(view);
+                if(likeProgress==null) {
+                    likeProgress = new LikeProgress(imageid, db);
+                    likeProgress.execute();
+                }
             }
         });
 
@@ -306,17 +312,6 @@ public class ViewPictureActivity extends GeneralActivity {
     }
 
     /**
-     * 刷新界面中的评论
-     */
-    public void refreshComments() {
-        commentView.removeAllViews();
-        for (int i = 0; i < comments.size(); i++) {
-            commentView.addView(comments.get(i));
-        }
-        commentView.postInvalidate();
-    }
-
-    /**
      * 让有内容的tag标签排在前边
      */
     public void refreshTags() {
@@ -385,17 +380,143 @@ public class ViewPictureActivity extends GeneralActivity {
     }
 
     /**
-     * 将自己的评论添加到页面中的UI操作
-     *
-     * @param comment
+     * 添加一条评论到评论数组里。
+     * 给用户名添加监听器。
      */
-    public void addComment(String comment) {
-        comments.add(new Comment(getApplicationContext(), LoginState.username, comment));
-        commentView.addView(comments.get(comments.size() - 1));
+    public void addComment(String name, String comment) {
+        comments.add(new Comment(getApplicationContext(), name, comment));
         comments.get(comments.size() - 1).textView1.setOnClickListener(new ToUserPageListener());
-        linearLayout.postInvalidate();
+    }
+
+    /**
+     * 刷新界面中的评论
+     */
+    public void refreshComments(){
+        commentView.removeAllViews();
+        for(int i = 0;i<comments.size();i++){
+            commentView.addView(comments.get(i));
+        }
+        commentView.postInvalidate();
         Thread refresh = new Thread(new Refresh());
         refresh.start();
+    }
+
+    @Override
+    public void onScrollChanged(MyScrollView scrollView, int x, int y, int oldX, int oldY) {
+        if (y + scrollView.getMeasuredHeight() + 50 > scrollContent.getMeasuredHeight()) {
+            if (scrollContent.getChildAt(scrollContent.getChildCount()-1)!=loadingView) {
+                scrollContent.addView(loadingView);
+                //TODO 可以开始加载剩余评论，加载完之后使用 scrollContent.removeView(loadingView);
+
+            }
+
+        }
+    }
+
+    private void changeLike() {
+        if (isLike) {
+            like.setBackgroundResource(R.drawable.liked);
+            int _likenumber = Integer.parseInt(likeNumber);
+            likeText.setText(_likenumber < 10000 ? likeNumber : _likenumber / 10000 + "万+");
+        } else {
+            like.setBackgroundResource(R.drawable.like);
+            int _likenumber = Integer.parseInt(likeNumber);
+            if (_likenumber == 0) {
+                likeText.setText(null);
+            } else {
+                likeText.setText(_likenumber < 10000 ? likeNumber : _likenumber / 10000 + "万+");
+            }
+        }
+    }
+
+   /*
+    public void changeLike(View view) {
+        onLikeChange(isLike);
+    }*/
+
+    /**
+     * 点击赞之后的UI变化
+     *
+     * @param
+     */
+    /*
+    public void onLikeChange(boolean zan) {
+        if (!zan) {
+            likeNumber++;
+            //TODO 上传赞
+            like.setBackgroundResource(R.drawable.liked);
+            likeText.setText(likeNumber < 10000 ? String.valueOf(likeNumber) : likeNumber / 10000 + "万+");
+        } else {
+            likeNumber--;
+            //TODO 上传取消赞
+            like.setBackgroundResource(R.drawable.like);
+            if (likeNumber == 0) {
+                likeText.setText(null);
+            } else {
+                likeText.setText(likeNumber < 10000 ? String.valueOf(likeNumber) : likeNumber / 10000 + "万+");
+            }
+        }
+        isLike = !isLike;
+    }
+*/
+    public void showProgress(boolean show) {
+
+        refreshingProgressBar.setVisibility(show ? View.VISIBLE : View.GONE);
+    }
+
+    /**
+     * 跳转到查看个人主页
+     *
+     * @param view
+     */
+    public void toUserPageActivity(View view) {
+        Intent intent = new Intent(this, UserPageActivity.class);
+        intent.putExtra("user_name", ((TextView) view).getText());
+        //TODO 加入查看个人主页时传入的其他参数
+        startActivity(intent);
+    }
+
+    /**
+     * 跳转到查看原图
+     *
+     * @param view
+     */
+    public void toPictureActivity(View view) {
+        if (NetworkState.isNetworkConnected(getApplicationContext())) {
+            if (!NetworkState.isWifiEnable(getApplicationContext())) {
+                AlertDialog.Builder builder =
+                        new AlertDialog.Builder(ViewPictureActivity.this).setMessage("将会消耗流量下载，继续？");
+                builder.setPositiveButton("继续", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        Intent intent = new Intent(getApplicationContext(), PictureActivity.class);
+                        //TODO 在这里添加想传入查看原图页面的信息，比如图片主人的名字，图片ID 啥的。
+
+                        startActivity(intent);
+                    }
+                });
+                builder.setNegativeButton("不了", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+
+                    }
+                });
+                builder.create().show();
+            } else {
+                Intent intent = new Intent(getApplicationContext(), PictureActivity.class);
+                //TODO 在这里添加想传入查看原图页面的信息，比如图片主人的名字，图片ID 啥的。
+
+                startActivity(intent);
+            }
+        } else {
+            Intent intent = new Intent(this, PictureActivity.class);
+            view.setDrawingCacheEnabled(true);
+            Bitmap bitmap = view.getDrawingCache();
+            intent.putExtra("pic", bitmap);
+            startActivity(intent);
+        }
+
+
     }
 
     public class getImageInformationProgress extends AsyncTask<Void, Void, Boolean> {
@@ -536,134 +657,6 @@ public class ViewPictureActivity extends GeneralActivity {
         }
     }
 
-    private void changeLike() {
-        if (isLike) {
-            like.setBackgroundResource(R.drawable.liked);
-            int _likenumber = Integer.parseInt(likeNumber);
-            likeText.setText(_likenumber < 10000 ? likeNumber : _likenumber / 10000 + "万+");
-        } else {
-            like.setBackgroundResource(R.drawable.like);
-            int _likenumber = Integer.parseInt(likeNumber);
-            if (_likenumber == 0) {
-                likeText.setText(null);
-            } else {
-                likeText.setText(_likenumber < 10000 ? likeNumber : _likenumber / 10000 + "万+");
-            }
-        }
-    }
-    /**
-     * 点击赞的相应函数
-     *
-     * @param view
-     */
-   /*
-    public void changeLike(View view) {
-        onLikeChange(isLike);
-    }*/
-
-    /**
-     * 点击赞之后的UI变化
-     *
-     * @param
-     */
-    /*
-    public void onLikeChange(boolean zan) {
-        if (!zan) {
-            likeNumber++;
-            //TODO 上传赞
-            like.setBackgroundResource(R.drawable.liked);
-            likeText.setText(likeNumber < 10000 ? String.valueOf(likeNumber) : likeNumber / 10000 + "万+");
-        } else {
-            likeNumber--;
-            //TODO 上传取消赞
-            like.setBackgroundResource(R.drawable.like);
-            if (likeNumber == 0) {
-                likeText.setText(null);
-            } else {
-                likeText.setText(likeNumber < 10000 ? String.valueOf(likeNumber) : likeNumber / 10000 + "万+");
-            }
-        }
-        isLike = !isLike;
-    }
-*/
-    public void showProgress(boolean show) {
-
-        refreshingProgressBar.setVisibility(show ? View.VISIBLE : View.GONE);
-    }
-
-    /**
-     * 跳转到查看个人主页
-     *
-     * @param view
-     */
-    public void toUserPageActivity(View view) {
-        Intent intent = new Intent(this, UserPageActivity.class);
-        intent.putExtra("user_name", ((TextView) view).getText());
-        //TODO 加入查看个人主页时传入的其他参数
-        startActivity(intent);
-    }
-
-    /**
-     * 跳转到查看原图
-     *
-     * @param view
-     */
-    public void toPictureActivity(View view) {
-        if (NetworkState.isNetworkConnected(getApplicationContext())) {
-            if (!NetworkState.isWifiEnable(getApplicationContext())) {
-                AlertDialog.Builder builder =
-                        new AlertDialog.Builder(ViewPictureActivity.this).setMessage("将会消耗流量下载，继续？");
-                builder.setPositiveButton("继续", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        Intent intent = new Intent(getApplicationContext(), PictureActivity.class);
-                        //TODO 在这里添加想传入查看原图页面的信息，比如图片主人的名字，图片ID 啥的。
-
-                        startActivity(intent);
-                    }
-                });
-                builder.setNegativeButton("不了", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-
-                    }
-                });
-                builder.create().show();
-            } else {
-                Intent intent = new Intent(getApplicationContext(), PictureActivity.class);
-                //TODO 在这里添加想传入查看原图页面的信息，比如图片主人的名字，图片ID 啥的。
-
-                startActivity(intent);
-            }
-        } else {
-            Intent intent = new Intent(this, PictureActivity.class);
-            view.setDrawingCacheEnabled(true);
-            Bitmap bitmap = view.getDrawingCache();
-            intent.putExtra("pic", bitmap);
-            startActivity(intent);
-        }
-
-
-    }
-
-    class Refresh implements Runnable {
-        @Override
-        public void run() {
-            while (!Thread.currentThread().isInterrupted()) {
-                try {
-                    Thread.sleep(100);
-
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
-                }
-                scrollView.scrollTo(0, linearLayout.getMeasuredHeight());
-                commentView.postInvalidate();
-                Log.d("comment--->>", "refreshing");
-                Thread.currentThread().interrupt();
-            }
-        }
-    }
-
     class GetCommentProgress extends AsyncTask<Void, Void, Boolean> {
         private String url;
         private DB db;
@@ -690,24 +683,9 @@ public class ViewPictureActivity extends GeneralActivity {
 
             showProgress(false);
             if (success) {
-                //addComment(comment);
-                editText.setText(null);
-                Thread thread = new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            Thread.sleep(5000);
-                            uploadComment = null;
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                });
-                thread.start();
-
+                refreshComments();
             } else {
-                myToast.show(getString(R.string.toast_comment_failed));
-                uploadComment = null;
+
             }
         }
 
@@ -748,7 +726,7 @@ public class ViewPictureActivity extends GeneralActivity {
             showProgress(false);
             if (success) {
                 Toast.makeText(getApplicationContext(), "评论成功", Toast.LENGTH_SHORT).show();
-                addComment(comment);
+                refreshComments();
                 editText.setText(null);
                 Thread thread = new Thread(new Runnable() {
                     @Override
@@ -837,6 +815,24 @@ public class ViewPictureActivity extends GeneralActivity {
             }
         }
 
+    }
+
+    class Refresh implements Runnable {
+        @Override
+        public void run() {
+            while (!Thread.currentThread().isInterrupted()) {
+                try {
+                    Thread.sleep(100);
+
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                }
+                scrollView.scrollTo(0, scrollContent.getMeasuredHeight());
+                commentView.postInvalidate();
+                Log.d("comment--->>", "refreshing");
+                Thread.currentThread().interrupt();
+            }
+        }
     }
 
     /**

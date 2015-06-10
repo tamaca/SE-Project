@@ -101,6 +101,7 @@
     <string name="invalid_input_in_search">输入不合法</string>
     <string name="search_content_missing">缺少搜索内容</string>
     <string name="manage_tags">管理标签</string>
+    <string name="loading">正在载入…</string>
 
 
     <string name="click_to_refresh">获取图片信息失败\n点击刷新</string>

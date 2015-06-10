@@ -6,10 +6,9 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.LinearLayout;
-import android.widget.ProgressBar;
 
+import com.example.team.myapplication.util.LoadingView;
 import com.example.team.myapplication.util.MyScrollView;
 import com.example.team.myapplication.util.MyToast;
 import com.example.team.myapplication.util.RecentItem;
@@ -24,9 +23,8 @@ public class RecentActivity extends Activity implements ScrollViewListener {
     private LinearLayout scrollContentLeft;
     private LinearLayout scrollContentRight;
 
+    private LoadingView loadingView;
     private ArrayList<RecentItem> recentItems;
-    private MyScrollView myScrollView;
-    private ProgressBar inLoadingPicture;
     private MyToast myToast;
     private GetPicture getPicture = null;
     private int pictureCount = 0;
@@ -42,13 +40,15 @@ public class RecentActivity extends Activity implements ScrollViewListener {
          */
         scrollContent = (LinearLayout) findViewById(R.id.linearLayout5);
         recentItems = new ArrayList<>();
-        myScrollView = (MyScrollView) findViewById(R.id.scrollView4);
-        inLoadingPicture = (ProgressBar) findViewById(R.id.progressBar6);
+        MyScrollView myScrollView = (MyScrollView) findViewById(R.id.scrollView4);
         refreshableView = (RefreshableView) findViewById(R.id.refreshable_view);
         scrollContentLeft = (LinearLayout) findViewById(R.id.linearLayout6);
         scrollContentRight = (LinearLayout) findViewById(R.id.linearLayout7);
         myToast = new MyToast(this);
-        ////////
+        loadingView = new LoadingView(this);
+        /**
+         * 添加监听器
+         */
         myScrollView.setScrollViewListener(this);
         refreshableView.setOnRefreshListener(new MyRefreshListener(), 0);
         /**
@@ -97,8 +97,9 @@ public class RecentActivity extends Activity implements ScrollViewListener {
     /**
      * 这是添加完成之后的UI操作。
      */
-    public void addRecentItemsToView() {
-        scrollContent.removeAllViews();
+    public void refreshRecentItems() {
+        scrollContentLeft.removeAllViews();
+        scrollContentRight.removeAllViews();
         for (int i = 0; i < recentItems.size(); i++) {
             if (i / 2 == 0) {
                 scrollContentLeft.addView(recentItems.get(i));
@@ -110,24 +111,28 @@ public class RecentActivity extends Activity implements ScrollViewListener {
     }
 
     public void getRecent() {
-        //TODO 刷出来几个新图片，按照时间排序，新的先加进去，如果使用 新线程 来实现，请在执行完成之后在 UI线程 使用方法 addRecentItemsToView()
+        //TODO 刷出来几个新图片，按照时间排序，新的先加进去，如果使用 新线程 来实现，请在执行完成之后在 UI线程 使用方法 refreshRecentItems()
 
     }
 
+    /**
+     * 上划查看更多图片
+     * @param scrollView
+     * @param x
+     * @param y
+     * @param oldX
+     * @param oldY
+     */
     @Override
     public void onScrollChanged(MyScrollView scrollView, int x, int y, int oldX, int oldY) {
-
-        //处理上划查看更多图片
         if (y + scrollView.getMeasuredHeight() + 50 > scrollContent.getMeasuredHeight()) {
-
-            if (inLoadingPicture.getVisibility() == View.GONE) {
-                inLoadingPicture.setVisibility(View.VISIBLE);
+            if (scrollContent.getChildAt(scrollContent.getChildCount() - 1) != loadingView) {
+                scrollContent.addView(loadingView);
                 if (getPicture == null) {
                     getPicture = new GetPicture();
                     getPicture.execute((Void) null);
                 }
             }
-
         }
     }
 
@@ -149,7 +154,7 @@ public class RecentActivity extends Activity implements ScrollViewListener {
 
         @Override
         protected void onPostExecute(Boolean success) {
-            inLoadingPicture.setVisibility(View.GONE);
+            scrollContent.removeView(loadingView);
             getPicture = null;
             if (success) {
                 scrollContent.postInvalidate();
@@ -173,7 +178,7 @@ public class RecentActivity extends Activity implements ScrollViewListener {
                 scrollContent.post(new Runnable() {
                     @Override
                     public void run() {
-                        addRecentItemsToView();
+                        refreshRecentItems();
                     }
                 });
             } catch (InterruptedException e) {
