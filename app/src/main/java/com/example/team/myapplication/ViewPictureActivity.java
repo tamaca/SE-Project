@@ -300,6 +300,16 @@ public class ViewPictureActivity extends GeneralActivity {
     }
 
     /**
+     * 刷新界面中的评论
+     */
+    public void refreshComments(){
+        commentView.removeAllViews();
+        for(int i = 0;i<comments.size();i++){
+            commentView.addView(comments.get(i));
+        }
+        commentView.postInvalidate();
+    }
+    /**
      * 让有内容的tag标签排在前边
      */
     public void refreshTags() {
@@ -349,7 +359,6 @@ public class ViewPictureActivity extends GeneralActivity {
 
     /**
      * 提交评论按钮的响应
-     *
      * @param view
      */
     public void submitComment(View view) {
@@ -373,7 +382,7 @@ public class ViewPictureActivity extends GeneralActivity {
     }
 
     /**
-     * 将评论添加到页面中的UI操作
+     * 将自己的评论添加到页面中的UI操作
      *
      * @param comment
      */
