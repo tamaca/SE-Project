@@ -24,11 +24,11 @@ import java.util.List;
 import java.util.Map;
 
 
-
 public class UserListActivity extends GeneralActivity {
     private ListView listView;
     private ArrayList<String> userNames;
     private MyToast myToast;
+    private DownloadList downloadList = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,19 +37,19 @@ public class UserListActivity extends GeneralActivity {
         setContentView(R.layout.activity_user_list);
         ActionBar actionBar = getActionBar();
 
-        listView = (ListView)findViewById(R.id.user_name_list);
+        listView = (ListView) findViewById(R.id.user_name_list);
         userNames = new ArrayList<String>();
 
-        int message = (int)intent.getExtras().get("message");
-        switch (message){
+        int message = (int) intent.getExtras().get("message");
+        switch (message) {
             case MainActivity.concernList:
                 setTitle("我关注的人");
-                if(actionBar!=null)
+                if (actionBar != null)
                     actionBar.setLogo(R.mipmap.ic_user_like);
                 break;
             case MainActivity.blacklist:
                 setTitle("黑名单");
-                if(actionBar!=null)
+                if (actionBar != null)
                     actionBar.setLogo(R.mipmap.ic_blacklist);
                 break;
             default:
@@ -61,6 +61,7 @@ public class UserListActivity extends GeneralActivity {
         getActionBar().setDisplayHomeAsUpEnabled(true);
 
     }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -76,7 +77,7 @@ public class UserListActivity extends GeneralActivity {
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        switch (id){
+        switch (id) {
             case android.R.id.home:
                 finish();
                 return true;
@@ -88,19 +89,17 @@ public class UserListActivity extends GeneralActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    public void toUserPageActivity(View view,String name){
-        Intent intent = new Intent(this,UserPageActivity.class);
-        intent.putExtra("user_name",name);
+    public void toUserPageActivity(View view, String name) {
+        Intent intent = new Intent(this, UserPageActivity.class);
+        intent.putExtra("user_name", name);
         startActivity(intent);
     }
 
-    public void showList(int type){
-
-        final List<Map<String,Object>> listItems = new ArrayList<Map<String, Object>>();
-        if(type == MainActivity.concernList){
+    public void showList(int type) {
+        if (type == MainActivity.concernList) {
             //获得关注的人的名单，名单是Arraylist<String>数组,放置到userName里
             //以下测试用
-            userNames.add("好友1");
+            /*userNames.add("好友1");
             userNames.add("好友2");
             userNames.add("好友3");
             userNames.add("好友4");
@@ -113,23 +112,24 @@ public class UserListActivity extends GeneralActivity {
             userNames.add("好友11");
             userNames.add("好友12");
             //以上---
-            for(int i = 0;i<userNames.size();i++){
-                Map<String,Object> listItem = new HashMap<String, Object>();
-                listItem.put("用户名",userNames.get(i));
+            for (int i = 0; i < userNames.size(); i++) {
+                Map<String, Object> listItem = new HashMap<String, Object>();
+                listItem.put("用户名", userNames.get(i));
                 listItems.add(listItem);
             }
-            SimpleAdapter simpleAdapter = new SimpleAdapter(this, listItems,R.layout.layout_user_name,new String[] {"用户名"},new int[] {R.id.Names});
+            SimpleAdapter simpleAdapter = new SimpleAdapter(this, listItems, R.layout.layout_user_name, new String[]{"用户名"}, new int[]{R.id.Names});
             listView.setAdapter(simpleAdapter);
             listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                    String name = ((TextView)view.findViewById(R.id.Names)).getText().toString();
-                    toUserPageActivity(view,name);
+                    String name = ((TextView) view.findViewById(R.id.Names)).getText().toString();
+                    toUserPageActivity(view, name);
                 }
-            });
-
+            });*/
+            downloadList = new DownloadList("concern", this);
+            downloadList.execute();
         }
-        if(type == MainActivity.blacklist){
+        if (type == MainActivity.blacklist) {
             /*//获得黑名单，名单是Arraylist<String>数组,放置到userName里
             //以下测试用
             userNames.add("黑1");
@@ -160,26 +160,33 @@ public class UserListActivity extends GeneralActivity {
                 }
             });
             */
-            String url = "";
-            DownloadFriendList downloadFriendList = new DownloadFriendList(url, this);
-            downloadFriendList.execute();
+            downloadList = new DownloadList("black", this);
+            downloadList.execute();
         }
     }
-    public class DownloadFriendList extends AsyncTask<Void, Void, Boolean> {
 
-        private String url;
-        private Toast toast = null;
+    public class DownloadList extends AsyncTask<Void, Void, Boolean> {
+
+        private String type;
         private Context context;
         private List<Map<String, Object>> listItems = new ArrayList<Map<String, Object>>();
 
-        DownloadFriendList(String url, Context context) {
-            this.url = url;
+        DownloadList(String type, Context context) {
+            this.type = type;
             this.context = context;
         }
 
         @Override
         protected Boolean doInBackground(Void... params) {
             try {
+                String url;
+                if(type.equals("concern")) {
+                    url="";
+                }
+                else
+                {
+                    url="";
+                }
                 userNames = new JsonGet(url).getUserNames();
                 for (int i = 0; i < userNames.size(); i++) {
                     Map<String, Object> listItem = new HashMap<String, Object>();
@@ -209,6 +216,7 @@ public class UserListActivity extends GeneralActivity {
                     myToast.show(getString(R.string.toast_fetching_list_error));
                 }
             }
+            downloadList=null;
         }
     }
 }

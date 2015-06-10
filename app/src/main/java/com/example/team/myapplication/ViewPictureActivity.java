@@ -52,7 +52,7 @@ public class ViewPictureActivity extends GeneralActivity {
     private TextView uploadTime;
     private TextView manageTagsButton;
     private DB db = new DB(this);
-    private int likeNumber;
+    private String likeNumber;
     private ImageButton like;
     private MyToast myToast;
     private TextView likeText;
@@ -65,7 +65,7 @@ public class ViewPictureActivity extends GeneralActivity {
     private View showFail;
     private UploadTagProgress uploadTagProgress = null;
     private String imageid = null;
-
+    private LikeProgress likeProgress=null;
     @Override
 
     protected void onCreate(Bundle savedInstanceState) {
@@ -205,7 +205,9 @@ public class ViewPictureActivity extends GeneralActivity {
         like.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                changeLike(view);
+                likeProgress=new LikeProgress(imageid,db);
+                likeProgress.execute();
+                //changeLike(view);
             }
         });
 
@@ -267,7 +269,7 @@ public class ViewPictureActivity extends GeneralActivity {
                     if (mCursor.moveToFirst()) {
                         String userid = mCursor.getString((mCursor.getColumnIndex("m_image_userid")));
                         String islike = mCursor.getString((mCursor.getColumnIndex("m_image_islike")));
-                        String likenumber = mCursor.getString((mCursor.getColumnIndex("m_image_likenumber")));
+                        likeNumber = mCursor.getString((mCursor.getColumnIndex("m_image_likenumber")));
                         String updatedate = mCursor.getString((mCursor.getColumnIndex("m_image_updatedate")));
                         author.setText(userid);
                         if (LoginState.username.equals(userid)) {
@@ -275,8 +277,7 @@ public class ViewPictureActivity extends GeneralActivity {
                         }
                         imgview.setContentDescription(null);
                         isLike = (islike.equals("true"));
-                        int _likenumber = Integer.parseInt(likenumber);
-                        likeText.setText(_likenumber < 10000 ? likenumber : _likenumber / 10000 + "万+");
+                        changeLike();
                         //时间显示
                         uploadTime.setText(updatedate);
                     } else {
@@ -289,6 +290,11 @@ public class ViewPictureActivity extends GeneralActivity {
                 }
             } else {
                 imageid = (String) intent.getExtras().get("imageid");
+                if(imageid==null)
+                {
+                    //id错误
+                    throw new Exception();
+                }
                 String url = "http://192.168.253.1/big_get/" + imageid + "/";
                 getImageFromIdProgress getImageFromIdProgress = new getImageFromIdProgress(url, imageid);
                 getImageFromIdProgress.execute();
@@ -413,6 +419,11 @@ public class ViewPictureActivity extends GeneralActivity {
             try {
                 HashMap<String, String> map = new HashMap<String, String>();
                 map.put("id", imageid);
+                if(imageid==null)
+                {
+                    //图片id错误
+                    throw new Exception();
+                }
                 returnmap = new JsonPost(map, url, "imageinfo", db).getReturnmap();
             } catch (Exception e) {
                 return false;
@@ -431,9 +442,8 @@ public class ViewPictureActivity extends GeneralActivity {
                 }
                 imgview.setContentDescription(returnmap.get(baseurl + "origin"));
                 isLike = (returnmap.get("islike").equals("true"));
-                String likenumber = returnmap.get("likenumber");
-                int _likenumber = Integer.parseInt(likenumber);
-                likeText.setText(_likenumber < 10000 ? likenumber : _likenumber / 10000 + "万+");
+                 likeNumber = returnmap.get("likenumber");
+                changeLike();
                 //时间显示
                 uploadTime.setText(returnmap.get("updatetime"));
                 String _tagnum = returnmap.get("tagnum");
@@ -487,17 +497,26 @@ public class ViewPictureActivity extends GeneralActivity {
         }
     }
 
-    public class likeProgress extends AsyncTask<Void, Void, Boolean> {
+    public class LikeProgress extends AsyncTask<Void, Void, Boolean> {
         private DB db;
         HashMap<String, String> returnmap;
 
-        likeProgress(String imageid, DB db) {
+        LikeProgress(String imageid, DB db) {
             this.db = db;
         }
-
+        @Override
+        protected void onPreExecute()
+        {
+            showProgress(true);
+        }
         @Override
         protected Boolean doInBackground(Void... params) {
             try {
+                if(imageid==null)
+                {
+                    //图片id错误
+                    throw new Exception();
+                }
                 String url = "http://192.168.253.1/"+LoginState.username+"/"+imageid+"/";
                 String key[] = {"like", "islike"};
                 returnmap = new JsonGet(url, key, db).getReturnmap();
@@ -512,30 +531,50 @@ public class ViewPictureActivity extends GeneralActivity {
             if (success) {
                 //TODO:后续处理
                 isLike = (returnmap.get("islike").equals("true"));
-                String likenumber = returnmap.get("likenumber");
-                int _likenumber = Integer.parseInt(likenumber);
-                likeText.setText(_likenumber < 10000 ? likenumber : _likenumber / 10000 + "万+");
+                likeNumber = returnmap.get("likenumber");
+                changeLike();
             } else {
                 myToast.show(getString(R.string.toast_fetching_information_failed));
             }
-            mAuthTask = null;
+            showProgress(false);
+            likeProgress = null;
         }
     }
-
+    private void changeLike()
+    {
+        if(isLike)
+        {
+            like.setBackgroundResource(R.drawable.liked);
+            int _likenumber = Integer.parseInt(likeNumber);
+            likeText.setText(_likenumber < 10000 ? likeNumber : _likenumber / 10000 + "万+");
+        }
+        else
+        {
+            like.setBackgroundResource(R.drawable.like);
+            int _likenumber = Integer.parseInt(likeNumber);
+            if (_likenumber == 0) {
+                likeText.setText(null);
+            } else {
+                likeText.setText(_likenumber < 10000 ? likeNumber : _likenumber / 10000 + "万+");
+            }
+        }
+    }
     /**
      * 点击赞的相应函数
      *
      * @param view
      */
+   /*
     public void changeLike(View view) {
         onLikeChange(isLike);
-    }
+    }*/
 
     /**
      * 点击赞之后的UI变化
      *
-     * @param zan
+     * @param
      */
+    /*
     public void onLikeChange(boolean zan) {
         if (!zan) {
             likeNumber++;
@@ -554,7 +593,7 @@ public class ViewPictureActivity extends GeneralActivity {
         }
         isLike = !isLike;
     }
-
+*/
     public void showProgress(boolean show) {
 
         refreshingProgressBar.setVisibility(show ? View.VISIBLE : View.GONE);
