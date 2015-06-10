@@ -127,7 +127,7 @@ public class UserListActivity extends GeneralActivity {
                 }
             });*/
             DownloadList downloadList = new DownloadList("concern", this);
-            downloadList.execute((Void) null);
+            downloadList.execute();
         }
         if (type == MainActivity.blacklist) {
             /*//获得黑名单，名单是Arraylist<String>数组,放置到userName里
@@ -182,7 +182,7 @@ public class UserListActivity extends GeneralActivity {
             try {
                 String url;
                 if (type.equals("concern")) {
-                    url = "";
+                    url = "http://192.168.253.1/"+LoginState.username+"/concern/show/";
                 } else {
                     url = "";
                 }

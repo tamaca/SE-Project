@@ -97,6 +97,7 @@ public class UserPageActivity extends GeneralActivity implements ScrollViewListe
 
     /**
      * 加载主页
+     *
      * @param my
      */
     public void loadView(boolean my) {
@@ -113,10 +114,11 @@ public class UserPageActivity extends GeneralActivity implements ScrollViewListe
             //TODO 获取用户和这个人的关系
             manageButton.setVisibility(View.GONE);
             uploadImageButton.setVisibility(View.GONE);
-            getInfomationtask = new GetInfomation("Kevin2");
+            getInfomationtask = new GetInfomation(userName);
             getInfomationtask.execute();
         }
     }
+
     static final int REQUEST_CODE_PICK_IMAGE = 2;
 
     protected void getImageFromAlbum(View view) {
@@ -128,7 +130,7 @@ public class UserPageActivity extends GeneralActivity implements ScrollViewListe
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        switch (resultCode){
+        switch (resultCode) {
             case REQUEST_CODE_PICK_IMAGE:
                 break;
         }
@@ -136,6 +138,7 @@ public class UserPageActivity extends GeneralActivity implements ScrollViewListe
 
     /**
      * 加载主页内容
+     *
      * @param concern
      * @param blacklist
      */
@@ -188,6 +191,7 @@ public class UserPageActivity extends GeneralActivity implements ScrollViewListe
 
     /**
      * 跳转到查看图片详细信息
+     *
      * @param view
      */
     public void toViewPictureActivity(View view) {
@@ -201,6 +205,7 @@ public class UserPageActivity extends GeneralActivity implements ScrollViewListe
 
     /**
      * 添加图片进gallery，每次加一张
+     *
      * @param bitmap
      */
     public void addGalleryItem(Bitmap bitmap) {
@@ -218,12 +223,13 @@ public class UserPageActivity extends GeneralActivity implements ScrollViewListe
     /**
      * 第一次加载ta的图片完成之后在UI线程刷新gallery
      */
-    public void refreshGallery(){
+    public void refreshGallery() {
         gallery.removeAllViews();
-        for(int i = 0;i<galleryItems.size();i++){
+        for (int i = 0; i < galleryItems.size(); i++) {
             gallery.addView(galleryItems.get(i));
         }
     }
+
     public boolean getGallery(String userName) {
         //TODO 在这里加载该用户的图片，如果用户没有图片，返回false,如果有，把 pictureCount 设置为该用户照片总数；
         // addGalleryItem(bitmap);
@@ -252,7 +258,7 @@ public class UserPageActivity extends GeneralActivity implements ScrollViewListe
         public void onClick(View view) {
             //点击 关注/取消关注 按钮
 
-            mAuthTask = new BlackConcerenTask("Kevin2", 1);
+            mAuthTask = new BlackConcerenTask(userName, 1);
             mAuthTask.execute();
         }
     }
@@ -285,18 +291,18 @@ public class UserPageActivity extends GeneralActivity implements ScrollViewListe
         @Override
         protected Boolean doInBackground(Void... params) {
             try {
-                String url ;
+                String url;
                 if (type == 1) {
                     if (concern) {
-                        url = "http://192.168.253.1/"+LoginState.username+"/concern/delete/";
+                        url = "http://192.168.253.1/" + LoginState.username + "/concern/delete/";
                     } else {
-                        url = "http://192.168.253.1/"+LoginState.username+"/concern/insert/";
+                        url = "http://192.168.253.1/" + LoginState.username + "/concern/insert/";
                     }
                 } else {
                     if (blacklist) {
-                        url = "http://192.168.253.1/"+LoginState.username+"/blacklist/delete/";
+                        url = "http://192.168.253.1/" + LoginState.username + "/blacklist/delete/";
                     } else {
-                        url = "http://192.168.253.1/"+LoginState.username+"/blacklist/insert/";
+                        url = "http://192.168.253.1/" + LoginState.username + "/blacklist/insert/";
                     }
                 }
                 HashMap<String, String> map = new HashMap<String, String>();
@@ -354,20 +360,24 @@ public class UserPageActivity extends GeneralActivity implements ScrollViewListe
         }
 
         @Override
+        protected void onPreExecute() {
+         //TODO:加入转圈效果 TO孙晓宇
+        }
+
+        @Override
         protected Boolean doInBackground(Void... params) {
-            try{
-                String url = "http://192.168.253.1/Kevin/relation_page/";
+            try {
+                String url = "http://192.168.253.1/" + LoginState.username + "/relation_page/";
                 HashMap<String, String> map = new HashMap<String, String>();
                 map.put("username", otherUsername);
-                HashMap<String,String> returnmap=new JsonPost(map, url, "relation").getReturnmap();
+                HashMap<String, String> returnmap = new JsonPost(map, url, "relation").getReturnmap();
                 /*
                 JSONObject jsonObject = jsonPost.getReturnjsonObject();
                 String _concern = jsonObject.getString("concern");
                 String _blacklist = jsonObject.getString("blacklist");*/
                 concern = returnmap.get("concern").equals("true");
                 blacklist = returnmap.get("blacklist").equals("true");
-            }catch (Exception e)
-            {
+            } catch (Exception e) {
                 return false;
             }
             return true;
@@ -375,7 +385,11 @@ public class UserPageActivity extends GeneralActivity implements ScrollViewListe
 
         @Override
         protected void onPostExecute(Boolean success) {
-            loadContent(concern, blacklist);
+            if (success) {
+                loadContent(concern, blacklist);
+            } else {
+                //TODO:关系读取错误 提示 TO:孙晓宇
+            }
         }
 
         @Override

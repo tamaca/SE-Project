@@ -191,11 +191,11 @@ public class JsonGet {
             if (jsonObject != null) {
                 String status = jsonObject.getString("status");
                 if (status.equals("normal")) {
-                    String _num = jsonObject.getString("num");
+                    String _num = jsonObject.getString("now");
                     int num = Integer.parseInt(_num);
                     ArrayList<String> userNames = new ArrayList<String>();
                     for (int i = 0; i < num; i++) {
-                        String _username = jsonObject.getString("username" + i);
+                        String _username = jsonObject.getString("target" + i);
                         userNames.add(_username);
                     }
                     return userNames;
