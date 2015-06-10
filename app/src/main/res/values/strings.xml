@@ -90,15 +90,18 @@
     <string name="toast_fetching_information_failed">获取信息失败</string>
     <string name="toast_search_failed">搜索失败</string>
     <string name="toast_before_login">您还未登录！</string>
+    <string name="toast_comment_upload_too_quickly">5秒内只能上传一次评论</string>
+    <string name="toast_tag_not_unique">存在相同的标签</string>
+    <string name="toast_tag_invalid">标签应为10字节以内，不含空格的字符串</string>
+    <string name="toast_tag_is_empty">标签不能为空</string>
+    <string name="toast_get_comment_failed">获得评论失败</string>
 
     <string name="no_search_result_users">没有找到用户…</string>
     <string name="no_search_result_tags">没有找到图片…</string>
     <string name="invalid_input_in_search">输入不合法</string>
     <string name="search_content_missing">缺少搜索内容</string>
     <string name="manage_tags">管理标签</string>
-    <string name="toast_tag_not_unique">存在相同的标签</string>
-    <string name="toast_tag_invalid">标签应为10字节以内，不含空格的字符串</string>
-    <string name="toast_tag_is_empty">标签不能为空</string>
 
-    <string name="click_to_refresh">获取图片信息失败，点击刷新</string>
+
+    <string name="click_to_refresh">获取图片信息失败\n点击刷新</string>
 </resources>
