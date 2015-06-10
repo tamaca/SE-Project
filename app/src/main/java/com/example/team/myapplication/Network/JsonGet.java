@@ -209,6 +209,10 @@ public class JsonGet {
                 if (status.equals("normal")) {
                     returnmap=new HashMap<String,String>();
                    // HashMap<String, String> returnmap = new HashMap<String, String>();
+                    String islike=jsonObject.getString("islike");
+                    String likenumber=jsonObject.getString("likenumber");
+                    String imageid=jsonObject.getString("imageid");
+                    dbimagelikesave(imageid,islike,likenumber);
                     for (String x : key) {
                         String value = jsonObject.getString(x);
                         returnmap.put(x, value);
@@ -246,7 +250,11 @@ public class JsonGet {
     private void dblobbyimagesave(String rank, String imageid) {
         db.lobbyimageinsert(rank, imageid);
     }
-
+    private void dbimagelikesave(String imageid,String islike,String likenumber)
+    {
+        db.imageupdateislike(imageid,islike);
+        db.imageupdatelikenumber(imageid,likenumber);
+    }
     //关注的人缩略图保存
     private void imagecaredsave(String imageid, String updatedate, String userid) {
         if (!db.checkuserimage(imageid, userid)) {

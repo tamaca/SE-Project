@@ -118,7 +118,7 @@ public class ViewPictureActivity extends GeneralActivity {
                         public void onClick(DialogInterface dialogInterface, int i) {
 
                             //TODO 删除该用户的这个标签，请把UI操作放在删除完成之后
-                            uploadTagProgress = new UploadTagProgress(editTextInDialog.getText().toString(), imageid,"delete");
+                            uploadTagProgress = new UploadTagProgress(editTextInDialog.getText().toString(), imageid, "delete");
                             uploadTagProgress.execute();
 
                             /**
@@ -160,7 +160,7 @@ public class ViewPictureActivity extends GeneralActivity {
                     builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialogInterface, int i) {
-                            uploadTagProgress = new UploadTagProgress(editTextInDialog.getText().toString(), imageid,"insert");
+                            uploadTagProgress = new UploadTagProgress(editTextInDialog.getText().toString(), imageid, "insert");
                             uploadTagProgress.execute();
                             /*tagView.post(new Runnable() {
                                 @Override
@@ -249,7 +249,7 @@ public class ViewPictureActivity extends GeneralActivity {
             if (type.equals("online")) {
                 //联网获取图片信息
                 String bigurl = (String) intent.getExtras().get("bigurl");
-                String informationurl = "http://192.168.253.1/Kevin/image_detail/";
+                String informationurl = "http://192.168.253.1/"+LoginState.username+"/image_detail/";
                 imageid = (String) intent.getExtras().get("imageid");
                 new ImageGet(imgview, bigurl, imageid, db, "big");
                 mAuthTask = new getImageInformationProgress(informationurl, imageid, db);
@@ -488,19 +488,17 @@ public class ViewPictureActivity extends GeneralActivity {
     }
 
     public class likeProgress extends AsyncTask<Void, Void, Boolean> {
-
-        private String url;
         private DB db;
         HashMap<String, String> returnmap;
 
-        likeProgress(String url, String imageid, DB db) {
-            this.url = url;
+        likeProgress(String imageid, DB db) {
             this.db = db;
         }
 
         @Override
         protected Boolean doInBackground(Void... params) {
             try {
+                String url = "http://192.168.253.1/"+LoginState.username+"/"+imageid+"/";
                 String key[] = {"like", "islike"};
                 returnmap = new JsonGet(url, key, db).getReturnmap();
             } catch (Exception e) {
@@ -513,6 +511,10 @@ public class ViewPictureActivity extends GeneralActivity {
         protected void onPostExecute(final Boolean success) {
             if (success) {
                 //TODO:后续处理
+                isLike = (returnmap.get("islike").equals("true"));
+                String likenumber = returnmap.get("likenumber");
+                int _likenumber = Integer.parseInt(likenumber);
+                likeText.setText(_likenumber < 10000 ? likenumber : _likenumber / 10000 + "万+");
             } else {
                 myToast.show(getString(R.string.toast_fetching_information_failed));
             }
@@ -743,7 +745,7 @@ public class ViewPictureActivity extends GeneralActivity {
         private String imageid;
         private String type;
 
-        public UploadTagProgress(String tagname, String imageid,String type) {
+        public UploadTagProgress(String tagname, String imageid, String type) {
             this.tagname = tagname;
             this.imageid = imageid;
             this.type = type;
@@ -757,7 +759,7 @@ public class ViewPictureActivity extends GeneralActivity {
         @Override
         protected Boolean doInBackground(Void... voids) {
             try {
-                String url = "";
+                String url;
                 if (type.equals("insert")) {//插入TAG
                     //TODO:错误监测返回提示给用户  TO孙晓宇
                     if (!CheckValid.isTagUnique(tags, tagname)) {
@@ -769,9 +771,9 @@ public class ViewPictureActivity extends GeneralActivity {
                     if (tagname.isEmpty()) {
                         throw new Exception();
                     }
-                    url = "";
+                    url = "http://192.168.253.1/" + LoginState.username + "/tag_insert/";
                 } else {//删除TAG
-                    url = "";
+                    url = "http://192.168.253.1/" + LoginState.username + "/tag_delete/";
                 }
                 HashMap<String, String> map = new HashMap<String, String>();
                 map.put("tagname", tagname);
@@ -792,12 +794,9 @@ public class ViewPictureActivity extends GeneralActivity {
 
             showProgress(false);
             if (success) {
-                if(type.equals("insert"))
-                {
+                if (type.equals("insert")) {
                     //TODO:添加标签  TO孙晓宇
-                }
-               else
-                {
+                } else {
                     //TODO:删除标签  TO孙晓宇
                 }
             } else {

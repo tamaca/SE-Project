@@ -51,7 +51,7 @@ public class Localstorage {
     /**
      * 计算图片的缩放比例
      */
-    public static int calculateInSampleSize(BitmapFactory.Options options,int requestWidth){
+   /* public static int calculateInSampleSize(BitmapFactory.Options options,int requestWidth){
         int inSampleSize=1;
         //SD卡中图片的宽
         int outWidth=options.outWidth;
@@ -59,7 +59,7 @@ public class Localstorage {
             inSampleSize=Math.round((float) outWidth / (float) requestWidth);
         }
         return inSampleSize;
-    }
+    }*/
 
     /**
      * 依据图片的Url获取其在SDCard的存储路径

@@ -28,6 +28,7 @@ import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TabHost;
 import android.widget.Toast;
+
 import com.example.team.myapplication.Cache.Localstorage;
 import com.example.team.myapplication.Database.DB;
 import com.example.team.myapplication.Network.JsonGet;
@@ -36,6 +37,7 @@ import com.example.team.myapplication.Network.NetworkState;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -514,7 +516,7 @@ public class MainActivity extends Activity {
         );
 
         // Save a file: path for use with ACTION_VIEW intents
-        mCurrentPhotoPath = "file://" + image.getAbsolutePath();
+        mCurrentPhotoPath =  image.getAbsolutePath();
         return image;
     }
 
@@ -526,7 +528,7 @@ public class MainActivity extends Activity {
         // Get the dimensions of the View
         int targetW = imageView.getMaxHeight();
         int targetH = imageView.getMaxWidth();
-
+        /*
         // Get the dimensions of the bitmap
         BitmapFactory.Options bmOptions = new BitmapFactory.Options();
         bmOptions.inJustDecodeBounds = true;
@@ -543,10 +545,25 @@ public class MainActivity extends Activity {
         bmOptions.inSampleSize = scaleFactor;
         bmOptions.inPurgeable = true;
 
-        Bitmap bitmap = BitmapFactory.decodeFile(mCurrentPhotoPath, bmOptions);
+        Bitmap bitmap = BitmapFactory.decodeFile(mCurrentPhotoPath, bmOptions);*/
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        BitmapFactory.decodeFile(mCurrentPhotoPath, options);
+        options.inJustDecodeBounds = true;
+        options.inSampleSize = calculateInSampleSize(options, targetW);
+        options.inJustDecodeBounds = false;
+        Bitmap bitmap = BitmapFactory.decodeFile(mCurrentPhotoPath,options);
         imageView.setImageBitmap(bitmap);
     }
 
+    public static int calculateInSampleSize(BitmapFactory.Options options, int requestWidth) {
+        int inSampleSize = 1;
+        //SD卡中图片的宽
+        int outWidth = options.outWidth;
+        if (outWidth > requestWidth) {
+            inSampleSize = Math.round((float) outWidth / (float) requestWidth);
+        }
+        return inSampleSize;
+    }
 
     /**
      * 上传图片的线程
