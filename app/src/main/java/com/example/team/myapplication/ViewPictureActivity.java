@@ -41,7 +41,7 @@ import java.util.HashMap;
 import java.util.List;
 
 
-public class ViewPictureActivity extends GeneralActivity implements ScrollViewListener{
+public class ViewPictureActivity extends GeneralActivity implements ScrollViewListener {
     ImageView imgview;
     private EditText editText;
     private LinearLayout commentView;
@@ -124,7 +124,7 @@ public class ViewPictureActivity extends GeneralActivity implements ScrollViewLi
                         public void onClick(DialogInterface dialogInterface, int i) {
 
                             //TODO 删除该用户的这个标签，请把UI操作放在删除完成之后
-                            uploadTagProgress = new UploadTagProgress(editTextInDialog.getText().toString(), imageid, "delete");
+                            uploadTagProgress = new UploadTagProgress(editTextInDialog.getText().toString(), imageid, "tagdelete");
                             uploadTagProgress.execute();
 
                             /**
@@ -166,7 +166,7 @@ public class ViewPictureActivity extends GeneralActivity implements ScrollViewLi
                     builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialogInterface, int i) {
-                            uploadTagProgress = new UploadTagProgress(editTextInDialog.getText().toString(), imageid, "insert");
+                            uploadTagProgress = new UploadTagProgress(editTextInDialog.getText().toString(), imageid, "taginsert");
                             uploadTagProgress.execute();
                             /*tagView.post(new Runnable() {
                                 @Override
@@ -211,7 +211,7 @@ public class ViewPictureActivity extends GeneralActivity implements ScrollViewLi
         like.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(likeProgress==null) {
+                if (likeProgress == null) {
                     likeProgress = new LikeProgress(imageid, db);
                     likeProgress.execute();
                 }
@@ -375,7 +375,7 @@ public class ViewPictureActivity extends GeneralActivity implements ScrollViewLi
             editText.setError("评论不能超过120字");
             return;
         }
-        uploadComment = new UploadComment(comment);
+        uploadComment = new UploadComment(comment, imageid);
         uploadComment.execute((Void) null);
     }
 
@@ -383,17 +383,18 @@ public class ViewPictureActivity extends GeneralActivity implements ScrollViewLi
      * 添加一条评论到评论数组里。
      * 给用户名添加监听器。
      */
+    /*
     public void addComment(String name, String comment) {
         comments.add(new Comment(getApplicationContext(), name, comment));
         comments.get(comments.size() - 1).textView1.setOnClickListener(new ToUserPageListener());
-    }
+    }*/
 
     /**
      * 刷新界面中的评论
      */
-    public void refreshComments(){
+    public void refreshComments() {
         commentView.removeAllViews();
-        for(int i = 0;i<comments.size();i++){
+        for (int i = 0; i < comments.size(); i++) {
             commentView.addView(comments.get(i));
         }
         commentView.postInvalidate();
@@ -404,7 +405,7 @@ public class ViewPictureActivity extends GeneralActivity implements ScrollViewLi
     @Override
     public void onScrollChanged(MyScrollView scrollView, int x, int y, int oldX, int oldY) {
         if (y + scrollView.getMeasuredHeight() + 50 > scrollContent.getMeasuredHeight()) {
-            if (scrollContent.getChildAt(scrollContent.getChildCount()-1)!=loadingView) {
+            if (scrollContent.getChildAt(scrollContent.getChildCount() - 1) != loadingView) {
                 scrollContent.addView(loadingView);
                 //TODO 可以开始加载剩余评论，加载完之后使用 scrollContent.removeView(loadingView);
 
@@ -693,25 +694,28 @@ public class ViewPictureActivity extends GeneralActivity implements ScrollViewLi
 
     class UploadComment extends AsyncTask<Void, Void, Boolean> {
         private String comment;
+        private String imageid;
 
-        public UploadComment(String comment) {
+        public UploadComment(String comment, String imageid) {
             this.comment = comment;
+            this.imageid = imageid;
+        }
 
+        protected void onPreExecute() {
+            showProgress(true);
         }
 
         @Override
         protected Boolean doInBackground(Void... voids) {
             try {
-                /*String key = "1234567891234567";
-                String username= LoginState.username;
-                AES aesEncrypt = new AES(key);
-                String encryptUsername=aesEncrypt.encrypt(username);
-                String url = "http://192.168.137.1/php22/index.php";
+                String url = "http://192.168.253.1/" + LoginState.username + "/comment_insert/"+imageid+"/";
+                if (imageid == null) {
+                    //图片ID获取错误
+                    throw new Exception();
+                }
                 HashMap<String, String> map = new HashMap<String, String>();
-                map.put("username", encryptUsername);
-                map.put("content", comment);
-                JsonPost post = new JsonPost(map, url,3,db);*/
-                Thread.sleep(100);
+                map.put("comment", comment);
+                JsonPost post=new JsonPost(map,url,"commentinsert",db);
             } catch (Exception e) {
                 return false;
             }
@@ -728,34 +732,21 @@ public class ViewPictureActivity extends GeneralActivity implements ScrollViewLi
                 Toast.makeText(getApplicationContext(), "评论成功", Toast.LENGTH_SHORT).show();
                 refreshComments();
                 editText.setText(null);
-                Thread thread = new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            Thread.sleep(5000);
-                            uploadComment = null;
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                });
-                thread.start();
-
             } else {
                 myToast.show(getString(R.string.toast_comment_failed));
-                uploadComment = null;
             }
+            uploadComment = null;
         }
 
     }
 
     class UploadTagProgress extends AsyncTask<Void, Void, Boolean> {
-        private String tagname;
+        private String tagnameorid;
         private String imageid;
         private String type;
-
-        public UploadTagProgress(String tagname, String imageid, String type) {
-            this.tagname = tagname;
+        private HashMap<String, String> returnmap;
+        public UploadTagProgress(String tagnameorid, String imageid, String type) {
+            this.tagnameorid = tagnameorid;
             this.imageid = imageid;
             this.type = type;
         }
@@ -769,29 +760,30 @@ public class ViewPictureActivity extends GeneralActivity implements ScrollViewLi
         protected Boolean doInBackground(Void... voids) {
             try {
                 String url;
-                if (type.equals("insert")) {//插入TAG
+                HashMap<String, String> map = new HashMap<String, String>();
+                if (type.equals("taginsert")) {//插入TAG
                     //TODO:错误监测返回提示给用户  TO孙晓宇
-                    if (!CheckValid.isTagUnique(tags, tagname)) {
+                    if (!CheckValid.isTagUnique(tags, tagnameorid)) {
                         throw new Exception();
                     }
-                    if (!CheckValid.isTagValid(tagname)) {
+                    if (!CheckValid.isTagValid(tagnameorid)) {
                         throw new Exception();
                     }
-                    if (tagname.isEmpty()) {
+                    if (tagnameorid.isEmpty()) {
                         throw new Exception();
                     }
                     url = "http://192.168.253.1/" + LoginState.username + "/tag_insert/";
+                    map.put("tagname", tagnameorid);
+                    map.put("imageid", imageid);
                 } else {//删除TAG
                     url = "http://192.168.253.1/" + LoginState.username + "/tag_delete/";
+                    map.put("tagid",tagnameorid);
                 }
-                HashMap<String, String> map = new HashMap<String, String>();
-                map.put("tagname", tagname);
-                map.put("imageid", imageid);
                 if (imageid == null) {
                     //图片ID获取错误
                     throw new Exception();
                 }
-                JsonPost post = new JsonPost(map, url);
+                returnmap= new JsonPost(map, url,type,db).getReturnmap();
             } catch (Exception e) {
                 return false;
             }
@@ -806,6 +798,7 @@ public class ViewPictureActivity extends GeneralActivity implements ScrollViewLi
                 if (type.equals("insert")) {
                     //TODO:添加标签  TO孙晓宇
                 } else {
+                    db.tagdelete(tagnameorid);
                     //TODO:删除标签  TO孙晓宇
                 }
             } else {

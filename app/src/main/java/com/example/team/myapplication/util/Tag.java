@@ -36,6 +36,15 @@ public class Tag extends LinearLayout {
     public ImageButton removeButton = null;
     public ImageButton addButton = null;
 
+    public String getTagid() {
+        return tagid;
+    }
+
+    public void setTagid(String tagid) {
+        this.tagid = tagid;
+    }
+
+    private String tagid;
     public Tag(Context context) {
         super(context);
         View view = LayoutInflater.from(context).inflate(R.layout.layout_tag, null);

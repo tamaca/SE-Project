@@ -11,8 +11,15 @@ import com.example.team.myapplication.R;
 public class Comment extends LinearLayout {
     public TextView textView1;
     public TextView textView2;
-    public Comment(Context context, final String _userName,String _comment) {
+
+    public String getCommentid() {
+        return commentid;
+    }
+
+    private String commentid;
+    public Comment(Context context, final String _userName,String _comment,String commentid) {
         super(context);
+        this.commentid=commentid;
         View view = LayoutInflater.from(context).inflate(R.layout.layout_comment, null);
         textView1 = (TextView)view.findViewById(R.id.user_name_in_comment);
         textView2 = (TextView)view.findViewById(R.id.comment);

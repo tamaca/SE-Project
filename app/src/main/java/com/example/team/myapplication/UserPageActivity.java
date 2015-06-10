@@ -370,11 +370,7 @@ public class UserPageActivity extends GeneralActivity implements ScrollViewListe
                 String url = "http://192.168.253.1/" + LoginState.username + "/relation_page/";
                 HashMap<String, String> map = new HashMap<String, String>();
                 map.put("username", otherUsername);
-                HashMap<String, String> returnmap = new JsonPost(map, url, "relation").getReturnmap();
-                /*
-                JSONObject jsonObject = jsonPost.getReturnjsonObject();
-                String _concern = jsonObject.getString("concern");
-                String _blacklist = jsonObject.getString("blacklist");*/
+                HashMap<String, String> returnmap = new JsonPost(map, url,"relation").getReturnmap();
                 concern = returnmap.get("concern").equals("true");
                 blacklist = returnmap.get("blacklist").equals("true");
             } catch (Exception e) {
