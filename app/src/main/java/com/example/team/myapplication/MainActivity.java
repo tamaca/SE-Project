@@ -16,6 +16,7 @@ import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -24,16 +25,21 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TabHost;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.team.myapplication.Cache.Localstorage;
 import com.example.team.myapplication.Database.DB;
 import com.example.team.myapplication.Network.JsonGet;
-import com.example.team.myapplication.util.MyToast;
 import com.example.team.myapplication.Network.NetworkState;
+import com.example.team.myapplication.util.LoadingView;
+import com.example.team.myapplication.util.MyScrollView;
+import com.example.team.myapplication.util.MyToast;
+import com.example.team.myapplication.util.ScrollViewListener;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -45,7 +51,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-public class MainActivity extends Activity {
+public class MainActivity extends Activity implements ScrollViewListener {
     private TabHost mTabHost;
     public final static int concernList = 1;
     public final static int blacklist = 2;
@@ -65,6 +71,11 @@ public class MainActivity extends Activity {
     private ImageButton camera;
     private MyToast myToast;
     private ProgressBar uploadProgressBar;
+    private MyScrollView myScrollView;
+    private LoadingView loadingView;
+    private LinearLayout scrollContent;
+    private LinearLayout scrollContentLeft;
+    private LinearLayout scrollContentRight;
 
     public static String getCurrentTag() {
         return currentTag;
@@ -100,12 +111,28 @@ public class MainActivity extends Activity {
         upload = (Button) findViewById(R.id.upload_button);
         cancel = (Button) findViewById(R.id.cancel_button);
         camera = (ImageButton) squareView.findViewById(R.id.imageButton);
-        search = (ImageButton) squareView.findViewById(R.id.imageButton3);
+        myScrollView = (MyScrollView) squareView.findViewById(R.id.scrollView5);
+        scrollContent = (LinearLayout) squareView.findViewById(R.id.linearLayout8);
+        scrollContentLeft = (LinearLayout) squareView.findViewById(R.id.square_left);
+        scrollContentRight = (LinearLayout) squareView.findViewById(R.id.square_right);
+
+
         myToast = new MyToast(this);
+        search = new ImageButton(this);
+        loadingView = new LoadingView(this);
+        search.setImageResource(android.R.drawable.ic_menu_search);
         /**
          * 设置搜索按钮背景为透明
          */
         search.setBackgroundColor(Color.argb(0, 0, 0, 0));
+        search.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                toSearchActivity(view);
+            }
+        });
+
+        myScrollView.setScrollViewListener(this);
         /**
          * 我关注的人的按钮添加监听器
          */
@@ -178,6 +205,14 @@ public class MainActivity extends Activity {
         mTabHost.setup();
         mTabHost.addTab(mTabHost.newTabSpec("tab1").setIndicator("广场").setContent(R.id.linearLayout));
         mTabHost.addTab(mTabHost.newTabSpec("tab2").setIndicator("我").setContent(R.id.linearLayout));
+        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        mTabHost.getTabWidget().addView(search, layoutParams);
+        for (int i = 0; i < 2; i++) {
+            TextView textView = (TextView)
+                    mTabHost.getTabWidget().getChildTabViewAt(i).findViewById(android.R.id.title);
+            textView.setTextColor(Color.argb(0xff, 0xff, 0xff, 0xff));
+            textView.setTextSize(20f);
+        }
         mTabHost.setOnTabChangedListener(new TabHost.OnTabChangeListener() {
             @Override
             public void onTabChanged(String tabId) {
@@ -301,28 +336,6 @@ public class MainActivity extends Activity {
         startActivity(intent);
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
-
     /**
      * 转到搜索页面
      *
@@ -363,47 +376,51 @@ public class MainActivity extends Activity {
      * @param view
      */
     public void toViewPictureActivity(View view) {
-        if (((ImageView) view).getDrawable() != null) {
-            Intent intent = new Intent(this, ViewPictureActivity.class);
-            //view.setDrawingCacheEnabled(true);
-            //Bitmap bitmap = view.getDrawingCache();
-            String imageviewJsonString = view.getContentDescription().toString();
-            try {
-                JSONObject imageviewJson = new JSONObject(imageviewJsonString);
-                //获取大图时联网
-                if (NetworkState.isNetworkConnected(this)) {
-                    String type = imageviewJson.getString("type");
-                    if (type.equals("online")) {
-                        //获取缩略图时联网 直接有大图地址
-                        String bigurl = imageviewJson.getString("imagebigurl");
+        if (LoginState.logined) {
+            if (((ImageView) view).getDrawable() != null) {
+                Intent intent = new Intent(this, ViewPictureActivity.class);
+                //view.setDrawingCacheEnabled(true);
+                //Bitmap bitmap = view.getDrawingCache();
+                String imageviewJsonString = view.getContentDescription().toString();
+                try {
+                    JSONObject imageviewJson = new JSONObject(imageviewJsonString);
+                    //获取大图时联网
+                    if (NetworkState.isNetworkConnected(this)) {
+                        String type = imageviewJson.getString("type");
+                        if (type.equals("online")) {
+                            //获取缩略图时联网 直接有大图地址
+                            String bigurl = imageviewJson.getString("imagebigurl");
+                            String id = imageviewJson.getString("imageid");
+                            intent.putExtra("type", "online");
+                            intent.putExtra("bigurl", bigurl);
+                            intent.putExtra("imageid", id);
+                            startActivity(intent);
+                        } else {
+                            //获取缩略图时未联网 无大图地址 获取大图时联网
+                            String id = imageviewJson.getString("imageid");
+                            intent.putExtra("type", "halfline");
+                            intent.putExtra("imageid", id);
+                            startActivity(intent);
+                        }
+                    }
+                    //获取大图时未联网
+                    //直接获取id找数据库
+                    else {
                         String id = imageviewJson.getString("imageid");
-                        intent.putExtra("type", "online");
-                        intent.putExtra("bigurl", bigurl);
-                        intent.putExtra("imageid", id);
-                        startActivity(intent);
-                    } else {
-                        //获取缩略图时未联网 无大图地址 获取大图时联网
-                        String id = imageviewJson.getString("imageid");
-                        intent.putExtra("type", "halfline");
+                        String filePath = Localstorage.getImageFilePath(id, "big");
+                        intent.putExtra("type", "offline");
+                        intent.putExtra("filepath", filePath);
                         intent.putExtra("imageid", id);
                         startActivity(intent);
                     }
+                } catch (Exception e) {
+                    myToast.show(getString(R.string.toast_picture_error));
                 }
-                //获取大图时未联网
-                //直接获取id找数据库
-                else {
-                    String id = imageviewJson.getString("imageid");
-                    String filePath = Localstorage.getImageFilePath(id, "big");
-                    intent.putExtra("type", "offline");
-                    intent.putExtra("filepath", filePath);
-                    intent.putExtra("imageid", id);
-                    startActivity(intent);
-                }
-            } catch (Exception e) {
+            } else {
                 myToast.show(getString(R.string.toast_picture_error));
             }
         } else {
-            myToast.show(getString(R.string.toast_picture_error));
+            myToast.show(getString(R.string.toast_before_login));
         }
     }
 
@@ -418,6 +435,43 @@ public class MainActivity extends Activity {
         Intent intent = new Intent(this, UserListActivity.class);
         intent.putExtra("message", x);
         startActivity(intent);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        //noinspection SimplifiableIfStatement
+        if (id == R.id.action_settings) {
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onScrollChanged(MyScrollView scrollView, int x, int y, int oldX, int oldY) {
+        if (y + scrollView.getMeasuredHeight() + 50 > scrollContent.getMeasuredHeight()) {
+            if (scrollContent.getChildAt(scrollContent.getChildCount() - 1) != loadingView) {
+                LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                params.gravity = Gravity.CENTER_HORIZONTAL;
+                scrollContent.addView(loadingView, params);
+                /*if (getPicture == null) {
+                    getPicture = new GetPicture();
+                    getPicture.execute((Void) null);
+                }*/
+            }
+        }
     }
 
     class MyPagerAdapter extends PagerAdapter {
@@ -519,7 +573,7 @@ public class MainActivity extends Activity {
         );
 
         // Save a file: path for use with ACTION_VIEW intents
-        mCurrentPhotoPath =  image.getAbsolutePath();
+        mCurrentPhotoPath = image.getAbsolutePath();
         return image;
     }
 
@@ -554,7 +608,7 @@ public class MainActivity extends Activity {
         options.inJustDecodeBounds = true;
         options.inSampleSize = calculateInSampleSize(options, targetW);
         options.inJustDecodeBounds = false;
-        Bitmap bitmap = BitmapFactory.decodeFile(mCurrentPhotoPath,options);
+        Bitmap bitmap = BitmapFactory.decodeFile(mCurrentPhotoPath, options);
         imageView.setImageBitmap(bitmap);
     }
 

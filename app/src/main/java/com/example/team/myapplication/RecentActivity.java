@@ -1,6 +1,5 @@
 package com.example.team.myapplication;
 
-import android.app.Activity;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -8,6 +7,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.LinearLayout;
 
+import com.example.team.myapplication.util.GeneralActivity;
 import com.example.team.myapplication.util.LoadingView;
 import com.example.team.myapplication.util.MyScrollView;
 import com.example.team.myapplication.util.MyToast;
@@ -18,7 +18,7 @@ import com.example.team.myapplication.util.ScrollViewListener;
 import java.util.ArrayList;
 
 
-public class RecentActivity extends Activity implements ScrollViewListener {
+public class RecentActivity extends GeneralActivity implements ScrollViewListener {
     private LinearLayout scrollContent;
     private LinearLayout scrollContentLeft;
     private LinearLayout scrollContentRight;
@@ -101,7 +101,7 @@ public class RecentActivity extends Activity implements ScrollViewListener {
         scrollContentLeft.removeAllViews();
         scrollContentRight.removeAllViews();
         for (int i = 0; i < recentItems.size(); i++) {
-            if (i / 2 == 0) {
+            if (i % 2 == 0) {
                 scrollContentLeft.addView(recentItems.get(i));
             } else {
                 scrollContentRight.addView(recentItems.get(i));

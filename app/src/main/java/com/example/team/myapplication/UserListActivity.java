@@ -27,6 +27,7 @@ public class UserListActivity extends GeneralActivity {
     private ListView listView;
     private ArrayList<String> userNames;
     private MyToast myToast;
+    private int message;
     // private DownloadList downloadList = null;
 
     @Override
@@ -35,11 +36,12 @@ public class UserListActivity extends GeneralActivity {
         Intent intent = getIntent();
         setContentView(R.layout.activity_user_list);
         ActionBar actionBar = getActionBar();
-
+        if (actionBar != null)
+            actionBar.setDisplayHomeAsUpEnabled(true);
         listView = (ListView) findViewById(R.id.user_name_list);
         userNames = new ArrayList<String>();
         myToast = new MyToast(this);
-        int message = (int) intent.getExtras().get("message");
+        message = (int) intent.getExtras().get("message");
         switch (message) {
             case MainActivity.concernList:
                 setTitle("我关注的人");
@@ -54,12 +56,14 @@ public class UserListActivity extends GeneralActivity {
             default:
                 break;
         }
-
-
         showList(message);
-        if (actionBar != null)
-            actionBar.setDisplayHomeAsUpEnabled(true);
+    }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        //TODO 回到该界面时要重新加载名单
+        showList(message);
     }
 
     @Override
@@ -182,7 +186,7 @@ public class UserListActivity extends GeneralActivity {
             try {
                 String url;
                 if (type.equals("concern")) {
-                    url = "http://192.168.253.1/"+LoginState.username+"/concern/show/";
+                    url = "http://192.168.253.1/" + LoginState.username + "/concern/show/";
                 } else {
                     url = "";
                 }

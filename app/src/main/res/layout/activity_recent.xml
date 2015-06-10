@@ -8,8 +8,8 @@
     android:background="@color/背景蓝">
     <com.example.team.myapplication.util.RefreshableView
         android:id="@+id/refreshable_view"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent">
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
         <com.example.team.myapplication.util.MyScrollView
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"

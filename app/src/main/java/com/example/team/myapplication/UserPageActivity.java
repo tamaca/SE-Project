@@ -1,5 +1,7 @@
 package com.example.team.myapplication;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
@@ -15,11 +17,10 @@ import android.widget.TextView;
 import com.example.team.myapplication.Network.JsonPost;
 import com.example.team.myapplication.util.GalleryItem;
 import com.example.team.myapplication.util.GeneralActivity;
+import com.example.team.myapplication.util.LoadingView;
 import com.example.team.myapplication.util.MyScrollView;
 import com.example.team.myapplication.util.MyToast;
 import com.example.team.myapplication.util.ScrollViewListener;
-
-import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -28,23 +29,24 @@ public class UserPageActivity extends GeneralActivity implements ScrollViewListe
     static public boolean concern;
     static public boolean blacklist;
     private boolean isMe = false;
-    private TextView name;
     private Button concernButton;
     private Button hateButton;
     private Button uploadImageButton;
     private Button manageButton;
     private String userName;
     private LinearLayout gallery;
+    private LinearLayout galleryLeft;
+    private LinearLayout galleryRight;
     private MyToast myToast;
-    private ProgressBar inLoadingPicture;
     private ProgressBar inChangingRelationship;
     private GetPicture getPicture = null;
     private LinearLayout scrollContent;
-    private Button pickPictures;
     private int pictureCount;
     public ArrayList<GalleryItem> galleryItems = null;
     private BlackConcerenTask mAuthTask = null;
     private GetInfomation getInfomationtask = null;
+    private LoadingView loadingView;
+    private boolean isManagingPicture = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,7 +60,7 @@ public class UserPageActivity extends GeneralActivity implements ScrollViewListe
          * userName 是这个主页的所有者
          */
         userName = intent.getExtras().get("user_name").toString();
-        name = (TextView) findViewById(R.id.name);
+        TextView name = (TextView) findViewById(R.id.name);
         name.setText(userName);
         if (userName.equals(LoginState.username)) {
             isMe = true;
@@ -75,18 +77,29 @@ public class UserPageActivity extends GeneralActivity implements ScrollViewListe
         uploadImageButton = (Button) findViewById(R.id.button10);
         gallery = (LinearLayout) findViewById(R.id.gallery);
         galleryItems = new ArrayList<>();
-        inLoadingPicture = (ProgressBar) findViewById(R.id.progressBar4);
         inChangingRelationship = (ProgressBar) findViewById(R.id.progressBar5);
         scrollContent = (LinearLayout) findViewById(R.id.scroll_content);
         myToast = new MyToast(this);
-        pickPictures = (Button) findViewById(R.id.button10);
+        loadingView = new LoadingView(this);
+        galleryLeft = (LinearLayout) findViewById(R.id.gallery_left);
+        galleryRight = (LinearLayout) findViewById(R.id.gallery_right);
         //////////
         concernButton.setOnClickListener(new OnClickConcernListener());
         hateButton.setOnClickListener(new OnClickHateListener());
-        pickPictures.setOnClickListener(new View.OnClickListener() {
+        uploadImageButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 getImageFromAlbum(view);
+            }
+        });
+        manageButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                isManagingPicture = !isManagingPicture;
+                for (int i = 0; i < galleryItems.size(); i++) {
+                    galleryItems.get(i).setRemovable(isManagingPicture);
+                }
+                manageButton.setText(isManagingPicture ? getString(R.string.OK) : getString(R.string.manage_picture));
             }
         });
         /**
@@ -119,10 +132,16 @@ public class UserPageActivity extends GeneralActivity implements ScrollViewListe
         }
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        //TODO 恢复该界面时刷新图片。
+    }
+
     static final int REQUEST_CODE_PICK_IMAGE = 2;
 
     protected void getImageFromAlbum(View view) {
-        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+        Intent intent = new Intent(Intent.ACTION_PICK);
         intent.setType("image/*");//相片类型
         startActivityForResult(intent, REQUEST_CODE_PICK_IMAGE);
     }
@@ -205,18 +224,41 @@ public class UserPageActivity extends GeneralActivity implements ScrollViewListe
 
     /**
      * 添加图片进gallery，每次加一张
+     * 给ImageView 添加跳转到查看大图监听器
      *
      * @param bitmap
      */
-    public void addGalleryItem(Bitmap bitmap) {
-        GalleryItem galleryItem = new GalleryItem(this, bitmap);
+    public void addGalleryItem(Bitmap bitmap, String date) {
+        final GalleryItem galleryItem = new GalleryItem(this, bitmap, date);
         galleryItem.imageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 toViewPictureActivity(view);
             }
         });
+        galleryItem.removeButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                AlertDialog.Builder builder =
+                        new AlertDialog.Builder(getApplicationContext()).setMessage("删除图片?");
+                builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        //TODO 删除图片操作
+                        galleryItems.remove(galleryItem);
+                        //UI操作：
+                        refreshGallery();
+                    }
+                });
+                builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
 
+                    }
+                });
+                builder.create().show();
+            }
+        });
         galleryItems.add(galleryItem);
     }
 
@@ -224,9 +266,14 @@ public class UserPageActivity extends GeneralActivity implements ScrollViewListe
      * 第一次加载ta的图片完成之后在UI线程刷新gallery
      */
     public void refreshGallery() {
-        gallery.removeAllViews();
+        galleryLeft.removeAllViews();
+        galleryRight.removeAllViews();
         for (int i = 0; i < galleryItems.size(); i++) {
-            gallery.addView(galleryItems.get(i));
+            if (i % 2 == 0) {
+                galleryLeft.addView(galleryItems.get(i));
+            } else {
+                galleryRight.addView(galleryItems.get(i));
+            }
         }
     }
 
@@ -241,8 +288,8 @@ public class UserPageActivity extends GeneralActivity implements ScrollViewListe
     public void onScrollChanged(MyScrollView scrollView, int x, int y, int oldX, int oldY) {
         if (y + scrollView.getMeasuredHeight() + 50 > scrollContent.getMeasuredHeight()) {
             if (galleryItems.size() != pictureCount) {
-                if (inLoadingPicture.getVisibility() == View.GONE) {
-                    inLoadingPicture.setVisibility(View.VISIBLE);
+                if (gallery.getChildAt(gallery.getChildCount() - 1) != loadingView) {
+                    gallery.addView(loadingView);
                     if (getPicture == null) {
                         getPicture = new GetPicture();
                         getPicture.execute((Void) null);
@@ -361,7 +408,7 @@ public class UserPageActivity extends GeneralActivity implements ScrollViewListe
 
         @Override
         protected void onPreExecute() {
-         //TODO:加入转圈效果 TO孙晓宇
+            //TODO:加入转圈效果 TO孙晓宇
         }
 
         @Override
@@ -413,7 +460,7 @@ public class UserPageActivity extends GeneralActivity implements ScrollViewListe
 
         @Override
         protected void onPostExecute(Boolean success) {
-            inLoadingPicture.setVisibility(View.GONE);
+            gallery.removeView(loadingView);
             getPicture = null;
             if (success) {
                 gallery.postInvalidate();

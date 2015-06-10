@@ -4,12 +4,42 @@
     android:layout_height="match_parent"
     android:background="@color/背景蓝"
     android:orientation="vertical">
-
+<com.example.team.myapplication.util.MyScrollView
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:id="@+id/scrollView5">
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:paddingTop="5dp">
+        android:paddingTop="5dp"
+        android:id="@+id/linearLayout8"
+        android:gravity="center_horizontal">
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="fill_parent"
+            android:layout_height="match_parent"
+            android:weightSum="2">
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:id="@+id/square_left">
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:id="@+id/square_right">
+
+            </LinearLayout>
+        </LinearLayout>
 
         <LinearLayout
             android:orientation="horizontal"
@@ -38,6 +68,7 @@
                 android:adjustViewBounds="true"
                 android:scaleType="centerCrop"
                 android:onClick="toViewPictureActivity" />
+
         </LinearLayout>
 
         <LinearLayout
@@ -129,18 +160,10 @@
                 android:scaleType="centerCrop"
                 android:onClick="toViewPictureActivity" />
         </LinearLayout>
-    </LinearLayout>
 
-    <ImageButton
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/imageButton3"
-        android:src="@android:drawable/ic_menu_search"
-        android:onClick="toSearchActivity"
-        android:layout_alignParentBottom="false"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="false"
-        android:layout_alignParentTop="true"/>
+    </LinearLayout>
+</com.example.team.myapplication.util.MyScrollView>
+
 
     <ImageButton
         android:layout_width="wrap_content"
