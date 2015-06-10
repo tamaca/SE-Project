@@ -43,6 +43,7 @@ public class Tag extends LinearLayout {
         removeButton = (ImageButton) view.findViewById(R.id.imageButton4);
         addButton = (ImageButton) view.findViewById(R.id.imageButton5);
         addView(view);
+        changeState(currentState); //初始化为什么都不显示的状态
     }
 
     public void changeState(int state) {
