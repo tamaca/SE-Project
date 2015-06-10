@@ -288,15 +288,15 @@ public class UserPageActivity extends GeneralActivity implements ScrollViewListe
                 String url ;
                 if (type == 1) {
                     if (concern) {
-                        url = "http://192.168.253.1/Kevin/concern/delete/";
+                        url = "http://192.168.253.1/"+LoginState.username+"/concern/delete/";
                     } else {
-                        url = "http://192.168.253.1/Kevin/concern/insert/";
+                        url = "http://192.168.253.1/"+LoginState.username+"/concern/insert/";
                     }
                 } else {
                     if (blacklist) {
-                        url = "http://192.168.253.1/Kevin/blacklist/delete/";
+                        url = "http://192.168.253.1/"+LoginState.username+"/blacklist/delete/";
                     } else {
-                        url = "http://192.168.253.1/Kevin/blacklist/insert/";
+                        url = "http://192.168.253.1/"+LoginState.username+"/blacklist/insert/";
                     }
                 }
                 HashMap<String, String> map = new HashMap<String, String>();

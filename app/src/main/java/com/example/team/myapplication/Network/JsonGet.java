@@ -31,6 +31,7 @@ public class JsonGet {
     private String url;
     private DB db;
     private View view;
+
     //关注或黑名单中的人
     public ArrayList<String> getUserNames() {
         return userNames;
@@ -55,14 +56,15 @@ public class JsonGet {
         JSONObject jsonObject = get.GetFromServer();
         get.PostExecuteImageUrl(jsonObject);
     }
+
     //图片获取(id)
-    public JsonGet(String url,String key[]) throws Exception
-    {
-        this.url=url;
+    public JsonGet(String url, String key) throws Exception {
+        this.url = url;
         Get get = new Get();
         JSONObject jsonObject = get.GetFromServer();
-        get.PostExecuteString(jsonObject,key);
+        get.PostExecuteId(jsonObject, key);
     }
+
     //关注的人获取 或 黑名单获取
     public JsonGet(String url) throws Exception {
         this.url = url;
@@ -72,13 +74,14 @@ public class JsonGet {
     }
 
     //赞或取消赞
-    public JsonGet(String url, String key[], DB db) throws Exception {
+    public JsonGet(String url, DB db) throws Exception {
         this.url = url;
         this.db = db;
         Get get = new Get();
         JSONObject jsonObject = get.GetFromServer();
-        get.PostExecuteString(jsonObject, key);
+        get.PostExecuteLike(jsonObject);
     }
+
     private class Get {
         CloseableHttpClient client = HttpClients.custom().useSystemProperties().build();
         HttpGetHC4 httpget = new HttpGetHC4(url);
@@ -107,6 +110,7 @@ public class JsonGet {
                 throw new getException();
             }
         }
+
         //接收图片(url)
         protected void PostExecuteImageUrl(JSONObject jsonObject) throws Exception {
             if (jsonObject != null) {
@@ -132,19 +136,19 @@ public class JsonGet {
                         ImageGet imageGet3 = new ImageGet(imageView3, image_small[2], image_id[2], db, "small");
                         ImageGet imageGet4 = new ImageGet(imageView4, image_small[3], image_id[3], db, "small");
                         JSONObject jsonObject1 = new JSONObject();
-                        jsonObject1.put("type","online");
+                        jsonObject1.put("type", "online");
                         jsonObject1.put("imageid", image_id[0]);
                         jsonObject1.put("imagebigurl", image_big[0]);
                         JSONObject jsonObject2 = new JSONObject();
-                        jsonObject2.put("type","online");
+                        jsonObject2.put("type", "online");
                         jsonObject2.put("imageid", image_id[1]);
                         jsonObject2.put("imagebigurl", image_big[1]);
                         JSONObject jsonObject3 = new JSONObject();
-                        jsonObject3.put("type","online");
+                        jsonObject3.put("type", "online");
                         jsonObject3.put("imageid", image_id[2]);
                         jsonObject3.put("imagebigurl", image_big[2]);
                         JSONObject jsonObject4 = new JSONObject();
-                        jsonObject4.put("type","online");
+                        jsonObject4.put("type", "online");
                         jsonObject4.put("imageid", image_id[3]);
                         jsonObject4.put("imagebigurl", image_big[3]);
                         imageView1.setContentDescription(jsonObject1.toString());
@@ -187,8 +191,8 @@ public class JsonGet {
             if (jsonObject != null) {
                 String status = jsonObject.getString("status");
                 if (status.equals("normal")) {
-                    String _num=jsonObject.getString("num");
-                    int num=Integer.parseInt(_num);
+                    String _num = jsonObject.getString("num");
+                    int num = Integer.parseInt(_num);
                     ArrayList<String> userNames = new ArrayList<String>();
                     for (int i = 0; i < num; i++) {
                         String _username = jsonObject.getString("username" + i);
@@ -205,20 +209,18 @@ public class JsonGet {
         }
 
         //赞或取消赞
-        protected void PostExecuteString(JSONObject jsonObject, String key[]) throws Exception {
+        protected void PostExecuteLike(JSONObject jsonObject) throws Exception {
             if (jsonObject != null) {
                 String status = jsonObject.getString("status");
                 if (status.equals("normal")) {
-                    returnmap=new HashMap<String,String>();
-                   // HashMap<String, String> returnmap = new HashMap<String, String>();
-                    String islike=jsonObject.getString("islike");
-                    String likenumber=jsonObject.getString("likenumber");
-                    String imageid=jsonObject.getString("imageid");
-                    dbimagelikesave(imageid,islike,likenumber);
-                    for (String x : key) {
-                        String value = jsonObject.getString(x);
-                        returnmap.put(x, value);
-                    }
+                    returnmap = new HashMap<String, String>();
+                    // HashMap<String, String> returnmap = new HashMap<String, String>();
+                    String islike = jsonObject.getString("is_like");
+                    String likenumber = jsonObject.getString("like_number");
+                    String imageid = jsonObject.getString("image_id");
+                    dbimagelikesave(imageid, islike, likenumber);
+                    returnmap.put("islike", islike);
+                    returnmap.put("likenumber", likenumber);
                     //return returnmap;
                 } else {
                     throw new executeException();
@@ -228,6 +230,23 @@ public class JsonGet {
                 throw new nullException();
             }
         }
+
+        protected void PostExecuteId(JSONObject jsonObject, String key) throws Exception {
+            if (jsonObject != null) {
+                String status = jsonObject.getString("status");
+                if (status.equals("normal")) {
+                    returnmap = new HashMap<String, String>();
+                    returnmap.put(key, jsonObject.getString(key));
+                    //return returnmap;
+                } else {
+                    throw new executeException();
+                }
+            } else {
+                //TODO:接收信息错误
+                throw new nullException();
+            }
+        }
+
         //异常类
         class getException extends Exception {
             public String name = "get";
@@ -252,11 +271,12 @@ public class JsonGet {
     private void dblobbyimagesave(String rank, String imageid) {
         db.lobbyimageinsert(rank, imageid);
     }
-    private void dbimagelikesave(String imageid,String islike,String likenumber)
-    {
-        db.imageupdateislike(imageid,islike);
-        db.imageupdatelikenumber(imageid,likenumber);
+
+    private void dbimagelikesave(String imageid, String islike, String likenumber) {
+        db.imageupdateislike(imageid, islike);
+        db.imageupdatelikenumber(imageid, likenumber);
     }
+
     //关注的人缩略图保存
     private void imagecaredsave(String imageid, String updatedate, String userid) {
         if (!db.checkuserimage(imageid, userid)) {

@@ -65,7 +65,8 @@ public class ViewPictureActivity extends GeneralActivity {
     private View showFail;
     private UploadTagProgress uploadTagProgress = null;
     private String imageid = null;
-    private LikeProgress likeProgress=null;
+    private LikeProgress likeProgress = null;
+
     @Override
 
     protected void onCreate(Bundle savedInstanceState) {
@@ -205,7 +206,7 @@ public class ViewPictureActivity extends GeneralActivity {
         like.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                likeProgress=new LikeProgress(imageid,db);
+                likeProgress = new LikeProgress(imageid, db);
                 likeProgress.execute();
                 //changeLike(view);
             }
@@ -251,7 +252,7 @@ public class ViewPictureActivity extends GeneralActivity {
             if (type.equals("online")) {
                 //联网获取图片信息
                 String bigurl = (String) intent.getExtras().get("bigurl");
-                String informationurl = "http://192.168.253.1/"+LoginState.username+"/image_detail/";
+                String informationurl = "http://192.168.253.1/" + LoginState.username + "/image_detail/";
                 imageid = (String) intent.getExtras().get("imageid");
                 new ImageGet(imgview, bigurl, imageid, db, "big");
                 mAuthTask = new getImageInformationProgress(informationurl, imageid, db);
@@ -290,8 +291,7 @@ public class ViewPictureActivity extends GeneralActivity {
                 }
             } else {
                 imageid = (String) intent.getExtras().get("imageid");
-                if(imageid==null)
-                {
+                if (imageid == null) {
                     //id错误
                     throw new Exception();
                 }
@@ -308,13 +308,14 @@ public class ViewPictureActivity extends GeneralActivity {
     /**
      * 刷新界面中的评论
      */
-    public void refreshComments(){
+    public void refreshComments() {
         commentView.removeAllViews();
-        for(int i = 0;i<comments.size();i++){
+        for (int i = 0; i < comments.size(); i++) {
             commentView.addView(comments.get(i));
         }
         commentView.postInvalidate();
     }
+
     /**
      * 让有内容的tag标签排在前边
      */
@@ -365,6 +366,7 @@ public class ViewPictureActivity extends GeneralActivity {
 
     /**
      * 提交评论按钮的响应
+     *
      * @param view
      */
     public void submitComment(View view) {
@@ -378,13 +380,8 @@ public class ViewPictureActivity extends GeneralActivity {
             editText.setError("评论不能超过120字");
             return;
         }
-        if (uploadComment == null) {
-            showProgress(true);
-            uploadComment = new UploadComment(comment);
-            uploadComment.execute((Void) null);
-        } else {
-            Toast.makeText(getApplicationContext(), "5秒内只能上传一次评论", Toast.LENGTH_SHORT).show();
-        }
+        uploadComment = new UploadComment(comment);
+        uploadComment.execute((Void) null);
     }
 
     /**
@@ -419,8 +416,7 @@ public class ViewPictureActivity extends GeneralActivity {
             try {
                 HashMap<String, String> map = new HashMap<String, String>();
                 map.put("id", imageid);
-                if(imageid==null)
-                {
+                if (imageid == null) {
                     //图片id错误
                     throw new Exception();
                 }
@@ -442,7 +438,7 @@ public class ViewPictureActivity extends GeneralActivity {
                 }
                 imgview.setContentDescription(returnmap.get(baseurl + "origin"));
                 isLike = (returnmap.get("islike").equals("true"));
-                 likeNumber = returnmap.get("likenumber");
+                likeNumber = returnmap.get("likenumber");
                 changeLike();
                 //时间显示
                 uploadTime.setText(returnmap.get("updatetime"));
@@ -475,7 +471,7 @@ public class ViewPictureActivity extends GeneralActivity {
         @Override
         protected Boolean doInBackground(Void... params) {
             try {
-                String key[] = {"image_big"};
+                String key = "image_big";
                 returnmap = new JsonGet(url, key).getReturnmap();
             } catch (Exception e) {
                 return false;
@@ -504,22 +500,21 @@ public class ViewPictureActivity extends GeneralActivity {
         LikeProgress(String imageid, DB db) {
             this.db = db;
         }
+
         @Override
-        protected void onPreExecute()
-        {
+        protected void onPreExecute() {
             showProgress(true);
         }
+
         @Override
         protected Boolean doInBackground(Void... params) {
             try {
-                if(imageid==null)
-                {
+                if (imageid == null) {
                     //图片id错误
                     throw new Exception();
                 }
-                String url = "http://192.168.253.1/"+LoginState.username+"/"+imageid+"/";
-                String key[] = {"like", "islike"};
-                returnmap = new JsonGet(url, key, db).getReturnmap();
+                String url = "http://192.168.253.1/" + LoginState.username + "/like_change/" + imageid + "/";
+                returnmap = new JsonGet(url, db).getReturnmap();
             } catch (Exception e) {
                 return false;
             }
@@ -540,16 +535,13 @@ public class ViewPictureActivity extends GeneralActivity {
             likeProgress = null;
         }
     }
-    private void changeLike()
-    {
-        if(isLike)
-        {
+
+    private void changeLike() {
+        if (isLike) {
             like.setBackgroundResource(R.drawable.liked);
             int _likenumber = Integer.parseInt(likeNumber);
             likeText.setText(_likenumber < 10000 ? likeNumber : _likenumber / 10000 + "万+");
-        }
-        else
-        {
+        } else {
             like.setBackgroundResource(R.drawable.like);
             int _likenumber = Integer.parseInt(likeNumber);
             if (_likenumber == 0) {
