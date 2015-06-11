@@ -802,6 +802,7 @@ public class ViewPictureActivity extends GeneralActivity implements ScrollViewLi
             if (success) {
                 if (type.equals("insert")) {
                     tag.tagText.setText(tagnameorid);
+                    tag.setTagid(tagnameorid);
                     tag.changeState(Tag.removable);
                 } else {
                     db.tagdelete(tagnameorid);

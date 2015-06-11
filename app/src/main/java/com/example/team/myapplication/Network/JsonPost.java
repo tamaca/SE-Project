@@ -77,20 +77,22 @@ public class JsonPost {
         }
     }
 
-    //添加关注 黑名单
-    public JsonPost(HashMap<String, String> map, String url) throws Exception {
-        this.url = url;
-        Post post = new Post(map);
-        returnjsonObject = post.PostToServer();
-        post.PostExecute(returnjsonObject);
-    }
 
-    // 获取关注和黑名单信息
+    // 获取关注和黑名单信息//添加关注 黑名单
     public JsonPost(HashMap<String, String> map, String url, String type) throws Exception {
         this.url = url;
         Post post = new Post(map);
         returnjsonObject = post.PostToServer();
-        post.PostExecuteRelation(returnjsonObject);
+        if(type.equals("relation")) {
+            post.PostExecuteRelation(returnjsonObject);
+        }else if(type.equals("concern"))
+        {
+            post.PostExecuteIODRelation(returnjsonObject);
+        }
+        else
+        {
+            post.PostExecute(returnjsonObject);
+        }
     }
 
     //数据库储存用户
@@ -317,14 +319,31 @@ public class JsonPost {
                 if (status.equals("normal")) {
                     String _concern = jsonObject.getString("concern");
                     String _blacklist = jsonObject.getString("blacklist");
+                    String picturecount=jsonObject.getString("count");
+                    returnmap=new HashMap<String,String>();
                     returnmap.put("concern", _concern);
                     returnmap.put("blacklist", _blacklist);
+                    returnmap.put("picturecount",picturecount);
                 } else {
                     throw new executeException();
                 }
             }
         }
-
+        protected void PostExecuteIODRelation(JSONObject jsonObject) throws Exception {
+            if (jsonObject == null) {
+                throw new nullException();
+                //TODO:网络通信错误
+            } else {
+                String status = jsonObject.getString("status");
+                if (status.equals("normal")) {
+                    String picturecount=jsonObject.getString("count");
+                    returnmap=new HashMap<String,String>();
+                    returnmap.put("picturecount",picturecount);
+                } else {
+                    throw new executeException();
+                }
+            }
+        }
         protected void PostExecuteCommentInsert(JSONObject jsonObject) throws Exception {
             if (jsonObject == null) {
                 throw new nullException();

@@ -139,7 +139,7 @@ public class JsonGet {
                         image_big[i] = baseurl + jsonObject.getString("image" + i + "_big");
                         image_id[i] = jsonObject.getString("image" + i + "_id");
                     }
-                    if (view != null) {
+                    if (view != null||galleryItems!=null) {
                         ImageView imageView1;
                         ImageView imageView2;
                         ImageView imageView3;

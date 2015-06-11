@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -50,8 +51,9 @@ public class UserPageActivity extends GeneralActivity implements ScrollViewListe
     private GetInfomation getInfomationtask = null;
     private LoadingView loadingView;
     private boolean isManagingPicture = false;
-    private int page=1;//page从1开始
-    private DB db=new DB(this);
+    private int page = 1;//page从1开始
+    private DB db = new DB(this);
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -132,6 +134,17 @@ public class UserPageActivity extends GeneralActivity implements ScrollViewListe
             uploadImageButton.setVisibility(View.GONE);
             getInfomationtask = new GetInfomation(userName);
             getInfomationtask.execute();
+            if (gallery.getChildAt(gallery.getChildCount() - 1) != loadingView) {
+               ;
+                if (getPicture == null) {
+                    GalleryItem galleryItems[] = new GalleryItem[4];
+                    for (int i = 0; i < 4; i++) {
+                        galleryItems[i] = new GalleryItem(this);
+                    }
+                    getPicture = new GetPicture(userName, galleryItems);
+                    getPicture.execute();
+                }
+            }
         }
     }
 
@@ -283,7 +296,10 @@ public class UserPageActivity extends GeneralActivity implements ScrollViewListe
     public boolean getGallery(String userName) {
         //TODO 在这里加载该用户的图片，如果用户没有图片，返回false,如果有，把 pictureCount 设置为该用户照片总数；
         // addGalleryItem(bitmap);
-        pictureCount = 0;
+        //pictureCount = 0;
+        if (pictureCount != 0) {
+            return true;
+        }
         return false;
     }
 
@@ -292,15 +308,14 @@ public class UserPageActivity extends GeneralActivity implements ScrollViewListe
         if (y + scrollView.getMeasuredHeight() + 50 > scrollContent.getMeasuredHeight()) {
             if (galleryItems.size() != pictureCount) {
                 if (gallery.getChildAt(gallery.getChildCount() - 1) != loadingView) {
-                    gallery.addView(loadingView);
+                   // gallery.addView(loadingView);
                     if (getPicture == null) {
-                        GalleryItem galleryItems[]=new GalleryItem[4];
-                        for(int i=0;i<4;i++)
-                        {
-                            galleryItems[i]=new GalleryItem(this);
+                        GalleryItem galleryItems[] = new GalleryItem[4];
+                        for (int i = 0; i < 4; i++) {
+                            galleryItems[i] = new GalleryItem(this);
                         }
-                        getPicture = new GetPicture(userName,galleryItems);
-                        getPicture.execute((Void) null);
+                        getPicture = new GetPicture(userName, galleryItems);
+                        getPicture.execute();
                     }
                 }
             }
@@ -362,7 +377,15 @@ public class UserPageActivity extends GeneralActivity implements ScrollViewListe
                 }
                 HashMap<String, String> map = new HashMap<String, String>();
                 map.put("username", otherUsername);
-                new JsonPost(map, url);
+                //添加关注获取图片总数
+                if(type==1&&!concern) {
+                    HashMap<String, String> returnmap = new JsonPost(map, url,"concern").getReturnmap();
+                    pictureCount = Integer.valueOf(returnmap.get("picturecount"));
+                }
+                else
+                {
+                    new JsonPost(map,url,"else");
+                }
                 Thread.sleep(100);
 
             } catch (Exception e) {
@@ -428,6 +451,7 @@ public class UserPageActivity extends GeneralActivity implements ScrollViewListe
                 HashMap<String, String> returnmap = new JsonPost(map, url, "relation").getReturnmap();
                 concern = returnmap.get("concern").equals("true");
                 blacklist = returnmap.get("blacklist").equals("true");
+                pictureCount = Integer.valueOf(returnmap.get("picturecount"));
             } catch (Exception e) {
                 return false;
             }
@@ -453,20 +477,24 @@ public class UserPageActivity extends GeneralActivity implements ScrollViewListe
     class GetPicture extends AsyncTask<Void, Void, Boolean> {
         private String userid;
         private GalleryItem galleryItem[];
-        public GetPicture(String userid,GalleryItem[] galleryItem) {
-            this.userid=userid;
-            this.galleryItem=galleryItem;
+        public GetPicture(String userid, GalleryItem[] galleryItem) {
+            this.userid = userid;
+            this.galleryItem = galleryItem;
         }
-
         @Override
-        protected Boolean doInBackground(Void... voids) {
+        protected void onPreExecute()
+        {
+            gallery.addView(loadingView);
+        }
+        @Override
+        protected Boolean doInBackground(Void... params) {
             try {
                 //TODO 添加几个图片到 galleryItems 里
-                String url1="http://192.168.253.1/"+LoginState.username+"/image_of/"+userid+"/"+"/page/"+page+"/";
+                String url1 = "http://192.168.253.1/" + LoginState.username + "/image_of/" + userid + "/" + "/page/" + page + "/";
                 page++;
-                String url2="http://192.168.253.1/"+LoginState.username+"/image_of/"+userid+"/"+"/page/"+page+"/";
-                new JsonGet(url1, db,galleryItem,"userpage");
-                new JsonGet(url1, db,null,"userpage");
+                String url2 = "http://192.168.253.1/" + LoginState.username + "/image_of/" + userid + "/" + "/page/" + page + "/";
+                new JsonGet(url1, db, galleryItem, "userpage");
+                new JsonGet(url2, db, null, "userpage");
                 Thread.sleep(1000);
             } catch (Exception e) {
                 return false;
@@ -479,7 +507,7 @@ public class UserPageActivity extends GeneralActivity implements ScrollViewListe
             gallery.removeView(loadingView);
             getPicture = null;
             if (success) {
-                for(GalleryItem _galleryitem:galleryItem) {
+                for (GalleryItem _galleryitem : galleryItem) {
                     galleryItems.add(_galleryitem);
                 }
                 refreshGallery();
