@@ -27,6 +27,6 @@
         android:layout_alignTop="@+id/imageView5"
         android:background="@drawable/remove"
         android:padding="15dp"
-        android:visibility="visible" />
+        android:visibility="gone" />
 
 </RelativeLayout>
