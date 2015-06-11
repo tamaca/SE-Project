@@ -41,7 +41,7 @@
                     android:maxHeight="320dp"
                     android:layout_marginLeft="10dp"
                     android:layout_marginRight="10dp"
-                    android:scaleType="centerInside"
+                    android:scaleType="fitCenter"
                     android:layout_gravity="top|center_horizontal"
                     android:contentDescription="@string/OK"
                     android:layout_marginTop="10dp"/>
