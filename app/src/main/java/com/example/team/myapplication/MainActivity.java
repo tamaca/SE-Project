@@ -673,7 +673,7 @@ public class MainActivity extends Activity implements ScrollViewListener {
         @Override
         protected Boolean doInBackground(Void... params) {
             try {
-                new JsonGet(url, db, view, "lobby");
+                new JsonGet(url, db, view);
             } catch (Exception e) {
                 return false;
             }

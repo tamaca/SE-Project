@@ -8,6 +8,7 @@ import com.example.team.myapplication.Database.DB;
 import com.example.team.myapplication.LoginState;
 import com.example.team.myapplication.R;
 import com.example.team.myapplication.ViewPictureActivity;
+import com.example.team.myapplication.util.GalleryItem;
 
 import org.apache.http4.client.methods.CloseableHttpResponse;
 import org.apache.http4.client.methods.HttpGetHC4;
@@ -31,6 +32,7 @@ public class JsonGet {
     private String url;
     private DB db;
     private View view;
+    private GalleryItem[] galleryItems;
 
     //关注或黑名单中的人
     public ArrayList<String> getUserNames() {
@@ -46,15 +48,26 @@ public class JsonGet {
     private HashMap<String, String> returnmap;
     private String type;
 
-    //图片获取(url)
-    public JsonGet(String url, DB db, View view, String type) throws Exception {
+    //图片获取(url) 大厅
+    public JsonGet(String url, DB db, View view) throws Exception {
         this.url = url;
         this.db = db;
         this.view = view;
         this.type = type;
         Get get = new Get();
         JSONObject jsonObject = get.GetFromServer();
-        get.PostExecuteImageUrl(jsonObject);
+        get.PostExecuteImageUrl(jsonObject, "lobby");
+    }
+
+    //图片获取url 个人主页
+    public JsonGet(String url, DB db, GalleryItem galleryItems[], String type) throws Exception {
+        this.url = url;
+        this.db = db;
+        this.galleryItems = galleryItems;
+        this.type = type;
+        Get get = new Get();
+        JSONObject jsonObject = get.GetFromServer();
+        get.PostExecuteImageUrl(jsonObject, "user");
     }
 
     //图片获取(id)
@@ -111,8 +124,8 @@ public class JsonGet {
             }
         }
 
-        //接收图片(url)
-        protected void PostExecuteImageUrl(JSONObject jsonObject) throws Exception {
+        //接收图片(url) 大厅
+        protected void PostExecuteImageUrl(JSONObject jsonObject, String type) throws Exception {
             if (jsonObject != null) {
                 String status = jsonObject.getString("status");
                 if (status.equals("normal")) {
@@ -127,10 +140,21 @@ public class JsonGet {
                         image_id[i] = jsonObject.getString("image" + i + "_id");
                     }
                     if (view != null) {
-                        ImageView imageView1 = (ImageView) view.findViewById(R.id.imageView1);
-                        ImageView imageView2 = (ImageView) view.findViewById(R.id.imageView2);
-                        ImageView imageView3 = (ImageView) view.findViewById(R.id.imageView3);
-                        ImageView imageView4 = (ImageView) view.findViewById(R.id.imageView4);
+                        ImageView imageView1;
+                        ImageView imageView2;
+                        ImageView imageView3;
+                        ImageView imageView4;
+                        if (type.equals("lobby")) {
+                            imageView1 = (ImageView) view.findViewById(R.id.imageView1);
+                            imageView2 = (ImageView) view.findViewById(R.id.imageView2);
+                            imageView3 = (ImageView) view.findViewById(R.id.imageView3);
+                            imageView4 = (ImageView) view.findViewById(R.id.imageView4);
+                        } else {
+                            imageView1 = galleryItems[0].imageView;
+                            imageView2 = galleryItems[1].imageView;
+                            imageView3 = galleryItems[2].imageView;
+                            imageView4 = galleryItems[3].imageView;
+                        }
                         ImageGet imageGet1 = new ImageGet(imageView1, image_small[0], image_id[0], db, "small");
                         ImageGet imageGet2 = new ImageGet(imageView2, image_small[1], image_id[1], db, "small");
                         ImageGet imageGet3 = new ImageGet(imageView3, image_small[2], image_id[2], db, "small");
@@ -170,8 +194,6 @@ public class JsonGet {
                         dblobbyimagesave(String.valueOf(LoginState.page * 4 + 2), image_id[1]);
                         dblobbyimagesave(String.valueOf(LoginState.page * 4 + 3), image_id[2]);
                         dblobbyimagesave(String.valueOf(LoginState.page * 4 + 4), image_id[3]);
-                    } else {
-                        //TODO:TA的动态数据库存储
                     }
                 } else {
                     throw new executeException();
@@ -179,12 +201,14 @@ public class JsonGet {
                 }
                 //这里写跳转代码
                 //loginActivity.showProgress(false);
-            } else {
+            } else
+
+            {
                 //TODO:接收信息错误
                 throw new nullException();
             }
-
         }
+
 
         //黑名单 和 关注的人
         protected ArrayList<String> PostExecuteList(JSONObject jsonObject) throws Exception {
@@ -259,6 +283,7 @@ public class JsonGet {
         class executeException extends Exception {
             public String name = "execute";
         }
+
     }
 
     //数据库
