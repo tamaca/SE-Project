@@ -12,10 +12,11 @@
 
     <ImageView
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="160dp"
         android:id="@+id/imageView5"
+        android:scaleType="centerCrop"
         android:layout_gravity="center_horizontal"
-        android:src="@drawable/rabbit"
+        android:src="@drawable/dogekid"
         android:layout_below="@+id/textView2" />
 
     <ImageButton
@@ -24,9 +25,8 @@
         android:id="@+id/imageButton6"
         android:layout_alignRight="@+id/imageView5"
         android:layout_alignTop="@+id/imageView5"
-        android:src="@drawable/remove"
+        android:background="@drawable/remove"
         android:padding="15dp"
-        android:background="@color/透明"
-        android:visibility="gone" />
+        android:visibility="visible" />
 
 </RelativeLayout>
