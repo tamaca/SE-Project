@@ -83,6 +83,7 @@ public class SearchActivity extends GeneralActivity {
     /**
      * 添加图片进搜索结果里，一次添加一张。
      */
+    /*
     public void addGalleryItem(Bitmap bitmap) {
         GalleryItem galleryItem = new GalleryItem(this, bitmap);
         galleryItem.imageView.setOnClickListener(new View.OnClickListener() {
@@ -92,7 +93,7 @@ public class SearchActivity extends GeneralActivity {
             }
         });
         resultPictures.add(galleryItem);
-    }
+    }*/
 
     /**
      * 更新搜素 用户名 的结果

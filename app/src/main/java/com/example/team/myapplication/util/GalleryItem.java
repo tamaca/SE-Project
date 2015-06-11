@@ -21,31 +21,11 @@ public class GalleryItem extends LinearLayout {
         super(context);
         View view = LayoutInflater.from(context).inflate(R.layout.layout_gallery_item, null);
         imageView = (ImageView) view.findViewById(R.id.imageView5);
+        textView=(TextView)view.findViewById(R.id.textView2);
         removeButton = (ImageButton) view.findViewById(R.id.imageButton6);
+        textView.setVisibility(GONE);
         addView(view);
     }
-
-    public GalleryItem(Context context, Bitmap bitmap) {
-        super(context);
-        View view = LayoutInflater.from(context).inflate(R.layout.layout_gallery_item, null);
-        imageView = (ImageView) view.findViewById(R.id.imageView5);
-        imageView.setImageBitmap(bitmap);
-        removeButton = (ImageButton) view.findViewById(R.id.imageButton6);
-        addView(view);
-    }
-
-    public GalleryItem(Context context, Bitmap bitmap, String date) {
-        super(context);
-        View view = LayoutInflater.from(context).inflate(R.layout.layout_gallery_item, null);
-        textView = (TextView) view.findViewById(R.id.textView2);
-        textView.setText(date);
-        imageView = (ImageView) view.findViewById(R.id.imageView5);
-        imageView.setImageBitmap(bitmap);
-        removeButton = (ImageButton) view.findViewById(R.id.imageButton6);
-        addView(view);
-
-    }
-
     public void setRemovable(boolean removable) {
         if (removable)
             removeButton.setVisibility(VISIBLE);

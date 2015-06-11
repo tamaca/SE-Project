@@ -36,6 +36,7 @@ import com.example.team.myapplication.Cache.Localstorage;
 import com.example.team.myapplication.Database.DB;
 import com.example.team.myapplication.Network.JsonGet;
 import com.example.team.myapplication.Network.NetworkState;
+import com.example.team.myapplication.util.GalleryItem;
 import com.example.team.myapplication.util.LoadingView;
 import com.example.team.myapplication.util.MyScrollView;
 import com.example.team.myapplication.util.MyToast;
@@ -78,7 +79,9 @@ public class MainActivity extends Activity implements ScrollViewListener {
     private LinearLayout scrollContent;
     private LinearLayout scrollContentLeft;
     private LinearLayout scrollContentRight;
-    private Boolean end=false;
+    private Boolean end = false;
+    public ArrayList<GalleryItem> galleryItems = null;
+
     public static String getCurrentTag() {
         return currentTag;
     }
@@ -117,8 +120,7 @@ public class MainActivity extends Activity implements ScrollViewListener {
         scrollContent = (LinearLayout) squareView.findViewById(R.id.linearLayout8);
         scrollContentLeft = (LinearLayout) squareView.findViewById(R.id.square_left);
         scrollContentRight = (LinearLayout) squareView.findViewById(R.id.square_right);
-
-
+        galleryItems = new ArrayList<>();
         myToast = new MyToast(this);
         search = new ImageButton(this);
         loadingView = new LoadingView(this);
@@ -227,24 +229,23 @@ public class MainActivity extends Activity implements ScrollViewListener {
          * 展示出相应的界面
          */
         changeView(LoginState.getLogined());
-        //Toast.makeText(getBaseContext(),"isLogin?"+LoginState.logined,Toast.LENGTH_LONG).show();
-        /**
-         * 如果imagedownload()的线程一直跑会占用很多cpu资源，请解决
-         */
         imagedownload();
-        //imageview
 
     }
 
     public void imagedownload() {
         if (NetworkState.isNetworkConnected(this)) {
-            int page=LoginState.getPage()+1;
-            String picURL1 = "http://192.168.253.1/square_page/"+(page)+"/";
+            int page = LoginState.getPage() + 1;
+            String picURL1 = "http://192.168.253.1/square_page/" + (page) + "/";
             page++;
-            LoginState.setPage(page-1 );
-            String picURL2 = "http://192.168.253.1/square_page/"+(page)+"/";
-            DownloadPictureProgress downloadPictureProgress1 = new DownloadPictureProgress(picURL1, db, squareView,getResources(),getPackageName());
-            DownloadPictureProgress downloadPictureProgress2 = new DownloadPictureProgress(picURL2, db, null,getResources(),getPackageName());
+            LoginState.setPage(page - 1);
+            String picURL2 = "http://192.168.253.1/square_page/" + (page) + "/";
+            GalleryItem galleryItems[] = new GalleryItem[8];
+            for (int i = 0; i < 8; i++) {
+                galleryItems[i] = new GalleryItem(this);
+            }
+            DownloadPictureProgress downloadPictureProgress1 = new DownloadPictureProgress(picURL1, db, galleryItems, getResources(), getPackageName());
+            DownloadPictureProgress downloadPictureProgress2 = new DownloadPictureProgress(picURL2, db, null, getResources(), getPackageName());
             downloadPictureProgress1.execute();
             downloadPictureProgress2.execute();
         } else {
@@ -255,24 +256,21 @@ public class MainActivity extends Activity implements ScrollViewListener {
                 String smallfilepath = Localstorage.getImageFilePath(id, "small");
                 Bitmap bitmap = Localstorage.getBitmapFromSDCard(smallfilepath);
                 Resources res = getResources();
-                int imageviewid = res.getIdentifier("imageView" + rank, "id", getPackageName());
-                ImageView _imageView = (ImageView) squareView.findViewById(imageviewid);
-                _imageView.setImageBitmap(bitmap);
+                GalleryItem galleryItem = new GalleryItem(this);
+                galleryItem.imageView.setImageBitmap(bitmap);
                 JSONObject jsonObject = new JSONObject();
                 try {
                     jsonObject.put("type", "offline");
                     jsonObject.put("imageid", id);
                 } catch (JSONException e) {
-                    Toast.makeText(getApplicationContext(),"数据传输错误",Toast.LENGTH_LONG).show();
+                    Toast.makeText(getApplicationContext(), "数据传输错误", Toast.LENGTH_LONG).show();
                     e.printStackTrace();
                 }
-                _imageView.setContentDescription(jsonObject.toString());
+                galleryItem.setContentDescription(jsonObject.toString());
+                galleryItems.add(galleryItem);
             }
+            refreshSquare();
         }
-        //  JsonGet jsonGet1 = new JsonGet(picURL1, db, squareView);
-        // JsonGet jsonGet2 = new JsonGet(picURL2, db);
-        //String picURL1 = "http://192.168.253.1/square_page/1/";
-        //ImageGet imageGet=new ImageGet((ImageView)squareView.findViewById(R.id.imageView1),picURL1,db);
     }
 
     /**
@@ -471,8 +469,7 @@ public class MainActivity extends Activity implements ScrollViewListener {
                 LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
                 params.gravity = Gravity.CENTER_HORIZONTAL;
                 scrollContent.addView(loadingView, params);
-                if(!end)
-                {
+                if (!end) {
                     imagedownload();
                 }
             }
@@ -617,6 +614,18 @@ public class MainActivity extends Activity implements ScrollViewListener {
         imageView.setImageBitmap(bitmap);
     }
 
+    public void refreshSquare() {
+        scrollContentLeft.removeAllViews();
+        scrollContentRight.removeAllViews();
+        for (int i = 0; i < galleryItems.size(); i++) {
+            if (i % 2 == 0) {
+                scrollContentLeft.addView(galleryItems.get(i));
+            } else {
+                scrollContentRight.addView(galleryItems.get(i));
+            }
+        }
+    }
+
     public static int calculateInSampleSize(BitmapFactory.Options options, int requestWidth) {
         int inSampleSize = 1;
         //SD卡中图片的宽
@@ -666,29 +675,27 @@ public class MainActivity extends Activity implements ScrollViewListener {
     public class DownloadPictureProgress extends AsyncTask<Void, Void, Boolean> {
 
         private String url;
-        private View view;
         private DB db;
         private Resources res;
         private String packageName;
+        private GalleryItem galleryItem[];
 
-        DownloadPictureProgress(String url, DB db, View view, Resources res,String packageName) {
+        DownloadPictureProgress(String url, DB db, GalleryItem[] galleryItems, Resources res, String packageName) {
             this.url = url;
-            this.view = view;
+            this.galleryItem = galleryItems;
             this.db = db;
-            this.res=res;
-            this.packageName=packageName;
+            this.res = res;
+            this.packageName = packageName;
         }
 
         @Override
         protected Boolean doInBackground(Void... params) {
             try {
-                HashMap<String,String>map= new JsonGet(url, db, view,res,packageName).getReturnmap();
-            }catch (myException.zeroException e)
-            {
+                new JsonGet(url, db, galleryItem, res, packageName).getReturnmap();
+            } catch (myException.zeroException e) {
                 //TODO:没有下一页图片了
-                end=false;
-            }
-            catch (Exception e) {
+                end = false;
+            } catch (Exception e) {
                 return false;
             }
             return true;
@@ -696,9 +703,15 @@ public class MainActivity extends Activity implements ScrollViewListener {
 
         @Override
         protected void onPostExecute(final Boolean success) {
-
             if (success) {
-                squareView.postInvalidate();
+                if (galleryItem != null) {
+                    for (GalleryItem _galleryitem : galleryItem) {
+                        galleryItems.add(_galleryitem);
+                        //TODO:添加监听器
+                    }
+                    refreshSquare();
+                    squareView.postInvalidate();
+                }
             } else {
                 myToast.show(getString(R.string.toast_downloading_picture_error));
             }

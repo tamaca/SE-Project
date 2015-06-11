@@ -7,6 +7,7 @@ import android.widget.ImageView;
 import com.example.team.myapplication.Database.DB;
 import com.example.team.myapplication.LoginState;
 import com.example.team.myapplication.util.*;
+
 import org.apache.http4.client.methods.CloseableHttpResponse;
 import org.apache.http4.client.methods.HttpGetHC4;
 import org.apache.http4.impl.client.CloseableHttpClient;
@@ -43,13 +44,13 @@ public class JsonGet {
     private String type;
 
     //图片获取(url) 大厅
-    public JsonGet(String url, DB db, View view,Resources res,String packageName) throws Exception {
+    public JsonGet(String url, DB db, GalleryItem[] galleryItems, Resources res, String packageName) throws Exception {
         this.url = url;
         this.db = db;
-        this.view = view;
+        this.galleryItems = galleryItems;
         Get get = new Get();
         JSONObject jsonObject = get.GetFromServer();
-        get.PostExecuteImageUrl(jsonObject, "lobby",res,packageName);
+        get.PostExecuteImageUrl(jsonObject, "lobby", res, packageName);
     }
 
     //图片获取url 个人主页
@@ -60,7 +61,7 @@ public class JsonGet {
         this.type = type;
         Get get = new Get();
         JSONObject jsonObject = get.GetFromServer();
-        get.PostExecuteImageUrl(jsonObject, "user",null,null);
+        get.PostExecuteImageUrl(jsonObject, "user", null, null);
     }
 
     //图片获取(id)
@@ -118,27 +119,25 @@ public class JsonGet {
         }
 
         //接收图片(url) 大厅
-        protected void PostExecuteImageUrl(JSONObject jsonObject, String type,Resources res,String packageName) throws Exception {
+        protected void PostExecuteImageUrl(JSONObject jsonObject, String type, Resources res, String packageName) throws Exception {
             if (jsonObject != null) {
                 String status = jsonObject.getString("status");
                 String baseurl = "http://192.168.253.1/media/";
                 String image_small[] = new String[8];
                 String image_big[] = new String[8];
                 String image_id[] = new String[8];
-                ImageView imageView[]=new ImageView[8];
+                String image_time[] = new String[8];
+                ImageView imageView[] = new ImageView[8];
                 int count;
                 if (status.equals("normal")) {
-                    count=8;
-                }else if(status.equals("no_more_image"))
-                {
-                    String _count=jsonObject.getString("count");
-                    count=Integer.valueOf(_count);
-                    if(count==0)
-                    {
+                    count = 8;
+                } else if (status.equals("no_more_image")) {
+                    String _count = jsonObject.getString("count");
+                    count = Integer.valueOf(_count);
+                    if (count == 0) {
                         throw new myException.zeroException();
                     }
-                }
-                else {
+                } else {
                     throw new myException.executeException();
                     //TODO:接收信息错误
                 }
@@ -147,52 +146,38 @@ public class JsonGet {
                     image_big[i] = baseurl + jsonObject.getString("image" + i + "_big");
                     image_id[i] = jsonObject.getString("image" + i + "_id");
                 }
-                if (view != null||galleryItems!=null) {
-                    if (type.equals("lobby")) {
-                        for(int i=1;i<=count;i++)
-                        {
-                            int imageviewid = res.getIdentifier("imageView" + i, "id",packageName);
-                            imageView[i-1]=(ImageView) view.findViewById(imageviewid);
-                        }
-                        //TODO:动态绑定
-                        /*imageView[0] = (ImageView) view.findViewById(R.id.imageView1);
-                        imageView[1] = (ImageView) view.findViewById(R.id.imageView2);
-                        imageView[2] = (ImageView) view.findViewById(R.id.imageView3);
-                        imageView[3] = (ImageView) view.findViewById(R.id.imageView4);
-                        imageView[4]= (ImageView) view.findViewById(R.id.imageView1);
-                        imageView[5]= (ImageView) view.findViewById(R.id.imageView2);
-                        imageView[6]= (ImageView) view.findViewById(R.id.imageView3);
-                        imageView[7]= (ImageView) view.findViewById(R.id.imageView4);*/
-                    } else {
-                        for(int i=0;i<count;i++) {
-                            imageView[i] = galleryItems[i].imageView;
-                        }
+                if (view != null || galleryItems != null) {
+                    for (int i = 0; i < count; i++) {
+                        imageView[i] = galleryItems[i].imageView;
                     }
-                    for(int i=0;i<count;i++)
-                    {
+                    for (int i = 0; i < count; i++) {
                         new ImageGet(imageView[i], image_small[i], image_id[i], db, "small");
-                        JSONObject jsonObject1=new JSONObject();
+                        JSONObject jsonObject1 = new JSONObject();
                         jsonObject1.put("type", "online");
                         jsonObject1.put("imageid", image_id[i]);
                         jsonObject1.put("imagebigurl", image_big[i]);
                         imageView[i].setContentDescription(jsonObject1.toString());
                     }
                 } else {
-                    for(int i=0;i<count;i++) {
+                    for (int i = 0; i < count; i++) {
                         new ImageGet(null, image_small[i], image_id[i], db, "small");
                     }
                 }
-                for(int i=0;i<count;i++) {
+                for (int i = 0; i < count; i++) {
                     dbimagesave(image_id[i]);
                 }
                 if (type.equals("lobby")) {
-                    for(int i=0;i<count;i++) {
-                        dblobbyimagesave(String.valueOf(LoginState.getPage() * 8
-                                + i+1), image_id[i]);
+                    for (int i = 0; i < count; i++) {
+                        dblobbyimagesave(String.valueOf(LoginState.getPage() * 8 + i + 1), image_id[i]);
+                    }
+                } else if(galleryItems!=null){
+                    for (int i = 0; i < count; i++) {
+                        image_time[i] = jsonObject.getString("image" + i + "_time");
+                        galleryItems[i].textView.setText(image_time[i]);
+                        galleryItems[i].textView.setVisibility(View.VISIBLE);
                     }
                 }
-            } else
-            {
+            } else {
                 //TODO:接收信息错误
                 throw new myException.nullException();
             }

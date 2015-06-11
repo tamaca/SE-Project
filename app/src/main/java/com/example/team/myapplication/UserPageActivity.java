@@ -245,6 +245,7 @@ public class UserPageActivity extends GeneralActivity implements ScrollViewListe
      *
      * @param bitmap
      */
+    /*
     public void addGalleryItem(Bitmap bitmap, String date) {
         final GalleryItem galleryItem = new GalleryItem(this, bitmap, date);
         galleryItem.imageView.setOnClickListener(new View.OnClickListener() {
@@ -277,7 +278,7 @@ public class UserPageActivity extends GeneralActivity implements ScrollViewListe
             }
         });
         galleryItems.add(galleryItem);
-    }
+    }*/
 
     /**
      * 第一次加载ta的图片完成之后在UI线程刷新gallery
@@ -515,6 +516,7 @@ public class UserPageActivity extends GeneralActivity implements ScrollViewListe
             if (success) {
                 for (GalleryItem _galleryitem : galleryItem) {
                     galleryItems.add(_galleryitem);
+                    //TODO:添加监听器
                 }
                 refreshGallery();
                 gallery.postInvalidate();
