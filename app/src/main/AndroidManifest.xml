@@ -92,6 +92,7 @@
         </activity>
         <activity
             android:name=".UserPageActivity"
+            android:icon="@mipmap/ic_user"
             android:label="@string/title_activity_user_page"
             android:screenOrientation="portrait"
             android:theme="@style/GeneralTheme" >

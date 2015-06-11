@@ -117,14 +117,16 @@
                             android:layout_width="0dp"
                             android:layout_height="match_parent"
                             android:id="@+id/gallery_left"
-                            android:layout_weight="1"/>
+                            android:layout_weight="1"
+                            android:layout_marginRight="3dp"/>
 
                         <LinearLayout
                             android:orientation="vertical"
                             android:layout_width="0dp"
                             android:layout_height="match_parent"
                             android:id="@+id/gallery_right"
-                            android:layout_weight="1"/>
+                            android:layout_weight="1"
+                            android:layout_marginLeft="3dp"/>
                     </LinearLayout>
                 </LinearLayout>
 
