@@ -51,7 +51,6 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 
 public class MainActivity extends Activity implements ScrollViewListener {
@@ -708,7 +707,12 @@ public class MainActivity extends Activity implements ScrollViewListener {
                     for (GalleryItem _galleryitem : galleryItem) {
                         if(_galleryitem.imageView.getContentDescription()!=null) {
                             galleryItems.add(_galleryitem);
-                            //TODO:添加监听器
+                            _galleryitem.imageView.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+                                    toViewPictureActivity(view);
+                                }
+                            });
                         }
                     }
                     refreshSquare();
