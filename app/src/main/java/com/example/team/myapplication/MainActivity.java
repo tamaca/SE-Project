@@ -258,7 +258,7 @@ public class MainActivity extends Activity implements ScrollViewListener {
                     jsonObject.put("type", "offline");
                     jsonObject.put("imageid", id);
                 } catch (JSONException e) {
-                    //TODO:数据传递错误（一般很少发生） TO孙晓宇
+                    Toast.makeText(getApplicationContext(),"数据传输错误",Toast.LENGTH_LONG).show();
                     e.printStackTrace();
                 }
                 _imageView.setContentDescription(jsonObject.toString());

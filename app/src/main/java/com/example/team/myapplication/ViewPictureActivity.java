@@ -124,7 +124,7 @@ public class ViewPictureActivity extends GeneralActivity implements ScrollViewLi
                         public void onClick(DialogInterface dialogInterface, int i) {
 
                             //TODO 删除该用户的这个标签，请把UI操作放在删除完成之后
-                            uploadTagProgress = new UploadTagProgress(editTextInDialog.getText().toString(), imageid, "tagdelete");
+                            uploadTagProgress = new UploadTagProgress(editTextInDialog.getText().toString(), imageid, "tagdelete",tags.get(j));
                             uploadTagProgress.execute();
 
                             /**
@@ -166,7 +166,7 @@ public class ViewPictureActivity extends GeneralActivity implements ScrollViewLi
                     builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialogInterface, int i) {
-                            uploadTagProgress = new UploadTagProgress(editTextInDialog.getText().toString(), imageid, "taginsert");
+                            uploadTagProgress = new UploadTagProgress(editTextInDialog.getText().toString(), imageid, "taginsert",tags.get(j));
                             uploadTagProgress.execute();
                             /*tagView.post(new Runnable() {
                                 @Override
@@ -744,11 +744,14 @@ public class ViewPictureActivity extends GeneralActivity implements ScrollViewLi
         private String tagnameorid;
         private String imageid;
         private String type;
+        private Tag tag;
+        private int errorType = 0;
         private HashMap<String, String> returnmap;
-        public UploadTagProgress(String tagnameorid, String imageid, String type) {
+        public UploadTagProgress(String tagnameorid, String imageid, String type,Tag tag) {
             this.tagnameorid = tagnameorid;
             this.imageid = imageid;
             this.type = type;
+            this.tag = tag;
         }
 
         @Override
@@ -762,14 +765,16 @@ public class ViewPictureActivity extends GeneralActivity implements ScrollViewLi
                 String url;
                 HashMap<String, String> map = new HashMap<String, String>();
                 if (type.equals("taginsert")) {//插入TAG
-                    //TODO:错误监测返回提示给用户  TO孙晓宇
                     if (!CheckValid.isTagUnique(tags, tagnameorid)) {
+                        errorType = 1;
                         throw new Exception();
                     }
                     if (!CheckValid.isTagValid(tagnameorid)) {
+                        errorType = 2;
                         throw new Exception();
                     }
                     if (tagnameorid.isEmpty()) {
+                        errorType = 3;
                         throw new Exception();
                     }
                     url = "http://192.168.253.1/" + LoginState.username + "/tag_insert/";
@@ -796,14 +801,29 @@ public class ViewPictureActivity extends GeneralActivity implements ScrollViewLi
             showProgress(false);
             if (success) {
                 if (type.equals("insert")) {
-                    //TODO:添加标签  TO孙晓宇
+                    tag.tagText.setText(tagnameorid);
+                    tag.changeState(Tag.removable);
                 } else {
                     db.tagdelete(tagnameorid);
-                    //TODO:删除标签  TO孙晓宇
+                    tag.tagText.setText(null);
+                    tag.changeState(Tag.addable);
                 }
+                refreshTags();
             } else {
-                //TODO:tag传输错误
-                //myToast.show(getString(R.string.toast_comment_failed));
+                switch (errorType){
+                    case 0:
+                        Toast.makeText(getApplicationContext(),"标签修改失败",Toast.LENGTH_LONG).show();
+                        break;
+                    case 1:
+                        Toast.makeText(getApplicationContext(),"已经存在相同的标签",Toast.LENGTH_LONG).show();
+                        break;
+                    case 2:
+                        Toast.makeText(getApplicationContext(),"标签长度不能超过10字节\n并且标签不能有空格",Toast.LENGTH_LONG).show();
+                        break;
+                    case 3:
+                        Toast.makeText(getApplicationContext(),"标签不能为空",Toast.LENGTH_LONG).show();
+                        break;
+                }
                 uploadTagProgress = null;
             }
         }
