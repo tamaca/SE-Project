@@ -40,6 +40,7 @@ import com.example.team.myapplication.util.LoadingView;
 import com.example.team.myapplication.util.MyScrollView;
 import com.example.team.myapplication.util.MyToast;
 import com.example.team.myapplication.util.ScrollViewListener;
+import com.example.team.myapplication.util.myException;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -49,6 +50,7 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
 public class MainActivity extends Activity implements ScrollViewListener {
@@ -76,7 +78,7 @@ public class MainActivity extends Activity implements ScrollViewListener {
     private LinearLayout scrollContent;
     private LinearLayout scrollContentLeft;
     private LinearLayout scrollContentRight;
-
+    private Boolean end=false;
     public static String getCurrentTag() {
         return currentTag;
     }
@@ -236,14 +238,17 @@ public class MainActivity extends Activity implements ScrollViewListener {
 
     public void imagedownload() {
         if (NetworkState.isNetworkConnected(this)) {
-            String picURL1 = "http://192.168.253.1/square_page/1/";
-            String picURL2 = "http://192.168.253.1/square_page/2/";
-            DownloadPictureProgress downloadPictureProgress1 = new DownloadPictureProgress(picURL1, db, squareView);
-            DownloadPictureProgress downloadPictureProgress2 = new DownloadPictureProgress(picURL2, db, null);
+            int page=LoginState.getPage()+1;
+            String picURL1 = "http://192.168.253.1/square_page/"+(page)+"/";
+            page++;
+            LoginState.setPage(page-1 );
+            String picURL2 = "http://192.168.253.1/square_page/"+(page)+"/";
+            DownloadPictureProgress downloadPictureProgress1 = new DownloadPictureProgress(picURL1, db, squareView,getResources(),getPackageName());
+            DownloadPictureProgress downloadPictureProgress2 = new DownloadPictureProgress(picURL2, db, null,getResources(),getPackageName());
             downloadPictureProgress1.execute();
             downloadPictureProgress2.execute();
         } else {
-            Cursor mCursor = db.lobbyimageselectpage(LoginState.page);
+            Cursor mCursor = db.lobbyimageselectpage(LoginState.getPage());
             for (mCursor.moveToFirst(); !mCursor.isAfterLast(); mCursor.moveToNext()) {
                 String id = mCursor.getString((mCursor.getColumnIndex("m_lobbyimage_imageid")));
                 String rank = mCursor.getString((mCursor.getColumnIndex("m_lobbyimage_rank")));
@@ -466,10 +471,10 @@ public class MainActivity extends Activity implements ScrollViewListener {
                 LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
                 params.gravity = Gravity.CENTER_HORIZONTAL;
                 scrollContent.addView(loadingView, params);
-                /*if (getPicture == null) {
-                    getPicture = new GetPicture();
-                    getPicture.execute((Void) null);
-                }*/
+                if(!end)
+                {
+                    imagedownload();
+                }
             }
         }
     }
@@ -663,18 +668,27 @@ public class MainActivity extends Activity implements ScrollViewListener {
         private String url;
         private View view;
         private DB db;
+        private Resources res;
+        private String packageName;
 
-        DownloadPictureProgress(String url, DB db, View view) {
+        DownloadPictureProgress(String url, DB db, View view, Resources res,String packageName) {
             this.url = url;
             this.view = view;
             this.db = db;
+            this.res=res;
+            this.packageName=packageName;
         }
 
         @Override
         protected Boolean doInBackground(Void... params) {
             try {
-                new JsonGet(url, db, view);
-            } catch (Exception e) {
+                HashMap<String,String>map= new JsonGet(url, db, view,res,packageName).getReturnmap();
+            }catch (myException.zeroException e)
+            {
+                //TODO:没有下一页图片了
+                end=false;
+            }
+            catch (Exception e) {
                 return false;
             }
             return true;

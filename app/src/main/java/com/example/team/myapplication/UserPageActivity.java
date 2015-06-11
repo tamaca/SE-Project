@@ -25,6 +25,7 @@ import com.example.team.myapplication.util.LoadingView;
 import com.example.team.myapplication.util.MyScrollView;
 import com.example.team.myapplication.util.MyToast;
 import com.example.team.myapplication.util.ScrollViewListener;
+import com.example.team.myapplication.util.myException;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -53,7 +54,7 @@ public class UserPageActivity extends GeneralActivity implements ScrollViewListe
     private boolean isManagingPicture = false;
     private int page = 1;//page从1开始
     private DB db = new DB(this);
-
+    private boolean end=false;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -137,8 +138,8 @@ public class UserPageActivity extends GeneralActivity implements ScrollViewListe
             if (gallery.getChildAt(gallery.getChildCount() - 1) != loadingView) {
                ;
                 if (getPicture == null) {
-                    GalleryItem galleryItems[] = new GalleryItem[4];
-                    for (int i = 0; i < 4; i++) {
+                    GalleryItem galleryItems[] = new GalleryItem[8];
+                    for (int i = 0; i < 8; i++) {
                         galleryItems[i] = new GalleryItem(this);
                     }
                     getPicture = new GetPicture(userName, galleryItems);
@@ -493,10 +494,15 @@ public class UserPageActivity extends GeneralActivity implements ScrollViewListe
                 String url1 = "http://192.168.253.1/" + LoginState.username + "/image_of/" + userid + "/" + "/page/" + page + "/";
                 page++;
                 String url2 = "http://192.168.253.1/" + LoginState.username + "/image_of/" + userid + "/" + "/page/" + page + "/";
-                new JsonGet(url1, db, galleryItem, "userpage");
+               HashMap<String,String>map= new JsonGet(url1, db, galleryItem, "userpage").getReturnmap();
                 new JsonGet(url2, db, null, "userpage");
                 Thread.sleep(1000);
-            } catch (Exception e) {
+            }catch (myException.zeroException e)
+            {
+                //TODO:没有下一页图片了
+                end=true;
+            }
+            catch (Exception e) {
                 return false;
             }
             return true;
