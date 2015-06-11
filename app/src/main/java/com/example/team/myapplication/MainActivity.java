@@ -16,6 +16,7 @@ import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -79,7 +80,13 @@ public class MainActivity extends Activity implements ScrollViewListener {
     private LinearLayout scrollContentLeft;
     private LinearLayout scrollContentRight;
     private Boolean end = false;
+    private ViewGroup.MarginLayoutParams cameraLayoutParams;
     public ArrayList<GalleryItem> galleryItems = null;
+    private HideCameraTask hideCameraTask = null;
+    private ShowCameraTask showCameraTask = null;
+    public static int SCROLL_SPEED = -10;
+    private int hideHeaderHeight;
+    private int originalBottomMargin;
 
     public static String getCurrentTag() {
         return currentTag;
@@ -124,6 +131,8 @@ public class MainActivity extends Activity implements ScrollViewListener {
         search = new ImageButton(this);
         loadingView = new LoadingView(this);
         search.setImageResource(android.R.drawable.ic_menu_search);
+        cameraLayoutParams = (ViewGroup.MarginLayoutParams) camera.getLayoutParams();
+        originalBottomMargin = cameraLayoutParams.bottomMargin;
         /**
          * 设置搜索按钮背景为透明
          */
@@ -228,7 +237,7 @@ public class MainActivity extends Activity implements ScrollViewListener {
          * 展示出相应的界面
          */
         changeView(LoginState.getLogined());
-        imagedownload();
+        /*imagedownload();*/
 
     }
 
@@ -463,11 +472,36 @@ public class MainActivity extends Activity implements ScrollViewListener {
 
     @Override
     public void onScrollChanged(MyScrollView scrollView, int x, int y, int oldX, int oldY) {
+        if (y < 0 || oldY < 0) {
+            y = 0;
+            oldY = 0;
+        }
+        if (y > scrollContent.getMeasuredHeight() - scrollView.getMeasuredHeight() || oldY > scrollContent.getMeasuredHeight() - scrollView.getMeasuredHeight()) {
+            y = scrollContent.getMeasuredHeight() - scrollView.getMeasuredHeight();
+            oldY = scrollContent.getMeasuredHeight() - scrollView.getMeasuredHeight();
+
+        }
+        hideHeaderHeight = -camera.getHeight();
+        Log.d("Y", String.valueOf(y));
+        Log.d("oldY", String.valueOf(oldY));
+        if (y - oldY >= 10) {
+            if (hideCameraTask == null && showCameraTask == null) {
+                hideCameraTask = new HideCameraTask();
+                hideCameraTask.execute();
+            }
+        }
+        if (oldY - y >= 10) {
+            if (showCameraTask == null && hideCameraTask == null) {
+                showCameraTask = new ShowCameraTask();
+                showCameraTask.execute();
+            }
+        }
         if (y + scrollView.getMeasuredHeight() + 50 > scrollContent.getMeasuredHeight()) {
             if (scrollContent.getChildAt(scrollContent.getChildCount() - 1) != loadingView) {
                 LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
                 params.gravity = Gravity.CENTER_HORIZONTAL;
                 scrollContent.addView(loadingView, params);
+
                 if (!end) {
                     imagedownload();
                 }
@@ -690,7 +724,7 @@ public class MainActivity extends Activity implements ScrollViewListener {
         @Override
         protected Boolean doInBackground(Void... params) {
             try {
-                new JsonGet(url, db, galleryItem,"lobby").getReturnmap();
+                new JsonGet(url, db, galleryItem, "lobby").getReturnmap();
             } catch (myException.zeroException e) {
                 //TODO:没有下一页图片了
                 end = false;
@@ -705,7 +739,7 @@ public class MainActivity extends Activity implements ScrollViewListener {
             if (success) {
                 if (galleryItem != null) {
                     for (GalleryItem _galleryitem : galleryItem) {
-                        if(_galleryitem.imageView.getContentDescription()!=null) {
+                        if (_galleryitem.imageView.getContentDescription() != null) {
                             galleryItems.add(_galleryitem);
                             _galleryitem.imageView.setOnClickListener(new View.OnClickListener() {
                                 @Override
@@ -721,6 +755,75 @@ public class MainActivity extends Activity implements ScrollViewListener {
             } else {
                 myToast.show(getString(R.string.toast_downloading_picture_error));
             }
+        }
+    }
+
+    class HideCameraTask extends AsyncTask<Void, Integer, Integer> {
+        @Override
+        protected Integer doInBackground(Void... params) {
+            int bottomMargin = cameraLayoutParams.bottomMargin;
+            while (true) {
+                bottomMargin = bottomMargin + SCROLL_SPEED;
+                if (bottomMargin <= hideHeaderHeight) {
+                    bottomMargin = hideHeaderHeight;
+                    break;
+                }
+                publishProgress(bottomMargin);
+                try {
+                    Thread.sleep(10);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+            return bottomMargin;
+        }
+
+        @Override
+        protected void onProgressUpdate(Integer... bottomMargin) {
+            cameraLayoutParams.bottomMargin = bottomMargin[0];
+            camera.setLayoutParams(cameraLayoutParams);
+        }
+
+        @Override
+        protected void onPostExecute(Integer bottomMargin) {
+            cameraLayoutParams.bottomMargin = bottomMargin;
+            camera.setLayoutParams(cameraLayoutParams);
+            hideCameraTask = null;
+        }
+    }
+
+    class ShowCameraTask extends AsyncTask<Void, Integer, Integer> {
+        @Override
+        protected Integer doInBackground(Void... params) {
+            int bottomMargin = cameraLayoutParams.bottomMargin;
+            while (true) {
+                bottomMargin = bottomMargin - SCROLL_SPEED;
+                if (bottomMargin >= originalBottomMargin) {
+                    bottomMargin = originalBottomMargin;
+                    break;
+                }
+                publishProgress(bottomMargin);
+                try {
+                    Thread.sleep(10);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            return bottomMargin;
+        }
+
+        @Override
+        protected void onProgressUpdate(Integer... bottomMargin) {
+            cameraLayoutParams.bottomMargin = bottomMargin[0];
+            camera.setLayoutParams(cameraLayoutParams);
+        }
+
+        @Override
+        protected void onPostExecute(Integer bottomMargin) {
+            cameraLayoutParams.bottomMargin = bottomMargin;
+            camera.setLayoutParams(cameraLayoutParams);
+            showCameraTask = null;
         }
     }
 }

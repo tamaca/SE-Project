@@ -201,6 +201,15 @@ public class ViewPictureActivity extends GeneralActivity implements ScrollViewLi
             });
         }
         /**
+         * 给imgView添加监听器
+         */
+        imgview.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                toPictureActivity(view);
+            }
+        });
+        /**
          * 给作者添加跳转到个人界面的监听器
          */
         author.setOnClickListener(new ToUserPageListener());
