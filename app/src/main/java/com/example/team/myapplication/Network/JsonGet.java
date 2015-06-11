@@ -26,7 +26,6 @@ import java.util.HashMap;
 public class JsonGet {
     private String url;
     private DB db;
-    private View view;
     private GalleryItem[] galleryItems;
 
     //关注或黑名单中的人
@@ -41,29 +40,17 @@ public class JsonGet {
     }
 
     private HashMap<String, String> returnmap;
-    private String type;
 
-    //图片获取(url) 大厅
-    public JsonGet(String url, DB db, GalleryItem[] galleryItems, Resources res, String packageName) throws Exception {
+
+    //图片获取(url)
+    public JsonGet(String url, DB db, GalleryItem[] galleryItems,String type) throws Exception {
         this.url = url;
         this.db = db;
         this.galleryItems = galleryItems;
         Get get = new Get();
         JSONObject jsonObject = get.GetFromServer();
-        get.PostExecuteImageUrl(jsonObject, "lobby", res, packageName);
+        get.PostExecuteImageUrl(jsonObject,type);
     }
-
-    //图片获取url 个人主页
-    public JsonGet(String url, DB db, GalleryItem galleryItems[], String type) throws Exception {
-        this.url = url;
-        this.db = db;
-        this.galleryItems = galleryItems;
-        this.type = type;
-        Get get = new Get();
-        JSONObject jsonObject = get.GetFromServer();
-        get.PostExecuteImageUrl(jsonObject, "user", null, null);
-    }
-
     //图片获取(id)
     public JsonGet(String url, String key) throws Exception {
         this.url = url;
@@ -119,7 +106,7 @@ public class JsonGet {
         }
 
         //接收图片(url) 大厅
-        protected void PostExecuteImageUrl(JSONObject jsonObject, String type, Resources res, String packageName) throws Exception {
+        protected void PostExecuteImageUrl(JSONObject jsonObject, String type) throws Exception {
             if (jsonObject != null) {
                 String status = jsonObject.getString("status");
                 String baseurl = "http://192.168.253.1/media/";
@@ -146,7 +133,7 @@ public class JsonGet {
                     image_big[i] = baseurl + jsonObject.getString("image" + i + "_big");
                     image_id[i] = jsonObject.getString("image" + i + "_id");
                 }
-                if (view != null || galleryItems != null) {
+                if ( galleryItems != null) {
                     for (int i = 0; i < count; i++) {
                         imageView[i] = galleryItems[i].imageView;
                     }

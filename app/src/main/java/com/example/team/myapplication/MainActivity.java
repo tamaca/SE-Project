@@ -244,8 +244,8 @@ public class MainActivity extends Activity implements ScrollViewListener {
             for (int i = 0; i < 8; i++) {
                 galleryItems[i] = new GalleryItem(this);
             }
-            DownloadPictureProgress downloadPictureProgress1 = new DownloadPictureProgress(picURL1, db, galleryItems, getResources(), getPackageName());
-            DownloadPictureProgress downloadPictureProgress2 = new DownloadPictureProgress(picURL2, db, null, getResources(), getPackageName());
+            DownloadPictureProgress downloadPictureProgress1 = new DownloadPictureProgress(picURL1, db, galleryItems);
+            DownloadPictureProgress downloadPictureProgress2 = new DownloadPictureProgress(picURL2, db, null);
             downloadPictureProgress1.execute();
             downloadPictureProgress2.execute();
         } else {
@@ -680,7 +680,7 @@ public class MainActivity extends Activity implements ScrollViewListener {
         private String packageName;
         private GalleryItem galleryItem[];
 
-        DownloadPictureProgress(String url, DB db, GalleryItem[] galleryItems, Resources res, String packageName) {
+        DownloadPictureProgress(String url, DB db, GalleryItem[] galleryItems) {
             this.url = url;
             this.galleryItem = galleryItems;
             this.db = db;
@@ -691,7 +691,7 @@ public class MainActivity extends Activity implements ScrollViewListener {
         @Override
         protected Boolean doInBackground(Void... params) {
             try {
-                new JsonGet(url, db, galleryItem, res, packageName).getReturnmap();
+                new JsonGet(url, db, galleryItem,"lobby").getReturnmap();
             } catch (myException.zeroException e) {
                 //TODO:没有下一页图片了
                 end = false;
@@ -706,8 +706,10 @@ public class MainActivity extends Activity implements ScrollViewListener {
             if (success) {
                 if (galleryItem != null) {
                     for (GalleryItem _galleryitem : galleryItem) {
-                        galleryItems.add(_galleryitem);
-                        //TODO:添加监听器
+                        if(_galleryitem.imageView.getContentDescription()!=null) {
+                            galleryItems.add(_galleryitem);
+                            //TODO:添加监听器
+                        }
                     }
                     refreshSquare();
                     squareView.postInvalidate();

@@ -515,8 +515,10 @@ public class UserPageActivity extends GeneralActivity implements ScrollViewListe
             getPicture = null;
             if (success) {
                 for (GalleryItem _galleryitem : galleryItem) {
-                    galleryItems.add(_galleryitem);
-                    //TODO:添加监听器
+                    if(_galleryitem.imageView.getContentDescription()!=null) {
+                        galleryItems.add(_galleryitem);
+                        //TODO:添加监听器
+                    }
                 }
                 refreshGallery();
                 gallery.postInvalidate();
