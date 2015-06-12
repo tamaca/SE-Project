@@ -42,7 +42,7 @@ import com.example.team.myapplication.util.LoadingView;
 import com.example.team.myapplication.util.MyScrollView;
 import com.example.team.myapplication.util.MyToast;
 import com.example.team.myapplication.util.ScrollViewListener;
-import com.example.team.myapplication.util.myException;
+import com.example.team.myapplication.util.MyException;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -303,7 +303,7 @@ public class MainActivity extends Activity implements ScrollViewListener {
     public void logout(View view) {
         LoginState.setLogined(false, "guest");
         changeView(LoginState.logined);
-
+        db.lastuserdelete();
     }
 
     /**
@@ -717,15 +717,13 @@ public class MainActivity extends Activity implements ScrollViewListener {
             this.url = url;
             this.galleryItem = galleryItems;
             this.db = db;
-            this.res = res;
-            this.packageName = packageName;
         }
 
         @Override
         protected Boolean doInBackground(Void... params) {
             try {
                 new JsonGet(url, db, galleryItem, "lobby").getReturnmap();
-            } catch (myException.zeroException e) {
+            } catch (MyException.zeroException e) {
                 //TODO:没有下一页图片了
                 end = false;
             } catch (Exception e) {

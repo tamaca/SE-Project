@@ -1,6 +1,5 @@
 package com.example.team.myapplication.Network;
 
-import android.content.res.Resources;
 import android.view.View;
 import android.widget.ImageView;
 
@@ -111,7 +110,7 @@ public class JsonGet {
                 client.close();
                 return jsonObject1;
             } catch (Exception e) {
-                throw new myException.getException();
+                throw new MyException.getException();
             }
         }
 
@@ -132,10 +131,10 @@ public class JsonGet {
                     String _count = jsonObject.getString("count");
                     count = Integer.valueOf(_count);
                     if (count == 0) {
-                        throw new myException.zeroException();
+                        throw new MyException.zeroException();
                     }
                 } else {
-                    throw new myException.executeException();
+                    throw new MyException.executeException();
                     //TODO:接收信息错误
                 }
                 for (int i = 0; i < count; i++) {
@@ -176,7 +175,7 @@ public class JsonGet {
                 }
             } else {
                 //TODO:接收信息错误
-                throw new myException.nullException();
+                throw new MyException.nullException();
             }
         }
 
@@ -195,11 +194,11 @@ public class JsonGet {
                     }
                     return userNames;
                 } else {
-                    throw new myException.executeException();
+                    throw new MyException.executeException();
                 }
             } else {
                 //TODO:接收信息错误
-                throw new myException.nullException();
+                throw new MyException.nullException();
             }
         }
 
@@ -218,11 +217,11 @@ public class JsonGet {
                     returnmap.put("likenumber", likenumber);
                     //return returnmap;
                 } else {
-                    throw new myException.executeException();
+                    throw new MyException.executeException();
                 }
             } else {
                 //TODO:接收信息错误
-                throw new myException.nullException();
+                throw new MyException.nullException();
             }
         }
 
@@ -246,7 +245,7 @@ public class JsonGet {
                 dbtagsave(returnmap);
             } else {
                 //TODO:接收信息错误
-                throw new myException.nullException();
+                throw new MyException.nullException();
             }
         }
 
@@ -258,11 +257,11 @@ public class JsonGet {
                     returnmap.put(key, jsonObject.getString(key));
                     //return returnmap;
                 } else {
-                    throw new myException.executeException();
+                    throw new MyException.executeException();
                 }
             } else {
                 //TODO:接收信息错误
-                throw new myException.nullException();
+                throw new MyException.nullException();
             }
         }
 

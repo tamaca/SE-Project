@@ -84,7 +84,21 @@ public class LoginActivity extends GeneralActivity implements LoaderCallbacks<Cu
 
 
         // Set up the login form.
+        //TODO:测试
         mUserNameView = (AutoCompleteTextView) findViewById(R.id.name_in_login);
+        mUserNameView.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (mUserNameView.hasFocus() == false) {
+                    String username = mUserNameView.getText().toString();
+                    String password;
+                    password = db.getmUserPassword(username);
+                    if (password != null) {
+                        mPasswordView.setText(password);
+                    }
+                }
+            }
+        });
         mPasswordView = (EditText) findViewById(R.id.password);
         mPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
@@ -140,7 +154,7 @@ public class LoginActivity extends GeneralActivity implements LoaderCallbacks<Cu
 
             }
         });
-        //autologin();
+        autologin();
     }
 
 
@@ -161,11 +175,15 @@ public class LoginActivity extends GeneralActivity implements LoaderCallbacks<Cu
         if (cursor.moveToFirst()) {
             String encryptid = cursor.getString(cursor.getColumnIndex("m_lastuser_id"));
             String encryptpassword = cursor.getString(cursor.getColumnIndex("m_lastuser_password"));
+            //String id=AES.decrypt(encryptid);
+            //String password=AES.decrypt(encryptpassword);
+            String id=encryptid;
+            String password=encryptpassword;
             if (mAuthTask != null) {
                 return;
             }
             showProgress(true);
-            mAuthTask = new UserLoginTask(encryptid, encryptpassword, 2);
+            mAuthTask = new UserLoginTask(id, password, 2);
             mAuthTask.execute((Void) null);
         }
     }
@@ -407,7 +425,6 @@ public class LoginActivity extends GeneralActivity implements LoaderCallbacks<Cu
                 JsonPost post = new JsonPost(map, url, autoLogin.isChecked(), rememPassword.isChecked(), db);
                 Thread.sleep(3000);
             } catch (Exception e) {
-                String name = e.getClass().getName();
                 return false;
             }
 

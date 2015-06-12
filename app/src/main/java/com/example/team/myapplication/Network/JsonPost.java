@@ -6,6 +6,8 @@ import android.view.View;
 import com.example.team.myapplication.Database.DB;
 import com.example.team.myapplication.ViewPictureActivity;
 import com.example.team.myapplication.util.Comment;
+import com.example.team.myapplication.util.GalleryItem;
+import com.example.team.myapplication.util.MyException;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
@@ -35,6 +37,7 @@ public class JsonPost {
     private DB db;
     private ViewPictureActivity view;
     private JSONObject returnjsonObject = null;
+    private GalleryItem[] galleryItems;
 
     public HashMap<String, String> getReturnmap() {
         return returnmap;
@@ -78,7 +81,7 @@ public class JsonPost {
     }
 
 
-    // 获取关注和黑名单信息//添加关注 黑名单
+    // 获取关注和黑名单信息//添加关注 黑名单//搜索用户
     public JsonPost(HashMap<String, String> map, String url, String type) throws Exception {
         this.url = url;
         Post post = new Post(map);
@@ -87,6 +90,8 @@ public class JsonPost {
             post.PostExecuteRelation(returnjsonObject);
         } else if (type.equals("concern")) {
             post.PostExecuteIODRelation(returnjsonObject);
+        } else if (type.equals("searchuser")) {
+            post.PostExecuteSearchUser(returnjsonObject);
         } else {
             post.PostExecute(returnjsonObject);
         }
@@ -101,8 +106,9 @@ public class JsonPost {
             } else {
                 db.userupdatepassword(id, password);
             }
+            boolean lastusercheck=db.checklastuser(id);
             if (autoLogin) {
-                if (!usercheck) {
+                if (!lastusercheck) {
                     db.lastuserinsert(id, password);
                 } else {
                     db.lastuserupdateid(id, password);
@@ -182,7 +188,7 @@ public class JsonPost {
         tag.put("imageid", info.getString("image_id"));
         for (int i = 0; i < tagnum; i++) {
             tag.put("tagname" + i, info.getString("tag" + String.valueOf(i)));
-            tag.put("tagid" + i, info.getString("tag" + String.valueOf(i)+"_id"));
+            tag.put("tagid" + i, info.getString("tag" + String.valueOf(i) + "_id"));
         }
         dbtagsave(tag);
         //TODO:数据库
@@ -270,6 +276,7 @@ public class JsonPost {
                 }
             }
         }
+
         protected void PostExecuteImageInformation(JSONObject jsonObject) throws Exception {
             if (jsonObject == null) {
                 throw new nullException();
@@ -338,6 +345,32 @@ public class JsonPost {
                     returnmap.put("picturecount", picturecount);
                 } else {
                     throw new executeException();
+                }
+            }
+        }
+
+        protected void PostExecuteSearchUser(JSONObject jsonObject) throws Exception {
+            if (jsonObject == null) {
+                throw new nullException();
+                //TODO:网络通信错误
+            } else {
+                returnmap = new HashMap<String, String>();
+                int count;
+                String status = jsonObject.getString("status");
+                if (status.equals("normal")) {
+                    count = 16;
+                    returnmap.put("count", "16");
+                } else if (status.equals("no_more_image")) {
+                    String _count = jsonObject.getString("count");
+                    count = Integer.valueOf(_count);
+                    if (count == 0) {
+                        throw new MyException.zeroException();
+                    }
+                } else {
+                    throw new executeException();
+                }
+                for (int i = 0; i < count; i++) {
+                    returnmap.put("name" + i, jsonObject.getString("target_name" + i));
                 }
             }
         }

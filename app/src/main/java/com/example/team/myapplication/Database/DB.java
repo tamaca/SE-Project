@@ -153,15 +153,19 @@ public class DB extends SQLiteOpenHelper {
     }
 
     public String getmUserPassword(String id) {
-        String encryptid = AES.encrypt(id);
+       // String encryptid = AES.encrypt(id);
         SQLiteDatabase db = this.getWritableDatabase();
-        Cursor cursor = db.rawQuery("select * from M_USER where M_USER_ID='" + encryptid.trim() + "'", null);
+        Cursor cursor = db.rawQuery("select * from M_USER where M_USER_ID='" + id.trim() + "'", null);
         if (cursor.moveToFirst()) {
-            String encryptpassword = cursor.getString((cursor.getColumnIndex("m_user_password")));
-            if (encryptpassword == null) {
+         //   String encryptpassword = cursor.getString((cursor.getColumnIndex("m_user_password")));
+            String password = cursor.getString((cursor.getColumnIndex("m_user_password")));
+         /*   if (encryptpassword == null) {
+                return null;
+            }*/
+          //  String password = AES.decrypt(encryptpassword);
+            if (password == null) {
                 return null;
             }
-            String password = AES.decrypt(encryptpassword);
             return password;
         }
         return null;
@@ -197,6 +201,17 @@ public class DB extends SQLiteOpenHelper {
     }
 
     //Lastuser
+    //TODO:说明书
+    public boolean checklastuser(String id) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor = db.rawQuery("select * from M_LASTUSER where M_LASTUSER_ID='" + id.trim() + "'", null);
+        if (cursor.moveToFirst()) {
+            String id1 = cursor.getString((cursor.getColumnIndex("m_lastuser_id")));
+            return true;
+        } else {
+            return false;
+        }
+    }
     public Cursor lastuserselect() {
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db

@@ -17,18 +17,19 @@ import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.example.team.myapplication.Network.JsonPost;
 import com.example.team.myapplication.util.CheckValid;
 import com.example.team.myapplication.util.GalleryItem;
 import com.example.team.myapplication.util.GeneralActivity;
+import com.example.team.myapplication.util.MyException;
 import com.example.team.myapplication.util.MyScrollView;
 import com.example.team.myapplication.util.MyToast;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 
 public class SearchActivity extends GeneralActivity {
-    public static final int search_users = 1;
-    public static final int search_by_tags = 2;
     private Button searchUserButton;
     private Button searchTagButton;
     private ListView userNameListView;
@@ -36,12 +37,12 @@ public class SearchActivity extends GeneralActivity {
     private LinearLayout scrollViewContent;
     public ArrayList<String> resultUsers;
     public ArrayList<GalleryItem> resultPictures;
-    private SearchTask searchTask;
+    private SearchUserTask searchUserTask;
     private ProgressBar onSearchProgressBar;
     private EditText textView;
     private MyToast myToast;
     private TextView noResultTextView;
-
+    private int page=1;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -61,7 +62,7 @@ public class SearchActivity extends GeneralActivity {
         scrollViewContent = (LinearLayout) findViewById(R.id.scroll_content_in_search_activity);
         resultUsers = new ArrayList<>();
         resultPictures = new ArrayList<>();
-        searchTask = null;
+        searchUserTask = null;
         myToast = new MyToast(getApplicationContext());
 
         /**
@@ -162,30 +163,40 @@ public class SearchActivity extends GeneralActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    class SearchTask extends AsyncTask<Void, Void, Boolean> {
+    class SearchUserTask extends AsyncTask<Void, Void, Boolean> {
         /**
          * 添加变量
          */
-        int searchType;
         String searchContent;
-
-        public SearchTask(int _searchType, String _searchContent) {
-            searchType = _searchType;
+        HashMap<String,String>returnmap;
+        public SearchUserTask(String _searchContent) {
             searchContent = _searchContent;
         }
-
+        @Override
+        protected void onPreExecute()
+        {
+            onSearchProgressBar.setVisibility(View.VISIBLE);
+        }
         @Override
         protected Boolean doInBackground(Void... voids) {
             try {
+
                 //TODO 根据 searchType 确定要搜索什么
                 /**
                  * 如果搜索人名，直接把搜索结果放在 resultUsers 里
                  * 如果搜索图片，请调用 addResultPicture(Bitmap )
                  *
                  */
+                String url = "http://192.168.253.1/search/user/page/"+page+"/";
+                HashMap<String,String>map=new HashMap<String,String>();
+                map.put("name",searchContent);
+                returnmap=new JsonPost(map,url,"searchuser").getReturnmap();
                 Thread.sleep(1000);
-
-            } catch (Exception e) {
+            }catch (MyException.zeroException e)
+            {
+                //TODO:搜索结果为空
+            }
+            catch (Exception e) {
                 return false;
             }
             return true;
@@ -194,19 +205,83 @@ public class SearchActivity extends GeneralActivity {
         @Override
         protected void onPostExecute(Boolean success) {
             onSearchProgressBar.setVisibility(View.GONE);
-            searchTask = null;
+            searchUserTask = null;
             if (success) {
-                if (searchType == search_users) {
+                int count = Integer.valueOf(returnmap.get("count"));
+                for (int i = 0; i < count; i++) {
+                    resultUsers.add(returnmap.get("name"+i));
+                }
+                /*
+                if (searchUserTask == search_users) {
                     refreshListView();
                 } else {
                     refreshScrollView();
-                }
+                }*/
             } else {
-
+                //TODO:搜索错误
             }
         }
     }
+    class SearchTagTask extends AsyncTask<Void, Void, Boolean> {
+        /**
+         * 添加变量
+         */
+        String searchContent;
+        HashMap<String,String>returnmap;
+        private GalleryItem galleryItem[];
+        public SearchTagTask(String _searchContent,GalleryItem[] galleryItem) {
+            searchContent = _searchContent;
+            this.galleryItem = galleryItem;
+        }
+        @Override
+        protected void onPreExecute()
+        {
+            onSearchProgressBar.setVisibility(View.VISIBLE);
+        }
+        @Override
+        protected Boolean doInBackground(Void... voids) {
+            try {
 
+                //TODO 根据 searchType 确定要搜索什么
+                /**
+                 * 如果搜索人名，直接把搜索结果放在 resultUsers 里
+                 * 如果搜索图片，请调用 addResultPicture(Bitmap )
+                 *
+                 */
+                String url = "http://192.168.253.1/search/tag/page/"+page+"/";
+                HashMap<String,String>map=new HashMap<String,String>();
+                map.put("tag",searchContent);
+                returnmap=new JsonPost(map,url,"searchtag").getReturnmap();
+                Thread.sleep(1000);
+            } catch (MyException.zeroException e)
+            {
+                //TODO:搜索结果为空
+            }catch (Exception e) {
+                return false;
+            }
+            return true;
+        }
+
+        @Override
+        protected void onPostExecute(Boolean success) {
+            onSearchProgressBar.setVisibility(View.GONE);
+            searchUserTask = null;
+            if (success) {
+                int count = Integer.valueOf(returnmap.get("count"));
+                for (int i = 0; i < count; i++) {
+                    resultUsers.add(returnmap.get("name"+i));
+                }
+                /*
+                if (searchUserTask == search_users) {
+                    refreshListView();
+                } else {
+                    refreshScrollView();
+                }*/
+            } else {
+                //TODO:搜索错误
+            }
+        }
+    }
     class MyOnClickListener implements View.OnClickListener {
 
         @Override
@@ -219,16 +294,18 @@ public class SearchActivity extends GeneralActivity {
                 textView.setError(getString(R.string.search_content_missing));
                 return;
             }
-            if(!CheckValid.isInputValid(content)){
+            if (!CheckValid.isInputValid(content)) {
                 textView.setError(getString(R.string.invalid_input_in_search));
                 return;
             }
-            InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+            InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
             imm.hideSoftInputFromWindow(textView.getWindowToken(), 0);
-            if (searchTask == null) {
+            if (searchUserTask == null) {
+                /*
                 onSearchProgressBar.setVisibility(View.VISIBLE);
                 searchTask = new SearchTask(view == searchUserButton ? search_users : search_by_tags, content);
                 searchTask.execute((Void) null);
+                */
             } else {
                 myToast.show(getString(R.string.toast_in_searching));
             }

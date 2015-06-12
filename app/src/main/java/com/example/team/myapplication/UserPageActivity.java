@@ -1,13 +1,8 @@
 package com.example.team.myapplication;
 
-import android.app.AlertDialog;
-import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -25,7 +20,7 @@ import com.example.team.myapplication.util.LoadingView;
 import com.example.team.myapplication.util.MyScrollView;
 import com.example.team.myapplication.util.MyToast;
 import com.example.team.myapplication.util.ScrollViewListener;
-import com.example.team.myapplication.util.myException;
+import com.example.team.myapplication.util.MyException;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -55,6 +50,7 @@ public class UserPageActivity extends GeneralActivity implements ScrollViewListe
     private int page = 1;//page从1开始
     private DB db = new DB(this);
     private boolean end=false;
+    private MyScrollView myScrollView;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -90,15 +86,18 @@ public class UserPageActivity extends GeneralActivity implements ScrollViewListe
         loadingView = new LoadingView(this);
         galleryLeft = (LinearLayout) findViewById(R.id.gallery_left);
         galleryRight = (LinearLayout) findViewById(R.id.gallery_right);
+        myScrollView = (MyScrollView)findViewById(R.id.scrollView3);
         //////////
         concernButton.setOnClickListener(new OnClickConcernListener());
         hateButton.setOnClickListener(new OnClickHateListener());
+        myScrollView.setScrollViewListener(this);
         uploadImageButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 getImageFromAlbum(view);
             }
         });
+
         manageButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -136,7 +135,6 @@ public class UserPageActivity extends GeneralActivity implements ScrollViewListe
             getInfomationtask = new GetInfomation(userName);
             getInfomationtask.execute();
             if (gallery.getChildAt(gallery.getChildCount() - 1) != loadingView) {
-               ;
                 if (getPicture == null) {
                     GalleryItem galleryItems[] = new GalleryItem[8];
                     for (int i = 0; i < 8; i++) {
@@ -310,12 +308,12 @@ public class UserPageActivity extends GeneralActivity implements ScrollViewListe
         if (y + scrollView.getMeasuredHeight() + 50 > scrollContent.getMeasuredHeight()) {
             if (galleryItems.size() != pictureCount) {
                 if (gallery.getChildAt(gallery.getChildCount() - 1) != loadingView) {
-                   // gallery.addView(loadingView);
                     if (getPicture == null) {
-                        GalleryItem galleryItems[] = new GalleryItem[4];
-                        for (int i = 0; i < 4; i++) {
+                        GalleryItem galleryItems[] = new GalleryItem[8];
+                        for (int i = 0; i < 8; i++) {
                             galleryItems[i] = new GalleryItem(this);
                         }
+                        //TODO:测试
                         getPicture = new GetPicture(userName, galleryItems);
                         getPicture.execute();
                     }
@@ -498,7 +496,7 @@ public class UserPageActivity extends GeneralActivity implements ScrollViewListe
                HashMap<String,String>map= new JsonGet(url1, db, galleryItem, "userpage").getReturnmap();
                 new JsonGet(url2, db, null, "userpage");
                 Thread.sleep(1000);
-            }catch (myException.zeroException e)
+            }catch (MyException.zeroException e)
             {
                 //TODO:没有下一页图片了
                 end=true;
