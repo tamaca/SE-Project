@@ -22,7 +22,7 @@
             android:visibility="gone"
             android:layout_centerInParent="true" />
 
-        <ScrollView
+        <com.example.team.myapplication.util.MyScrollView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/scrollView3">
@@ -131,7 +131,7 @@
                 </LinearLayout>
 
             </LinearLayout>
-        </ScrollView>
+        </com.example.team.myapplication.util.MyScrollView>
 
         <TextView
             android:layout_width="wrap_content"
