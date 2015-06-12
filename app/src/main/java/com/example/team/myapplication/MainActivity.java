@@ -65,11 +65,7 @@ public class MainActivity extends Activity implements ScrollViewListener {
     private ViewPager viewPager;
     private List<View> listOfViews;
     private RelativeLayout mainLayout;
-    private RelativeLayout uploadPictureLayout;
-    private ImageView imageView;
     private ImageButton search;
-    private Button upload;
-    private Button cancel;
     private DB db = null;
     private ImageButton camera;
     private MyToast myToast;
@@ -117,10 +113,6 @@ public class MainActivity extends Activity implements ScrollViewListener {
         listOfViews = new ArrayList<>();
         loginView = meView.findViewById(R.id.login_button);
         mainLayout = (RelativeLayout) findViewById(R.id.main_layout);
-        uploadPictureLayout = (RelativeLayout) findViewById(R.id.upload_picture_layout);
-        imageView = (ImageView) findViewById(R.id.imageView);
-        upload = (Button) findViewById(R.id.upload_button);
-        cancel = (Button) findViewById(R.id.cancel_button);
         camera = (ImageButton) squareView.findViewById(R.id.imageButton);
         myScrollView = (MyScrollView) squareView.findViewById(R.id.scrollView5);
         scrollContent = (LinearLayout) squareView.findViewById(R.id.linearLayout8);
@@ -163,30 +155,6 @@ public class MainActivity extends Activity implements ScrollViewListener {
             @Override
             public void onClick(View view) {
                 toUserListActivity(view, blacklist);
-            }
-        });
-        /**
-         * 上传图片按钮添加监听器
-         */
-        upload.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //上传图片开始。
-
-                imageView.setDrawingCacheEnabled(true);
-                Bitmap bitmap = imageView.getDrawingCache();
-                UploadPictureProgress uploadPictureProgress = new UploadPictureProgress(bitmap);
-                uploadPictureProgress.execute((Void) null);
-            }
-        });
-        /**
-         * 取消上传按钮添加监听器
-         */
-        cancel.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showUploadView(false);
-
             }
         });
         /**
@@ -281,15 +249,6 @@ public class MainActivity extends Activity implements ScrollViewListener {
         }
     }
 
-    /**
-     * 切换到上传图片页面
-     *
-     * @param show
-     */
-    public void showUploadView(boolean show) {
-        uploadPictureLayout.setVisibility(show ? View.VISIBLE : View.GONE);
-        mainLayout.setVisibility(show ? View.GONE : View.VISIBLE);
-    }
 
     /**
      * 重写函数，当返回到MainActivity的时候显示相应的界面
@@ -575,8 +534,7 @@ public class MainActivity extends Activity implements ScrollViewListener {
         if (resultCode == RESULT_OK) {
             switch (requestCode) {
                 case REQUEST_TAKE_PHOTO:
-                    setPic();
-                    showUploadView(true);
+                    /*setPic();*/
                     Toast.makeText(getApplicationContext(), "Picture is Taken", Toast.LENGTH_LONG).show();
                     break;
             }
@@ -616,11 +574,11 @@ public class MainActivity extends Activity implements ScrollViewListener {
      * 把从路径读到的图片压缩 (可能是这里出了问题，读得了图片，但是不能获得真实图片的宽高)
      */
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
-    private void setPic() {
+    /*private void setPic() {
         // Get the dimensions of the View
         int targetW = imageView.getMaxHeight();
         int targetH = imageView.getMaxWidth();
-        /*
+        *//*
         // Get the dimensions of the bitmap
         BitmapFactory.Options bmOptions = new BitmapFactory.Options();
         bmOptions.inJustDecodeBounds = true;
@@ -637,7 +595,7 @@ public class MainActivity extends Activity implements ScrollViewListener {
         bmOptions.inSampleSize = scaleFactor;
         bmOptions.inPurgeable = true;
 
-        Bitmap bitmap = BitmapFactory.decodeFile(mCurrentPhotoPath, bmOptions);*/
+        Bitmap bitmap = BitmapFactory.decodeFile(mCurrentPhotoPath, bmOptions);*//*
         BitmapFactory.Options options = new BitmapFactory.Options();
         BitmapFactory.decodeFile(mCurrentPhotoPath, options);
         options.inJustDecodeBounds = true;
@@ -645,7 +603,7 @@ public class MainActivity extends Activity implements ScrollViewListener {
         options.inJustDecodeBounds = false;
         Bitmap bitmap = BitmapFactory.decodeFile(mCurrentPhotoPath, options);
         imageView.setImageBitmap(bitmap);
-    }
+    }*/
 
     public void refreshSquare() {
         scrollContentLeft.removeAllViews();
@@ -698,7 +656,6 @@ public class MainActivity extends Activity implements ScrollViewListener {
         protected void onPostExecute(Boolean success) {
             if (success) {
 
-                showUploadView(false);
             } else {
 
             }

@@ -104,7 +104,7 @@
                             android:id="@+id/manage_tag"
                             android:layout_weight="1"
                             android:layout_gravity="center"
-                            android:visibility="visible"
+                            android:visibility="gone"
                             />
                     </LinearLayout>
                 </LinearLayout>
