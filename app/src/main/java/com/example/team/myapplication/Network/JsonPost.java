@@ -358,11 +358,12 @@ public class JsonPost {
                 int count;
                 String status = jsonObject.getString("status");
                 if (status.equals("normal")) {
-                    count = 16;
-                    returnmap.put("count", "16");
-                } else if (status.equals("no_more_image")) {
-                    String _count = jsonObject.getString("count");
+                    count = 32;
+                    returnmap.put("count", "32");
+                } else if (status.equals("no_more_user")) {
+                    String _count = jsonObject.getString("now");
                     count = Integer.valueOf(_count);
+                    returnmap.put("count", _count);
                     if (count == 0) {
                         throw new MyException.zeroException();
                     }

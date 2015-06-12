@@ -106,6 +106,7 @@ public class SearchActivity extends GeneralActivity {
         }
         userNameListView.setAdapter(new ArrayAdapter<String>(this,
                 android.R.layout.simple_expandable_list_item_1, resultUsers));
+        userNameListView.postInvalidate();
     }
 
     /**
@@ -211,6 +212,7 @@ public class SearchActivity extends GeneralActivity {
                 for (int i = 0; i < count; i++) {
                     resultUsers.add(returnmap.get("name"+i));
                 }
+                refreshListView();
                 /*
                 if (searchUserTask == search_users) {
                     refreshListView();
@@ -306,6 +308,8 @@ public class SearchActivity extends GeneralActivity {
                 searchTask = new SearchTask(view == searchUserButton ? search_users : search_by_tags, content);
                 searchTask.execute((Void) null);
                 */
+                searchUserTask=new SearchUserTask(content);
+                searchUserTask.execute();
             } else {
                 myToast.show(getString(R.string.toast_in_searching));
             }
