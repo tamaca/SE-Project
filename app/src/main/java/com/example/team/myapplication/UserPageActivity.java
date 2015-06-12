@@ -502,6 +502,7 @@ public class UserPageActivity extends GeneralActivity implements ScrollViewListe
             {
                 //TODO:没有下一页图片了
                 end=true;
+                return false;
             }
             catch (Exception e) {
                 return false;

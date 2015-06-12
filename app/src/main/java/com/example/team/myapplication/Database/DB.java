@@ -201,7 +201,6 @@ public class DB extends SQLiteOpenHelper {
     }
 
     //Lastuser
-    //TODO:说明书
     public boolean checklastuser(String id) {
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor cursor = db.rawQuery("select * from M_LASTUSER where M_LASTUSER_ID='" + id.trim() + "'", null);
@@ -299,7 +298,6 @@ public class DB extends SQLiteOpenHelper {
                 .query(M_IMAGE, null, null, null, null, null, null);
         return cursor;
     }*/
-    //TODO:软件设计说明书
     public Cursor imageselect(String imageid) {
 
         SQLiteDatabase db = this.getReadableDatabase();
@@ -316,7 +314,6 @@ public class DB extends SQLiteOpenHelper {
     }
 
     //大图插入数据库
-    //TODO:软件设计说明书
     public void imageinsert(String imageid, String userid, String islike, String likenumber, Timestamp updatedate) {
         SQLiteDatabase db = this.getWritableDatabase();
         String where = M_IMAGE_IMAGEID + " = ?";

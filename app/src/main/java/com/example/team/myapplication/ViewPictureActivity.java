@@ -1,6 +1,7 @@
 package com.example.team.myapplication;
 
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
@@ -30,6 +31,7 @@ import com.example.team.myapplication.util.CheckValid;
 import com.example.team.myapplication.util.Comment;
 import com.example.team.myapplication.util.GeneralActivity;
 import com.example.team.myapplication.util.LoadingView;
+import com.example.team.myapplication.util.MyException;
 import com.example.team.myapplication.util.MyScrollView;
 import com.example.team.myapplication.util.MyToast;
 import com.example.team.myapplication.util.ScrollViewListener;
@@ -70,6 +72,9 @@ public class ViewPictureActivity extends GeneralActivity implements ScrollViewLi
     private LikeProgress likeProgress = null;
     private LoadingView loadingView;
     private GetTagProgress getTagProgress = null;
+    private int commentpage = 1;
+    private boolean end = false;
+    private GetCommentProgress getCommentProgress = null;
 
     @Override
 
@@ -265,6 +270,11 @@ public class ViewPictureActivity extends GeneralActivity implements ScrollViewLi
         try {
             Intent intent = getIntent();
             String type = (String) intent.getExtras().get("type");
+            Comment newcomments[]=new Comment[8];
+            for(int i=0;i<8;i++)
+            {
+                newcomments[i]=new Comment(this);
+            }
             if (type.equals("online")) {
                 //联网获取图片信息
                 String bigurl = (String) intent.getExtras().get("bigurl");
@@ -273,6 +283,9 @@ public class ViewPictureActivity extends GeneralActivity implements ScrollViewLi
                 new ImageGet(imgview, bigurl, imageid, db, "big");
                 mAuthTask = new getImageInformationProgress(informationurl, imageid, db);
                 mAuthTask.execute();
+
+                getCommentProgress = new GetCommentProgress(db,newcomments);
+                getCommentProgress.execute();
             } else if (type.equals("offline")) {
                 //未联网 先读取数据库中数据
                 String filepath = (String) intent.getExtras().get("filepath");
@@ -385,7 +398,12 @@ public class ViewPictureActivity extends GeneralActivity implements ScrollViewLi
             editText.setError("评论不能超过120字");
             return;
         }
-        uploadComment = new UploadComment(comment, imageid);
+        Comment newcomments[]=new Comment[8];
+        for(int i=0;i<8;i++)
+        {
+            newcomments[i]=new Comment(this);
+        }
+        uploadComment = new UploadComment(db,comment, newcomments);
         uploadComment.execute((Void) null);
     }
 
@@ -408,8 +426,8 @@ public class ViewPictureActivity extends GeneralActivity implements ScrollViewLi
             commentView.addView(comments.get(i));
         }
         commentView.postInvalidate();
-        Thread refresh = new Thread(new Refresh());
-        refresh.start();
+        scrollView.scrollTo(0, scrollContent.getMeasuredHeight());
+        commentView.postInvalidate();
     }
 
     @Override
@@ -608,7 +626,6 @@ public class ViewPictureActivity extends GeneralActivity implements ScrollViewLi
             } else {
                 myToast.show(getString(R.string.toast_fetching_information_failed));
             }
-            mAuthTask = null;
         }
     }
 
@@ -690,34 +707,51 @@ public class ViewPictureActivity extends GeneralActivity implements ScrollViewLi
     }
 
     class GetCommentProgress extends AsyncTask<Void, Void, Boolean> {
-        private String url;
         private DB db;
+        private HashMap<String, String> returnmap;
+        private Comment[] mycomments;
 
-        public GetCommentProgress(String url, DB db) {
-            this.url = url;
+        public GetCommentProgress(DB db, Comment[] mycomments) {
             this.db = db;
+            this.mycomments = mycomments;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            showProgress(true);
         }
 
         @Override
         protected Boolean doInBackground(Void... voids) {
             try {
-
+                String url = "http://192.168.253.1/comment_show/" + imageid + "/page/" + commentpage + "/";
+                returnmap = new JsonGet(url, db, "getcomment").getReturnmap();
+            } catch (MyException.zeroException e) {
+                end = true;
+                return false;
+                //TODO:没有更多的评论了
             } catch (Exception e) {
                 return false;
             }
-
-
             return true;
         }
 
         @Override
         protected void onPostExecute(final Boolean success) {
-
             showProgress(false);
+            getCommentProgress = null;
             if (success) {
+                String _commentnum = returnmap.get("commentnum");
+                int commentnum = Integer.parseInt(_commentnum);
+                for (int i = 0; i < commentnum; i++) {
+                    mycomments[i].setCommentid(returnmap.get("commentid" + i));
+                    mycomments[i].textView1.setText(returnmap.get("commentuser" + i));
+                    mycomments[i].textView2.setText(returnmap.get("comment" + i));
+                    comments.add(mycomments[i]);
+                }
                 refreshComments();
             } else {
-
+                //TODO:评论获取错误
             }
         }
 
@@ -725,12 +759,15 @@ public class ViewPictureActivity extends GeneralActivity implements ScrollViewLi
 
     class UploadComment extends AsyncTask<Void, Void, Boolean> {
         private String comment;
-        private String imageid;
-
-        public UploadComment(String comment, String imageid) {
-            this.comment = comment;
-            this.imageid = imageid;
+        private Comment[] mycomments;
+        private DB db;
+        private HashMap<String,String>returnmap;
+        public UploadComment(DB db,String comment, Comment[] mycomments) {
+            this.db = db;
+            this.comment=comment;
+            this.mycomments = mycomments;
         }
+
 
         protected void onPreExecute() {
             showProgress(true);
@@ -746,12 +783,10 @@ public class ViewPictureActivity extends GeneralActivity implements ScrollViewLi
                 }
                 HashMap<String, String> map = new HashMap<String, String>();
                 map.put("comment", comment);
-                JsonPost post = new JsonPost(map, url, "commentinsert", db);
+                returnmap=new JsonPost(map, url, "commentinsert", db).getReturnmap();
             } catch (Exception e) {
                 return false;
             }
-
-
             return true;
         }
 
@@ -761,8 +796,19 @@ public class ViewPictureActivity extends GeneralActivity implements ScrollViewLi
             showProgress(false);
             if (success) {
                 Toast.makeText(getApplicationContext(), "评论成功", Toast.LENGTH_SHORT).show();
-                refreshComments();
                 editText.setText(null);
+                comments.clear();
+                String _commentnum = returnmap.get("commentnum");
+                int commentnum = Integer.parseInt(_commentnum);
+                for (int i = 0; i < commentnum; i++) {
+                    mycomments[i].setCommentid(returnmap.get("commentid" + i));
+                    mycomments[i].textView1.setText(returnmap.get("commentuser" + i));
+                    mycomments[i].textView2.setText(returnmap.get("comment" + i));
+                    comments.add(mycomments[i]);
+                }
+                refreshComments();
+                //  getCommentProgress =new GetCommentProgress(db,context);
+                // getCommentProgress.execute();
             } else {
                 myToast.show(getString(R.string.toast_comment_failed));
             }
@@ -777,7 +823,6 @@ public class ViewPictureActivity extends GeneralActivity implements ScrollViewLi
         private String type;
         private Tag tag;
         private int errorType = 0;
-        private HashMap<String, String> returnmap;
 
         public UploadTagProgress(String tagnameorid, String imageid, String type, Tag tag) {
             this.tagnameorid = tagnameorid;
@@ -861,24 +906,6 @@ public class ViewPictureActivity extends GeneralActivity implements ScrollViewLi
             }
         }
 
-    }
-
-    class Refresh implements Runnable {
-        @Override
-        public void run() {
-            while (!Thread.currentThread().isInterrupted()) {
-                try {
-                    Thread.sleep(100);
-
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
-                }
-                scrollView.scrollTo(0, scrollContent.getMeasuredHeight());
-                commentView.postInvalidate();
-                Log.d("comment--->>", "refreshing");
-                Thread.currentThread().interrupt();
-            }
-        }
     }
 
     /**

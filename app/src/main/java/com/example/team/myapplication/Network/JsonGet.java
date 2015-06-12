@@ -82,7 +82,11 @@ public class JsonGet {
         this.db = db;
         Get get = new Get();
         JSONObject jsonObject = get.GetFromServer();
-        get.PostExecuteTag(jsonObject);
+        if (type.equals("gettag")) {
+            get.PostExecuteTag(jsonObject);
+        } else if (type.equals("getcomment")) {
+            get.PostExecuteComment(jsonObject);
+        }
     }
 
     private class Get {
@@ -229,7 +233,7 @@ public class JsonGet {
             if (jsonObject != null) {
                 int tagnum;
                 String status = jsonObject.getString("status");
-                returnmap=new HashMap<String, String>();
+                returnmap = new HashMap<String, String>();
                 if (status.equals("normal")) {
                     tagnum = 5;
                 } else {
@@ -243,6 +247,37 @@ public class JsonGet {
                     returnmap.put("tagid" + i, jsonObject.getString("tag" + String.valueOf(i) + "_id"));
                 }
                 dbtagsave(returnmap);
+            } else {
+                //TODO:接收信息错误
+                throw new MyException.nullException();
+            }
+        }
+
+        protected void PostExecuteComment(JSONObject jsonObject) throws Exception {
+            if (jsonObject != null) {
+                int commentnum;
+                String status = jsonObject.getString("status");
+                returnmap = new HashMap<String, String>();
+                if (status.equals("normal")) {
+                    commentnum = 8;
+                    returnmap.put("commentnum", "8");
+                } else {
+                    String _commentnum = jsonObject.getString("now");
+                    returnmap.put("commentnum", String.valueOf(_commentnum));
+                    commentnum = Integer.parseInt(_commentnum);
+                    if(commentnum==0)
+                    {
+                        throw new MyException.zeroException();
+                    }
+                }
+                returnmap.put("imageid", jsonObject.getString("image_id"));
+                for (int i = 0; i < commentnum; i++) {
+                    returnmap.put("comment" + i, jsonObject.getString("comment" + String.valueOf(i) + "_text"));
+                    returnmap.put("commentid" + i, jsonObject.getString("comment" + String.valueOf(i) + "_id"));
+                    returnmap.put("commentdate" + i, jsonObject.getString("comment" + String.valueOf(i) + "_date"));
+                    returnmap.put("commentuser" + i, jsonObject.getString("comment" + String.valueOf(i) + "_username"));
+                }
+                dbcommentsave(returnmap);
             } else {
                 //TODO:接收信息错误
                 throw new MyException.nullException();
@@ -283,6 +318,17 @@ public class JsonGet {
         db.imageupdatelikenumber(imageid, likenumber);
     }
 
+    private void dbcommentsave(HashMap<String, String> comment) {
+        String _commentnum = comment.get("commentnum");
+        int commentnum = Integer.parseInt(_commentnum);
+        String imageid = comment.get("imageid");
+        Timestamp updatetime = new Timestamp(System.currentTimeMillis());
+        for (int i = 0; i < commentnum; i++) {
+            updatetime.valueOf(comment.get("commentdate"+i));
+            db.commentinsert(comment.get("commentid" + i), comment.get("commentuser" + i), imageid, comment.get("comment"), updatetime);
+        }
+    }
+
     //关注的人缩略图保存
     private void imagecaredsave(String imageid, String updatedate, String userid) {
         if (!db.checkuserimage(imageid, userid)) {
@@ -291,6 +337,7 @@ public class JsonGet {
             db.imagecaredinsert(imageid, userid, updatetime);
         }
     }
+
     //数据库存储标签
     private void dbtagsave(HashMap<String, String> tag) {
         String _tagnum = tag.get("tagnum");

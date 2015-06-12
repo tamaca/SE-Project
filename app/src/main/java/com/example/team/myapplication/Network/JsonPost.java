@@ -70,7 +70,7 @@ public class JsonPost {
         } else if (type.equals("imageinfo")) {
             post.PostExecuteImageInformation(returnjsonObject);
         } else if (type.equals("commentinsert")) {
-            post.PostExecuteCommentInsert(returnjsonObject);
+            post.PostExecuteComment(returnjsonObject);
         } else if (type.equals("taginsert")) {
             post.PostExecute(returnjsonObject);
         } else if (type.equals("tagdelete")) {
@@ -106,7 +106,7 @@ public class JsonPost {
             } else {
                 db.userupdatepassword(id, password);
             }
-            boolean lastusercheck=db.checklastuser(id);
+            boolean lastusercheck = db.checklastuser(id);
             if (autoLogin) {
                 if (!lastusercheck) {
                     db.lastuserinsert(id, password);
@@ -134,24 +134,23 @@ public class JsonPost {
         db.imageinsert(image.get("imageid"), image.get("userid"), image.get("islike"), image.get("likenumber"), updatetime);
     }
 
-    //数据库存储评论
-    private void dbcommentsave(HashMap<String, String> commentmap) {
-        String _commentnum = commentmap.get("commentnum");
-        int commentnum = Integer.parseInt(_commentnum);
-        String imageid = commentmap.get("imageid");
-        Timestamp updatetime = new Timestamp(System.currentTimeMillis());
-        for (int i = 1; i <= commentnum; i++) {
-            updatetime.valueOf(commentmap.get("updatedate" + String.valueOf(i - 1)));
-            db.commentinsert(commentmap.get("commentid" + String.valueOf(i - 1)), commentmap.get("userid" + String.valueOf(i - 1)), imageid, commentmap.get("comment" + String.valueOf(i - 1)), updatetime);
-        }
-    }
-
     //数据库存储标签
     private void dbtagsave(HashMap<String, String> tag) {
         String _tagnum = tag.get("tagnum");
         int tagnum = Integer.parseInt(_tagnum);
         for (int i = 0; i < tagnum; i++) {
             db.taginsert(tag.get("tagid" + i), tag.get("tagname" + i), tag.get("imageid"));
+        }
+    }
+
+    private void dbcommentsave(HashMap<String, String> comment) {
+        String _commentnum = comment.get("commentnum");
+        int commentnum = Integer.parseInt(_commentnum);
+        String imageid = comment.get("imageid");
+        Timestamp updatetime = new Timestamp(System.currentTimeMillis());
+        for (int i = 0; i < commentnum; i++) {
+            updatetime.valueOf(comment.get("commentdate" + i));
+            db.commentinsert(comment.get("commentid" + i), comment.get("commentuser" + i), imageid, comment.get("comment"), updatetime);
         }
     }
 
@@ -263,17 +262,32 @@ public class JsonPost {
         }
 
         protected void PostExecuteComment(JSONObject jsonObject) throws Exception {
-            if (jsonObject == null) {
-                throw new nullException();
-                //TODO:网络通信错误
-            } else {
+            if (jsonObject != null) {
+                int commentnum;
                 String status = jsonObject.getString("status");
+                returnmap = new HashMap<String, String>();
                 if (status.equals("normal")) {
-                    String username = jsonObject.getString("user_name");
-                    String content = jsonObject.getString("user_content");
+                    commentnum = 8;
+                    returnmap.put("commentnum", "8");
                 } else {
-                    throw new executeException();
+                    String _commentnum = jsonObject.getString("now");
+                    returnmap.put("commentnum", String.valueOf(_commentnum));
+                    commentnum = Integer.parseInt(_commentnum);
+                    if (commentnum == 0) {
+                        throw new MyException.zeroException();
+                    }
                 }
+                returnmap.put("imageid", jsonObject.getString("image_id"));
+                for (int i = 0; i < commentnum; i++) {
+                    returnmap.put("comment" + i, jsonObject.getString("comment" + String.valueOf(i) + "_text"));
+                    returnmap.put("commentid" + i, jsonObject.getString("comment" + String.valueOf(i) + "_id"));
+                    returnmap.put("commentdate" + i, jsonObject.getString("comment" + String.valueOf(i) + "_date"));
+                    returnmap.put("commentuser" + i, jsonObject.getString("comment" + String.valueOf(i) + "_username"));
+                }
+                dbcommentsave(returnmap);
+            } else {
+                //TODO:接收信息错误
+                throw new MyException.nullException();
             }
         }
 
@@ -373,36 +387,6 @@ public class JsonPost {
                 for (int i = 0; i < count; i++) {
                     returnmap.put("name" + i, jsonObject.getString("target_name" + i));
                 }
-            }
-        }
-
-        protected void PostExecuteCommentInsert(JSONObject jsonObject) throws Exception {
-            if (jsonObject == null) {
-                throw new nullException();
-                //TODO:网络通信错误
-            }
-            String status = jsonObject.getString("status");
-            if (status.equals("normal")) {
-                String comment_status = jsonObject.getString("comment_status");
-                int num;
-                if (comment_status.equals("normal")) {
-                    num = 5;
-                } else {
-                    String _num = jsonObject.getString("count");
-                    num = Integer.parseInt(_num);
-                }
-                returnmap.put("commentnum", String.valueOf(num));
-                returnmap.put("imageid", jsonObject.getString("image_id"));
-                for (int i = 0; i < num; i++) {
-                    returnmap.put("comment" + i, jsonObject.getString("commment" + String.valueOf(i)));
-                    returnmap.put("commentid" + i, jsonObject.getString("commentid" + String.valueOf(i)));
-                    returnmap.put("userid" + i, jsonObject.getString("userid" + String.valueOf(i)));
-                    returnmap.put("updatedate" + i, jsonObject.getString("updatedate" + String.valueOf(i)));
-                }
-                dbcommentsave(returnmap);
-                //TODO:数据库
-            } else {
-                throw new executeException();
             }
         }
 

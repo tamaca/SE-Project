@@ -16,15 +16,16 @@ public class Comment extends LinearLayout {
         return commentid;
     }
 
+    public void setCommentid(String commentid) {
+        this.commentid = commentid;
+    }
+
     private String commentid;
-    public Comment(Context context, final String _userName,String _comment,String commentid) {
+    public Comment(Context context) {
         super(context);
-        this.commentid=commentid;
         View view = LayoutInflater.from(context).inflate(R.layout.layout_comment, null);
         textView1 = (TextView)view.findViewById(R.id.user_name_in_comment);
         textView2 = (TextView)view.findViewById(R.id.comment);
-        textView1.setText(_userName);
-        textView2.setText(_comment);
         addView(view);
     }
 }

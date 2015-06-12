@@ -683,6 +683,7 @@ public class MainActivity extends Activity implements ScrollViewListener {
             } catch (MyException.zeroException e) {
                 //TODO:没有下一页图片了
                 end = false;
+                return false;
             } catch (Exception e) {
                 return false;
             }
