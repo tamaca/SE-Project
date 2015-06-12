@@ -19,24 +19,27 @@
         <LinearLayout
             android:orientation="horizontal"
             android:layout_width="fill_parent"
-            android:layout_height="match_parent"
-            android:weightSum="2">
+            android:layout_height="match_parent">
 
             <LinearLayout
                 android:orientation="vertical"
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:id="@+id/square_left">
+                android:id="@+id/square_left"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="2dp">
 
             </LinearLayout>
 
             <LinearLayout
                 android:orientation="vertical"
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:id="@+id/square_right">
+                android:id="@+id/square_right"
+                android:layout_marginRight="5dp"
+                android:layout_marginLeft="2dp">
 
             </LinearLayout>
         </LinearLayout>
