@@ -495,14 +495,13 @@ public class UserPageActivity extends GeneralActivity implements ScrollViewListe
                 String url1 = "http://192.168.253.1/" + LoginState.username + "/image_of/" + userid + "/" + "/page/" + page + "/";
                 page++;
                 String url2 = "http://192.168.253.1/" + LoginState.username + "/image_of/" + userid + "/" + "/page/" + page + "/";
-               HashMap<String,String>map= new JsonGet(url1, db, galleryItem, "userpage").getReturnmap();
+                new JsonGet(url1, db, galleryItem, "userpage");
                 new JsonGet(url2, db, null, "userpage");
                 Thread.sleep(1000);
             }catch (MyException.zeroException e)
             {
                 //TODO:没有下一页图片了
                 end=true;
-                return false;
             }
             catch (Exception e) {
                 return false;

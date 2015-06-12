@@ -177,8 +177,8 @@ public class LoginActivity extends GeneralActivity implements LoaderCallbacks<Cu
             String encryptpassword = cursor.getString(cursor.getColumnIndex("m_lastuser_password"));
             //String id=AES.decrypt(encryptid);
             //String password=AES.decrypt(encryptpassword);
-            String id=encryptid;
-            String password=encryptpassword;
+            String id = encryptid;
+            String password = encryptpassword;
             if (mAuthTask != null) {
                 return;
             }
@@ -402,12 +402,14 @@ public class LoginActivity extends GeneralActivity implements LoaderCallbacks<Cu
                 String encryptuserName = "";
                 String encryptPassword = "";
                 if (1 == type) {
-                  //  encryptuserName = AES.encrypt(mUserName);
-                   // encryptPassword = AES.encrypt(mPassword);
+                    //  encryptuserName = AES.encrypt(mUserName);
+                    // encryptPassword = AES.encrypt(mPassword);
 
                 } else if (2 == type) {
-                 //   encryptuserName = mUserName;
-                  //  encryptPassword = mPassword;
+                    //   encryptuserName = mUserName;
+                    //  encryptPassword = mPassword;
+                    autoLogin.setChecked(true);
+                    rememPassword.setChecked(true);
                 } else {
                     try {
                         throw new Exception("参数错误");
@@ -418,10 +420,10 @@ public class LoginActivity extends GeneralActivity implements LoaderCallbacks<Cu
                 }
                 String url = "http://192.168.253.1/login/";
                 HashMap<String, String> map = new HashMap<String, String>();
-               // map.put("username", encryptuserName);
-               // map.put("password", encryptPassword);
-                 map.put("username", mUserName);
-                 map.put("password", mPassword);
+                // map.put("username", encryptuserName);
+                // map.put("password", encryptPassword);
+                map.put("username", mUserName);
+                map.put("password", mPassword);
                 JsonPost post = new JsonPost(map, url, autoLogin.isChecked(), rememPassword.isChecked(), db);
                 Thread.sleep(3000);
             } catch (Exception e) {

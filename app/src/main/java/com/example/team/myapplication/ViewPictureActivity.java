@@ -270,10 +270,9 @@ public class ViewPictureActivity extends GeneralActivity implements ScrollViewLi
         try {
             Intent intent = getIntent();
             String type = (String) intent.getExtras().get("type");
-            Comment newcomments[]=new Comment[8];
-            for(int i=0;i<8;i++)
-            {
-                newcomments[i]=new Comment(this);
+            Comment newcomments[] = new Comment[8];
+            for (int i = 0; i < 8; i++) {
+                newcomments[i] = new Comment(this);
             }
             if (type.equals("online")) {
                 //联网获取图片信息
@@ -284,7 +283,7 @@ public class ViewPictureActivity extends GeneralActivity implements ScrollViewLi
                 mAuthTask = new getImageInformationProgress(informationurl, imageid, db);
                 mAuthTask.execute();
 
-                getCommentProgress = new GetCommentProgress(db,newcomments);
+                getCommentProgress = new GetCommentProgress(db, newcomments);
                 getCommentProgress.execute();
             } else if (type.equals("offline")) {
                 //未联网 先读取数据库中数据
@@ -398,12 +397,12 @@ public class ViewPictureActivity extends GeneralActivity implements ScrollViewLi
             editText.setError("评论不能超过120字");
             return;
         }
-        Comment newcomments[]=new Comment[8];
-        for(int i=0;i<8;i++)
-        {
-            newcomments[i]=new Comment(this);
+        //TODO:防止用户上传评论频率高
+        Comment newcomments[] = new Comment[8];
+        for (int i = 0; i < 8; i++) {
+            newcomments[i] = new Comment(this);
         }
-        uploadComment = new UploadComment(db,comment, newcomments);
+        uploadComment = new UploadComment(db, comment, newcomments);
         uploadComment.execute((Void) null);
     }
 
@@ -435,8 +434,13 @@ public class ViewPictureActivity extends GeneralActivity implements ScrollViewLi
         if (y + scrollView.getMeasuredHeight() + 50 > scrollContent.getMeasuredHeight()) {
             if (scrollContent.getChildAt(scrollContent.getChildCount() - 1) != loadingView) {
                 scrollContent.addView(loadingView);
+                Comment newcomments[] = new Comment[8];
+                for (int i = 0; i < 8; i++) {
+                    newcomments[i] = new Comment(this);
+                }
+                getCommentProgress = new GetCommentProgress(db,newcomments);
+                getCommentProgress.execute();
                 //TODO 可以开始加载剩余评论，加载完之后使用 scrollContent.removeView(loadingView);
-
             }
 
         }
@@ -728,8 +732,7 @@ public class ViewPictureActivity extends GeneralActivity implements ScrollViewLi
                 returnmap = new JsonGet(url, db, "getcomment").getReturnmap();
             } catch (MyException.zeroException e) {
                 end = true;
-                return false;
-                //TODO:没有更多的评论了
+                //TODO:没有更多的评论了 把正在载入替换
             } catch (Exception e) {
                 return false;
             }
@@ -741,6 +744,7 @@ public class ViewPictureActivity extends GeneralActivity implements ScrollViewLi
             showProgress(false);
             getCommentProgress = null;
             if (success) {
+                commentpage = commentpage + 1;
                 String _commentnum = returnmap.get("commentnum");
                 int commentnum = Integer.parseInt(_commentnum);
                 for (int i = 0; i < commentnum; i++) {
@@ -748,6 +752,9 @@ public class ViewPictureActivity extends GeneralActivity implements ScrollViewLi
                     mycomments[i].textView1.setText(returnmap.get("commentuser" + i));
                     mycomments[i].textView2.setText(returnmap.get("comment" + i));
                     comments.add(mycomments[i]);
+                }
+                if (scrollContent.getChildAt(scrollContent.getChildCount() - 1) == loadingView) {
+                    scrollContent.removeView(loadingView);
                 }
                 refreshComments();
             } else {
@@ -761,10 +768,11 @@ public class ViewPictureActivity extends GeneralActivity implements ScrollViewLi
         private String comment;
         private Comment[] mycomments;
         private DB db;
-        private HashMap<String,String>returnmap;
-        public UploadComment(DB db,String comment, Comment[] mycomments) {
+        private HashMap<String, String> returnmap;
+
+        public UploadComment(DB db, String comment, Comment[] mycomments) {
             this.db = db;
-            this.comment=comment;
+            this.comment = comment;
             this.mycomments = mycomments;
         }
 
@@ -783,7 +791,7 @@ public class ViewPictureActivity extends GeneralActivity implements ScrollViewLi
                 }
                 HashMap<String, String> map = new HashMap<String, String>();
                 map.put("comment", comment);
-                returnmap=new JsonPost(map, url, "commentinsert", db).getReturnmap();
+                returnmap = new JsonPost(map, url, "commentinsert", db).getReturnmap();
             } catch (Exception e) {
                 return false;
             }
@@ -792,10 +800,10 @@ public class ViewPictureActivity extends GeneralActivity implements ScrollViewLi
 
         @Override
         protected void onPostExecute(final Boolean success) {
-
             showProgress(false);
             if (success) {
                 Toast.makeText(getApplicationContext(), "评论成功", Toast.LENGTH_SHORT).show();
+                commentpage = 2;
                 editText.setText(null);
                 comments.clear();
                 String _commentnum = returnmap.get("commentnum");

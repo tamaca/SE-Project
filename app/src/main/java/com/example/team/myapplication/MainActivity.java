@@ -214,7 +214,6 @@ public class MainActivity extends Activity implements ScrollViewListener {
             int page = LoginState.getPage() + 1;
             String picURL1 = "http://192.168.253.1/square_page/" + (page) + "/";
             page++;
-            LoginState.setPage(page - 1);
             String picURL2 = "http://192.168.253.1/square_page/" + (page) + "/";
             GalleryItem galleryItems[] = new GalleryItem[8];
             for (int i = 0; i < 8; i++) {
@@ -228,10 +227,8 @@ public class MainActivity extends Activity implements ScrollViewListener {
             Cursor mCursor = db.lobbyimageselectpage(LoginState.getPage());
             for (mCursor.moveToFirst(); !mCursor.isAfterLast(); mCursor.moveToNext()) {
                 String id = mCursor.getString((mCursor.getColumnIndex("m_lobbyimage_imageid")));
-                String rank = mCursor.getString((mCursor.getColumnIndex("m_lobbyimage_rank")));
                 String smallfilepath = Localstorage.getImageFilePath(id, "small");
                 Bitmap bitmap = Localstorage.getBitmapFromSDCard(smallfilepath);
-                Resources res = getResources();
                 GalleryItem galleryItem = new GalleryItem(this);
                 galleryItem.imageView.setImageBitmap(bitmap);
                 JSONObject jsonObject = new JSONObject();
@@ -244,6 +241,13 @@ public class MainActivity extends Activity implements ScrollViewListener {
                 }
                 galleryItem.setContentDescription(jsonObject.toString());
                 galleryItems.add(galleryItem);
+            }
+            if (!(mCursor.getCount() == 0)) {
+                LoginState.setPage(LoginState.getPage() + 1);
+            } else
+
+            {
+                end = true;
             }
             refreshSquare();
         }
@@ -456,13 +460,15 @@ public class MainActivity extends Activity implements ScrollViewListener {
             }
         }
         if (y + scrollView.getMeasuredHeight() + 50 > scrollContent.getMeasuredHeight()) {
-            if (scrollContent.getChildAt(scrollContent.getChildCount() - 1) != loadingView) {
-                LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-                params.gravity = Gravity.CENTER_HORIZONTAL;
-                scrollContent.addView(loadingView, params);
+            if (!end) {
+                if (scrollContent.getChildAt(scrollContent.getChildCount() - 1) != loadingView) {
+                    LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                    params.gravity = Gravity.CENTER_HORIZONTAL;
 
-                if (!end) {
+                    scrollContent.addView(loadingView, params);
                     imagedownload();
+                } else {
+                    //TODO:图片没了
                 }
             }
         }
@@ -682,8 +688,7 @@ public class MainActivity extends Activity implements ScrollViewListener {
                 new JsonGet(url, db, galleryItem, "lobby").getReturnmap();
             } catch (MyException.zeroException e) {
                 //TODO:没有下一页图片了
-                end = false;
-                return false;
+                end = true;
             } catch (Exception e) {
                 return false;
             }
@@ -694,6 +699,7 @@ public class MainActivity extends Activity implements ScrollViewListener {
         protected void onPostExecute(final Boolean success) {
             if (success) {
                 if (galleryItem != null) {
+                    LoginState.setPage(LoginState.getPage() + 1);
                     for (GalleryItem _galleryitem : galleryItem) {
                         if (_galleryitem.imageView.getContentDescription() != null) {
                             galleryItems.add(_galleryitem);
