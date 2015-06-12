@@ -2,19 +2,19 @@ package com.example.team.myapplication;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.ArrayAdapter;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.ProgressBar;
+import android.widget.SimpleAdapter;
 import android.widget.TextView;
 
 import com.example.team.myapplication.Network.JsonPost;
@@ -27,6 +27,8 @@ import com.example.team.myapplication.util.MyToast;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 
 public class SearchActivity extends GeneralActivity {
@@ -35,6 +37,9 @@ public class SearchActivity extends GeneralActivity {
     private ListView userNameListView;
     private MyScrollView pictureScrollView;
     private LinearLayout scrollViewContent;
+    private LinearLayout scrollViewContentLeft;
+    private LinearLayout scrollViewContentRight;
+
     public ArrayList<String> resultUsers;
     public ArrayList<GalleryItem> resultPictures;
     private SearchUserTask searchUserTask;
@@ -42,13 +47,16 @@ public class SearchActivity extends GeneralActivity {
     private EditText textView;
     private MyToast myToast;
     private TextView noResultTextView;
-    private int page=1;
+    private List<Map<String, Object>> listItems;
+    private int page = 1;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setTitle("搜索");
         setContentView(R.layout.activity_search);
         getActionBar().setDisplayHomeAsUpEnabled(true);
+        listItems = new ArrayList<>();
         /**
          * 初始化变量
          */
@@ -60,6 +68,9 @@ public class SearchActivity extends GeneralActivity {
         textView = (EditText) findViewById(R.id.editText);
         noResultTextView = (TextView) findViewById(R.id.textView8);
         scrollViewContent = (LinearLayout) findViewById(R.id.scroll_content_in_search_activity);
+        scrollViewContentLeft = (LinearLayout) findViewById(R.id.scroll_content_left);
+        scrollViewContentRight = (LinearLayout) findViewById(R.id.scroll_content_right);
+
         resultUsers = new ArrayList<>();
         resultPictures = new ArrayList<>();
         searchUserTask = null;
@@ -69,7 +80,14 @@ public class SearchActivity extends GeneralActivity {
          * 设置返回结果界面初始化
          */
         userNameListView.setVisibility(View.GONE);
+        userNameListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                toUserPageActivity(view.findViewById(R.id.Names));
+            }
+        });
         pictureScrollView.setVisibility(View.GONE);
+
         /**
          * 添加 搜索用户 监听器
          */
@@ -81,20 +99,12 @@ public class SearchActivity extends GeneralActivity {
 
     }
 
-    /**
-     * 添加图片进搜索结果里，一次添加一张。
-     */
-    /*
-    public void addGalleryItem(Bitmap bitmap) {
-        GalleryItem galleryItem = new GalleryItem(this, bitmap);
-        galleryItem.imageView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                toViewPictureActivity(view);
-            }
-        });
-        resultPictures.add(galleryItem);
-    }*/
+    public void toUserPageActivity(View view) {
+        Intent intent = new Intent(this, UserPageActivity.class);
+        intent.putExtra("user_name", ((TextView) view).getText());
+        //TODO 加入查看个人主页时传入的其他参数
+        startActivity(intent);
+    }
 
     /**
      * 更新搜素 用户名 的结果
@@ -104,9 +114,15 @@ public class SearchActivity extends GeneralActivity {
             noResultTextView.setText(getString(R.string.no_search_result_users));
             noResultTextView.setVisibility(View.VISIBLE);
         }
-        userNameListView.setAdapter(new ArrayAdapter<String>(this,
-                android.R.layout.simple_expandable_list_item_1, resultUsers));
-        userNameListView.postInvalidate();
+        listItems.clear();
+        for (int i = 0; i < resultUsers.size(); i++) {
+            Map<String, Object> listItem = new HashMap<String, Object>();
+            listItem.put("用户名", resultUsers.get(i));
+            listItems.add(listItem);
+        }
+        SimpleAdapter simpleAdapter = new SimpleAdapter(this, listItems, R.layout.layout_user_name, new String[]{"用户名"}, new int[]{R.id.Names});
+        userNameListView.setAdapter(simpleAdapter);
+        userNameListView.setVisibility(View.VISIBLE);
     }
 
     /**
@@ -117,10 +133,22 @@ public class SearchActivity extends GeneralActivity {
             noResultTextView.setText(getString(R.string.no_search_result_tags));
             noResultTextView.setVisibility(View.VISIBLE);
         }
-        scrollViewContent.removeAllViews();
+        scrollViewContentLeft.removeAllViews();
+        scrollViewContentRight.removeAllViews();
         for (int i = 0; i < resultPictures.size(); i++) {
-            scrollViewContent.addView(resultPictures.get(i));
+            resultPictures.get(i).imageView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    toViewPictureActivity(view);
+                }
+            });
+            if (i % 2 == 0) {
+                scrollViewContentLeft.addView(resultPictures.get(i));
+            } else {
+                scrollViewContentRight.addView(resultPictures.get(i));
+            }
         }
+        scrollViewContent.setVisibility(View.VISIBLE);
     }
 
     /**
@@ -169,15 +197,17 @@ public class SearchActivity extends GeneralActivity {
          * 添加变量
          */
         String searchContent;
-        HashMap<String,String>returnmap;
+        HashMap<String, String> returnmap;
+
         public SearchUserTask(String _searchContent) {
             searchContent = _searchContent;
         }
+
         @Override
-        protected void onPreExecute()
-        {
+        protected void onPreExecute() {
             onSearchProgressBar.setVisibility(View.VISIBLE);
         }
+
         @Override
         protected Boolean doInBackground(Void... voids) {
             try {
@@ -188,16 +218,14 @@ public class SearchActivity extends GeneralActivity {
                  * 如果搜索图片，请调用 addResultPicture(Bitmap )
                  *
                  */
-                String url = "http://192.168.253.1/search/user/page/"+page+"/";
-                HashMap<String,String>map=new HashMap<String,String>();
-                map.put("name",searchContent);
-                returnmap=new JsonPost(map,url,"searchuser").getReturnmap();
+                String url = "http://192.168.253.1/search/user/page/" + page + "/";
+                HashMap<String, String> map = new HashMap<String, String>();
+                map.put("name", searchContent);
+                returnmap = new JsonPost(map, url, "searchuser").getReturnmap();
                 Thread.sleep(1000);
-            }catch (MyException.zeroException e)
-            {
+            } catch (MyException.zeroException e) {
                 //TODO:搜索结果为空
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 return false;
             }
             return true;
@@ -210,7 +238,7 @@ public class SearchActivity extends GeneralActivity {
             if (success) {
                 int count = Integer.valueOf(returnmap.get("count"));
                 for (int i = 0; i < count; i++) {
-                    resultUsers.add(returnmap.get("name"+i));
+                    resultUsers.add(returnmap.get("name" + i));
                 }
                 refreshListView();
                 /*
@@ -224,22 +252,25 @@ public class SearchActivity extends GeneralActivity {
             }
         }
     }
+
     class SearchTagTask extends AsyncTask<Void, Void, Boolean> {
         /**
          * 添加变量
          */
         String searchContent;
-        HashMap<String,String>returnmap;
+        HashMap<String, String> returnmap;
         private GalleryItem galleryItem[];
-        public SearchTagTask(String _searchContent,GalleryItem[] galleryItem) {
+
+        public SearchTagTask(String _searchContent, GalleryItem[] galleryItem) {
             searchContent = _searchContent;
             this.galleryItem = galleryItem;
         }
+
         @Override
-        protected void onPreExecute()
-        {
+        protected void onPreExecute() {
             onSearchProgressBar.setVisibility(View.VISIBLE);
         }
+
         @Override
         protected Boolean doInBackground(Void... voids) {
             try {
@@ -250,15 +281,14 @@ public class SearchActivity extends GeneralActivity {
                  * 如果搜索图片，请调用 addResultPicture(Bitmap )
                  *
                  */
-                String url = "http://192.168.253.1/search/tag/page/"+page+"/";
-                HashMap<String,String>map=new HashMap<String,String>();
-                map.put("tag",searchContent);
-                returnmap=new JsonPost(map,url,"searchtag").getReturnmap();
+                String url = "http://192.168.253.1/search/tag/page/" + page + "/";
+                HashMap<String, String> map = new HashMap<String, String>();
+                map.put("tag", searchContent);
+                returnmap = new JsonPost(map, url, "searchtag").getReturnmap();
                 Thread.sleep(1000);
-            } catch (MyException.zeroException e)
-            {
+            } catch (MyException.zeroException e) {
                 //TODO:搜索结果为空
-            }catch (Exception e) {
+            } catch (Exception e) {
                 return false;
             }
             return true;
@@ -271,7 +301,7 @@ public class SearchActivity extends GeneralActivity {
             if (success) {
                 int count = Integer.valueOf(returnmap.get("count"));
                 for (int i = 0; i < count; i++) {
-                    resultUsers.add(returnmap.get("name"+i));
+                    resultUsers.add(returnmap.get("name" + i));
                 }
                 /*
                 if (searchUserTask == search_users) {
@@ -284,13 +314,15 @@ public class SearchActivity extends GeneralActivity {
             }
         }
     }
+
     class MyOnClickListener implements View.OnClickListener {
 
         @Override
         public void onClick(View view) {
-
-            noResultTextView.setVisibility(View.GONE);
             resultUsers.clear();
+            noResultTextView.setVisibility(View.GONE);
+            userNameListView.setVisibility(View.GONE);
+            scrollViewContent.setVisibility(View.GONE);
             String content = textView.getText().toString();
             if (content.isEmpty()) {
                 textView.setError(getString(R.string.search_content_missing));
@@ -308,8 +340,9 @@ public class SearchActivity extends GeneralActivity {
                 searchTask = new SearchTask(view == searchUserButton ? search_users : search_by_tags, content);
                 searchTask.execute((Void) null);
                 */
-                searchUserTask=new SearchUserTask(content);
+                searchUserTask = new SearchUserTask(content);
                 searchUserTask.execute();
+
             } else {
                 myToast.show(getString(R.string.toast_in_searching));
             }

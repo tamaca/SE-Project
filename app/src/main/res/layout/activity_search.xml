@@ -67,7 +67,7 @@
             android:layout_height="wrap_content"
             android:id="@+id/user_name_listView"
             android:layout_marginTop="10dp"
-            />
+            android:visibility="gone" />
 
         <com.example.team.myapplication.util.MyScrollView
             android:layout_width="fill_parent"
@@ -78,7 +78,29 @@
                 android:orientation="vertical"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:id="@+id/scroll_content_in_search_activity"/>
+                android:id="@+id/scroll_content_in_search_activity">
+
+                <LinearLayout
+                    android:orientation="horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:weightSum="2">
+
+                    <LinearLayout
+                        android:orientation="vertical"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:id="@+id/scroll_content_left"/>
+
+                    <LinearLayout
+                        android:orientation="vertical"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:id="@+id/scroll_content_right"/>
+                </LinearLayout>
+            </LinearLayout>
         </com.example.team.myapplication.util.MyScrollView>
 
     </LinearLayout>
