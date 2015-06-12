@@ -109,8 +109,14 @@
             android:name=".RecentActivity"
             android:icon="@mipmap/ic_moments"
             android:label="@string/title_activity_recent"
-            android:theme="@style/GeneralTheme"
-            android:screenOrientation="portrait">
+            android:screenOrientation="portrait"
+            android:theme="@style/GeneralTheme" >
+        </activity>
+        <activity
+            android:name=".ChoosePictureActivity"
+            android:label="@string/title_activity_choose_picture"
+            android:screenOrientation="portrait"
+            android:theme="@style/GeneralTheme" >
         </activity>
     </application>
 

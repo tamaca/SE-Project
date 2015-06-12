@@ -1,0 +1,75 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    android:layout_height="match_parent" android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    tools:context="com.example.team.myapplication.ChoosePictureActivity"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:weightSum="2">
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:weightSum="2">
+            <com.example.team.myapplication.util.UploadPictureView
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/choose_picture_view1"
+                android:layout_weight="1"/>
+            <com.example.team.myapplication.util.UploadPictureView
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/choose_picture_view2"
+                android:layout_weight="1"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:weightSum="2">
+            <com.example.team.myapplication.util.UploadPictureView
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/choose_picture_view3"
+                android:layout_weight="1"/>
+
+            <com.example.team.myapplication.util.UploadPictureView
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/choose_picture_view4"
+                android:layout_weight="1"/>
+        </LinearLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content">
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/choose_from_gallery"
+            android:id="@+id/button3" />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/take_from_camera"
+            android:id="@+id/button4" />
+    </LinearLayout>
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/OK"
+        android:id="@+id/button11" />
+
+</LinearLayout>

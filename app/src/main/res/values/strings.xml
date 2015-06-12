@@ -41,7 +41,7 @@
     <string name="error_field_required">该项不能为空</string>
     <string name="register">立即注册</string>
     <string name="user_name">用户名</string>
-    <string name="user_name_invalid">用户名不符合格式（长度为2~20个字符）</string>
+    <string name="user_name_invalid">用户名只能使用英文字母，下划线，数字及汉字，长度2~20个字符</string>
     <string name="title_activity_user_list">名单</string>
     <string name="enter_password">输入密码</string>
     <string name="reenter_password">再次输入密码</string>
@@ -105,4 +105,7 @@
 
 
     <string name="click_to_refresh">获取图片信息失败\n点击刷新</string>
+    <string name="title_activity_choose_picture">上传图片</string>
+    <string name="choose_from_gallery">从相册中选择</string>
+    <string name="take_from_camera">打开相机</string>
 </resources>

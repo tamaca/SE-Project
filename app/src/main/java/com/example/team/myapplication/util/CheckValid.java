@@ -14,16 +14,16 @@ public class CheckValid {
     }
 
     static public boolean isUserNameValid(String userName) {
-        return userName.length() >= 2 && userName.length() <= 20;
+        return userName.length() >= 2 && userName.length() <= 20 && userName.matches("^[A-Za-z0-9_\u4e00-\u9fa5]{2,15}$");
     }
 
     static public boolean isInputValid(String str) {
         return str.length() < 20 && str.charAt(0) != ' ';
     }
 
-    static public boolean isTagUnique(ArrayList<Tag> tags, String tagContent){
-        for(int i = 0;i < 5;i++){
-            if(tags.get(i).tagText.getText().toString().equals(tagContent)){
+    static public boolean isTagUnique(ArrayList<Tag> tags, String tagContent) {
+        for (int i = 0; i < 5; i++) {
+            if (tags.get(i).tagText.getText().toString().equals(tagContent)) {
                 return false;
             }
         }

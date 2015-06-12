@@ -1,13 +1,8 @@
 package com.example.team.myapplication;
 
-import android.app.AlertDialog;
-import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -43,7 +38,7 @@ public class UserPageActivity extends GeneralActivity implements ScrollViewListe
     private LinearLayout galleryLeft;
     private LinearLayout galleryRight;
     private MyToast myToast;
-    private ProgressBar inChangingRelationship;
+    private ProgressBar progressBar;
     private GetPicture getPicture = null;
     private LinearLayout scrollContent;
     private int pictureCount;
@@ -54,7 +49,8 @@ public class UserPageActivity extends GeneralActivity implements ScrollViewListe
     private boolean isManagingPicture = false;
     private int page = 1;//page从1开始
     private DB db = new DB(this);
-    private boolean end=false;
+    private boolean end = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -72,7 +68,7 @@ public class UserPageActivity extends GeneralActivity implements ScrollViewListe
         if (userName.equals(LoginState.username)) {
             isMe = true;
         }
-        setTitle((isMe ? "我" : userName) + "的个人主页");
+
         getActionBar().setDisplayHomeAsUpEnabled(true);
 
         /**
@@ -84,7 +80,7 @@ public class UserPageActivity extends GeneralActivity implements ScrollViewListe
         uploadImageButton = (Button) findViewById(R.id.button10);
         gallery = (LinearLayout) findViewById(R.id.gallery);
         galleryItems = new ArrayList<>();
-        inChangingRelationship = (ProgressBar) findViewById(R.id.progressBar5);
+        progressBar = (ProgressBar) findViewById(R.id.progressBar5);
         scrollContent = (LinearLayout) findViewById(R.id.scroll_content);
         myToast = new MyToast(this);
         loadingView = new LoadingView(this);
@@ -96,7 +92,7 @@ public class UserPageActivity extends GeneralActivity implements ScrollViewListe
         uploadImageButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                getImageFromAlbum(view);
+                toChoosePictureActivity(view);
             }
         });
         manageButton.setOnClickListener(new View.OnClickListener() {
@@ -121,6 +117,7 @@ public class UserPageActivity extends GeneralActivity implements ScrollViewListe
      * @param my
      */
     public void loadView(boolean my) {
+        setTitle((my ? "我" : userName) + "的个人主页");
         if (my) {
             //加载我的个人主页
             if (!getGallery(userName)) {
@@ -136,7 +133,7 @@ public class UserPageActivity extends GeneralActivity implements ScrollViewListe
             getInfomationtask = new GetInfomation(userName);
             getInfomationtask.execute();
             if (gallery.getChildAt(gallery.getChildCount() - 1) != loadingView) {
-               ;
+                ;
                 if (getPicture == null) {
                     GalleryItem galleryItems[] = new GalleryItem[8];
                     for (int i = 0; i < 8; i++) {
@@ -153,23 +150,7 @@ public class UserPageActivity extends GeneralActivity implements ScrollViewListe
     protected void onResume() {
         super.onResume();
         //TODO 恢复该界面时刷新图片。
-    }
-
-    static final int REQUEST_CODE_PICK_IMAGE = 2;
-
-    protected void getImageFromAlbum(View view) {
-        Intent intent = new Intent(Intent.ACTION_PICK);
-        intent.setType("image/*");//相片类型
-        startActivityForResult(intent, REQUEST_CODE_PICK_IMAGE);
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        switch (resultCode) {
-            case REQUEST_CODE_PICK_IMAGE:
-                break;
-        }
+        loadView(isMe);
     }
 
     /**
@@ -223,6 +204,11 @@ public class UserPageActivity extends GeneralActivity implements ScrollViewListe
 
 
         return super.onOptionsItemSelected(item);
+    }
+
+    public void toChoosePictureActivity(View view) {
+        Intent intent = new Intent(this, ChoosePictureActivity.class);
+        startActivity(intent);
     }
 
     /**
@@ -310,7 +296,7 @@ public class UserPageActivity extends GeneralActivity implements ScrollViewListe
         if (y + scrollView.getMeasuredHeight() + 50 > scrollContent.getMeasuredHeight()) {
             if (galleryItems.size() != pictureCount) {
                 if (gallery.getChildAt(gallery.getChildCount() - 1) != loadingView) {
-                   // gallery.addView(loadingView);
+                    // gallery.addView(loadingView);
                     if (getPicture == null) {
                         GalleryItem galleryItems[] = new GalleryItem[4];
                         for (int i = 0; i < 4; i++) {
@@ -380,13 +366,11 @@ public class UserPageActivity extends GeneralActivity implements ScrollViewListe
                 HashMap<String, String> map = new HashMap<String, String>();
                 map.put("username", otherUsername);
                 //添加关注获取图片总数
-                if(type==1&&!concern) {
-                    HashMap<String, String> returnmap = new JsonPost(map, url,"concern").getReturnmap();
+                if (type == 1 && !concern) {
+                    HashMap<String, String> returnmap = new JsonPost(map, url, "concern").getReturnmap();
                     pictureCount = Integer.valueOf(returnmap.get("picturecount"));
-                }
-                else
-                {
-                    new JsonPost(map,url,"else");
+                } else {
+                    new JsonPost(map, url, "else");
                 }
                 Thread.sleep(100);
 
@@ -479,15 +463,17 @@ public class UserPageActivity extends GeneralActivity implements ScrollViewListe
     class GetPicture extends AsyncTask<Void, Void, Boolean> {
         private String userid;
         private GalleryItem galleryItem[];
+
         public GetPicture(String userid, GalleryItem[] galleryItem) {
             this.userid = userid;
             this.galleryItem = galleryItem;
         }
+
         @Override
-        protected void onPreExecute()
-        {
+        protected void onPreExecute() {
             gallery.addView(loadingView);
         }
+
         @Override
         protected Boolean doInBackground(Void... params) {
             try {
@@ -495,15 +481,12 @@ public class UserPageActivity extends GeneralActivity implements ScrollViewListe
                 String url1 = "http://192.168.253.1/" + LoginState.username + "/image_of/" + userid + "/" + "/page/" + page + "/";
                 page++;
                 String url2 = "http://192.168.253.1/" + LoginState.username + "/image_of/" + userid + "/" + "/page/" + page + "/";
-               HashMap<String,String>map= new JsonGet(url1, db, galleryItem, "userpage").getReturnmap();
+                HashMap<String, String> map = new JsonGet(url1, db, galleryItem, "userpage").getReturnmap();
                 new JsonGet(url2, db, null, "userpage");
                 Thread.sleep(1000);
-            }catch (myException.zeroException e)
-            {
-                //TODO:没有下一页图片了
-                end=true;
-            }
-            catch (Exception e) {
+            } catch (myException.zeroException e) {
+                end = true;
+            } catch (Exception e) {
                 return false;
             }
             return true;
@@ -515,15 +498,24 @@ public class UserPageActivity extends GeneralActivity implements ScrollViewListe
             getPicture = null;
             if (success) {
                 for (GalleryItem _galleryitem : galleryItem) {
-                    if(_galleryitem.imageView.getContentDescription()!=null) {
+                    if (_galleryitem.imageView.getContentDescription() != null) {
                         galleryItems.add(_galleryitem);
-                        //TODO:添加监听器
+                        _galleryitem.imageView.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                toViewPictureActivity(view);
+                            }
+                        });
                     }
                 }
                 refreshGallery();
                 gallery.postInvalidate();
             } else {
-                myToast.show(getString(R.string.toast_refreshing_error));
+                if (end) {
+                    myToast.show("没有更多图片了");
+                } else {
+                    myToast.show(getString(R.string.toast_refreshing_error));
+                }
             }
         }
     }
