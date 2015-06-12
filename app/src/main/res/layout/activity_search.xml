@@ -83,19 +83,18 @@
                 <LinearLayout
                     android:orientation="horizontal"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:weightSum="2">
+                    android:layout_height="match_parent">
 
                     <LinearLayout
                         android:orientation="vertical"
-                        android:layout_width="match_parent"
+                        android:layout_width="0dp"
                         android:layout_height="match_parent"
                         android:layout_weight="1"
                         android:id="@+id/scroll_content_left"/>
 
                     <LinearLayout
                         android:orientation="vertical"
-                        android:layout_width="match_parent"
+                        android:layout_width="0dp"
                         android:layout_height="match_parent"
                         android:layout_weight="1"
                         android:id="@+id/scroll_content_right"/>
