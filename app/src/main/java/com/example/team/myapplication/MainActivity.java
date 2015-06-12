@@ -237,7 +237,7 @@ public class MainActivity extends Activity implements ScrollViewListener {
          * 展示出相应的界面
          */
         changeView(LoginState.getLogined());
-        /*imagedownload();*/
+        imagedownload();
 
     }
 

@@ -69,7 +69,7 @@ public class JsonPost {
         } else if (type.equals("commentinsert")) {
             post.PostExecuteCommentInsert(returnjsonObject);
         } else if (type.equals("taginsert")) {
-            returnmap = post.PostExecuteTag(returnjsonObject);
+            post.PostExecute(returnjsonObject);
         } else if (type.equals("tagdelete")) {
             post.PostExecute(returnjsonObject);
         } else {
@@ -182,7 +182,7 @@ public class JsonPost {
         tag.put("imageid", info.getString("image_id"));
         for (int i = 0; i < tagnum; i++) {
             tag.put("tagname" + i, info.getString("tag" + String.valueOf(i)));
-            tag.put("tagid" + i, info.getString("tagid" + String.valueOf(i)));
+            tag.put("tagid" + i, info.getString("tag" + String.valueOf(i)+"_id"));
         }
         dbtagsave(tag);
         //TODO:数据库
@@ -270,18 +270,6 @@ public class JsonPost {
                 }
             }
         }
-
-        private HashMap<String, String> PostExecuteTag(JSONObject info) throws Exception {
-            String status = info.getString("status");
-            HashMap<String, String> tag = new HashMap<String, String>();
-            tag.put("tagnum", "1");
-            tag.put("imageid", info.getString("image_id"));
-            tag.put("tagname" + 0, info.getString("tag" + 0));
-            tag.put("tagid" + 0, info.getString("tagid" + 0));
-            dbtagsave(tag);
-            return tag;
-        }
-
         protected void PostExecuteImageInformation(JSONObject jsonObject) throws Exception {
             if (jsonObject == null) {
                 throw new nullException();

@@ -43,14 +43,15 @@ public class JsonGet {
 
 
     //图片获取(url)
-    public JsonGet(String url, DB db, GalleryItem[] galleryItems,String type) throws Exception {
+    public JsonGet(String url, DB db, GalleryItem[] galleryItems, String type) throws Exception {
         this.url = url;
         this.db = db;
         this.galleryItems = galleryItems;
         Get get = new Get();
         JSONObject jsonObject = get.GetFromServer();
-        get.PostExecuteImageUrl(jsonObject,type);
+        get.PostExecuteImageUrl(jsonObject, type);
     }
+
     //图片获取(id)
     public JsonGet(String url, String key) throws Exception {
         this.url = url;
@@ -74,6 +75,15 @@ public class JsonGet {
         Get get = new Get();
         JSONObject jsonObject = get.GetFromServer();
         get.PostExecuteLike(jsonObject);
+    }
+
+    //获得标签
+    public JsonGet(String url, DB db, String type) throws Exception {
+        this.url = url;
+        this.db = db;
+        Get get = new Get();
+        JSONObject jsonObject = get.GetFromServer();
+        get.PostExecuteTag(jsonObject);
     }
 
     private class Get {
@@ -133,7 +143,7 @@ public class JsonGet {
                     image_big[i] = baseurl + jsonObject.getString("image" + i + "_big");
                     image_id[i] = jsonObject.getString("image" + i + "_id");
                 }
-                if ( galleryItems != null) {
+                if (galleryItems != null) {
                     for (int i = 0; i < count; i++) {
                         imageView[i] = galleryItems[i].imageView;
                     }
@@ -157,7 +167,7 @@ public class JsonGet {
                     for (int i = 0; i < count; i++) {
                         dblobbyimagesave(String.valueOf(LoginState.getPage() * 8 + i + 1), image_id[i]);
                     }
-                } else if(galleryItems!=null){
+                } else if (galleryItems != null) {
                     for (int i = 0; i < count; i++) {
                         image_time[i] = jsonObject.getString("image" + i + "_time");
                         galleryItems[i].textView.setText(image_time[i]);
@@ -216,6 +226,30 @@ public class JsonGet {
             }
         }
 
+        protected void PostExecuteTag(JSONObject jsonObject) throws Exception {
+            if (jsonObject != null) {
+                int tagnum;
+                String status = jsonObject.getString("status");
+                returnmap=new HashMap<String, String>();
+                if (status.equals("normal")) {
+                    tagnum = 5;
+                } else {
+                    String _tagnum = jsonObject.getString("count");
+                    returnmap.put("tagnum", String.valueOf(_tagnum));
+                    tagnum = Integer.parseInt(_tagnum);
+                }
+                returnmap.put("imageid", jsonObject.getString("image_id"));
+                for (int i = 0; i < tagnum; i++) {
+                    returnmap.put("tagname" + i, jsonObject.getString("tag" + String.valueOf(i)));
+                    returnmap.put("tagid" + i, jsonObject.getString("tag" + String.valueOf(i) + "_id"));
+                }
+                dbtagsave(returnmap);
+            } else {
+                //TODO:接收信息错误
+                throw new myException.nullException();
+            }
+        }
+
         protected void PostExecuteId(JSONObject jsonObject, String key) throws Exception {
             if (jsonObject != null) {
                 String status = jsonObject.getString("status");
@@ -231,6 +265,7 @@ public class JsonGet {
                 throw new myException.nullException();
             }
         }
+
     }
 
     //数据库
@@ -255,6 +290,14 @@ public class JsonGet {
             Timestamp updatetime = new Timestamp(System.currentTimeMillis());
             updatetime.valueOf(updatedate);
             db.imagecaredinsert(imageid, userid, updatetime);
+        }
+    }
+    //数据库存储标签
+    private void dbtagsave(HashMap<String, String> tag) {
+        String _tagnum = tag.get("tagnum");
+        int tagnum = Integer.parseInt(_tagnum);
+        for (int i = 0; i < tagnum; i++) {
+            db.taginsert(tag.get("tagid" + i), tag.get("tagname" + i), tag.get("imageid"));
         }
     }
 }

@@ -69,6 +69,7 @@ public class ViewPictureActivity extends GeneralActivity implements ScrollViewLi
     private String imageid = null;
     private LikeProgress likeProgress = null;
     private LoadingView loadingView;
+    private GetTagProgress getTagProgress = null;
 
     @Override
 
@@ -124,7 +125,7 @@ public class ViewPictureActivity extends GeneralActivity implements ScrollViewLi
                         public void onClick(DialogInterface dialogInterface, int i) {
 
                             //TODO 删除该用户的这个标签，请把UI操作放在删除完成之后
-                            uploadTagProgress = new UploadTagProgress(editTextInDialog.getText().toString(), imageid, "tagdelete",tags.get(j));
+                            uploadTagProgress = new UploadTagProgress(tags.get(j).getTagid(), imageid, "tagdelete", tags.get(j));
                             uploadTagProgress.execute();
 
                             /**
@@ -166,7 +167,7 @@ public class ViewPictureActivity extends GeneralActivity implements ScrollViewLi
                     builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialogInterface, int i) {
-                            uploadTagProgress = new UploadTagProgress(editTextInDialog.getText().toString(), imageid, "taginsert",tags.get(j));
+                            uploadTagProgress = new UploadTagProgress(editTextInDialog.getText().toString(), imageid, "taginsert", tags.get(j));
                             uploadTagProgress.execute();
                             /*tagView.post(new Runnable() {
                                 @Override
@@ -438,6 +439,7 @@ public class ViewPictureActivity extends GeneralActivity implements ScrollViewLi
             }
         }
     }
+
     public void showProgress(boolean show) {
 
         refreshingProgressBar.setVisibility(show ? View.VISIBLE : View.GONE);
@@ -512,6 +514,11 @@ public class ViewPictureActivity extends GeneralActivity implements ScrollViewLi
         }
 
         @Override
+        protected void onPreExecute() {
+            showProgress(true);
+        }
+
+        @Override
         protected Boolean doInBackground(Void... params) {
             try {
                 HashMap<String, String> map = new HashMap<String, String>();
@@ -529,7 +536,7 @@ public class ViewPictureActivity extends GeneralActivity implements ScrollViewLi
 
         @Override
         protected void onPostExecute(final Boolean success) {
-            refreshingProgressBar.setVisibility(View.GONE);
+            showProgress(false);
             if (success) {
                 String baseurl = "http://192.168.253.1/media/";
                 author.setText(returnmap.get("userid"));
@@ -546,6 +553,54 @@ public class ViewPictureActivity extends GeneralActivity implements ScrollViewLi
                 int tagnum = Integer.parseInt(_tagnum);
                 for (int i = 0; i < tagnum; i++) {
                     tags.get(i).tagText.setText(returnmap.get("tagname" + i));
+                    tags.get(i).setTagid(returnmap.get("tagid" + i));
+                    tags.get(i).changeState(Tag.showingTag);
+                }
+                refreshTags();
+
+            } else {
+                myToast.show(getString(R.string.toast_fetching_information_failed));
+            }
+            mAuthTask = null;
+        }
+    }
+
+    public class GetTagProgress extends AsyncTask<Void, Void, Boolean> {
+
+        private String url;
+        private DB db;
+        private HashMap<String, String> returnmap;
+
+        GetTagProgress(String url, DB db) {
+            this.url = url;
+            this.db = db;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            showProgress(true);
+        }
+
+        @Override
+        protected Boolean doInBackground(Void... params) {
+            try {
+                returnmap = new JsonGet(url, db, "gettag").getReturnmap();
+            } catch (Exception e) {
+                return false;
+            }
+            return true;
+        }
+
+        @Override
+        protected void onPostExecute(final Boolean success) {
+            showProgress(false);
+            getTagProgress = null;
+            if (success) {
+                String _tagnum = returnmap.get("tagnum");
+                int tagnum = Integer.parseInt(_tagnum);
+                for (int i = 0; i < tagnum; i++) {
+                    tags.get(i).tagText.setText(returnmap.get("tagname" + i));
+                    tags.get(i).setTagid(returnmap.get("tagid" + i));
                     tags.get(i).changeState(Tag.showingTag);
                 }
                 refreshTags();
@@ -684,14 +739,14 @@ public class ViewPictureActivity extends GeneralActivity implements ScrollViewLi
         @Override
         protected Boolean doInBackground(Void... voids) {
             try {
-                String url = "http://192.168.253.1/" + LoginState.username + "/comment_insert/"+imageid+"/";
+                String url = "http://192.168.253.1/" + LoginState.username + "/comment_insert/" + imageid + "/";
                 if (imageid == null) {
                     //图片ID获取错误
                     throw new Exception();
                 }
                 HashMap<String, String> map = new HashMap<String, String>();
                 map.put("comment", comment);
-                JsonPost post=new JsonPost(map,url,"commentinsert",db);
+                JsonPost post = new JsonPost(map, url, "commentinsert", db);
             } catch (Exception e) {
                 return false;
             }
@@ -723,7 +778,8 @@ public class ViewPictureActivity extends GeneralActivity implements ScrollViewLi
         private Tag tag;
         private int errorType = 0;
         private HashMap<String, String> returnmap;
-        public UploadTagProgress(String tagnameorid, String imageid, String type,Tag tag) {
+
+        public UploadTagProgress(String tagnameorid, String imageid, String type, Tag tag) {
             this.tagnameorid = tagnameorid;
             this.imageid = imageid;
             this.type = type;
@@ -758,13 +814,13 @@ public class ViewPictureActivity extends GeneralActivity implements ScrollViewLi
                     map.put("image_id", imageid);
                 } else {//删除TAG
                     url = "http://192.168.253.1/" + LoginState.username + "/tag_delete/";
-                    map.put("tagid",tagnameorid);
+                    map.put("tag_id", tagnameorid);
                 }
                 if (imageid == null) {
                     //图片ID获取错误
                     throw new Exception();
                 }
-                returnmap= new JsonPost(map, url,type,db).getReturnmap();//TODO:返回TAGID
+                new JsonPost(map, url, type, db).getReturnmap();
             } catch (Exception e) {
                 return false;
             }
@@ -776,10 +832,10 @@ public class ViewPictureActivity extends GeneralActivity implements ScrollViewLi
 
             showProgress(false);
             if (success) {
-                if (type.equals("insert")) {
-                    tag.tagText.setText(tagnameorid);
-                    tag.setTagid(tagnameorid);
-                    tag.changeState(Tag.removable);
+                if (type.equals("taginsert")) {
+                    String url = "http://192.168.253.1/tag_show/" + imageid + "/";
+                    getTagProgress = new GetTagProgress(url, db);
+                    getTagProgress.execute();
                 } else {
                     db.tagdelete(tagnameorid);
                     tag.tagText.setText(null);
@@ -787,18 +843,18 @@ public class ViewPictureActivity extends GeneralActivity implements ScrollViewLi
                 }
                 refreshTags();
             } else {
-                switch (errorType){
+                switch (errorType) {
                     case 0:
-                        Toast.makeText(getApplicationContext(),"标签修改失败",Toast.LENGTH_LONG).show();
+                        Toast.makeText(getApplicationContext(), "标签修改失败", Toast.LENGTH_LONG).show();
                         break;
                     case 1:
-                        Toast.makeText(getApplicationContext(),"已经存在相同的标签",Toast.LENGTH_LONG).show();
+                        Toast.makeText(getApplicationContext(), "已经存在相同的标签", Toast.LENGTH_LONG).show();
                         break;
                     case 2:
-                        Toast.makeText(getApplicationContext(),"标签长度不能超过10字节\n并且标签不能有空格",Toast.LENGTH_LONG).show();
+                        Toast.makeText(getApplicationContext(), "标签长度不能超过10字节\n并且标签不能有空格", Toast.LENGTH_LONG).show();
                         break;
                     case 3:
-                        Toast.makeText(getApplicationContext(),"标签不能为空",Toast.LENGTH_LONG).show();
+                        Toast.makeText(getApplicationContext(), "标签不能为空", Toast.LENGTH_LONG).show();
                         break;
                 }
                 uploadTagProgress = null;
