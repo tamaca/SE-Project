@@ -438,37 +438,6 @@ public class ViewPictureActivity extends GeneralActivity implements ScrollViewLi
             }
         }
     }
-
-   /*
-    public void changeLike(View view) {
-        onLikeChange(isLike);
-    }*/
-
-    /**
-     * 点击赞之后的UI变化
-     *
-     * @param
-     */
-    /*
-    public void onLikeChange(boolean zan) {
-        if (!zan) {
-            likeNumber++;
-            //TODO 上传赞
-            like.setBackgroundResource(R.drawable.liked);
-            likeText.setText(likeNumber < 10000 ? String.valueOf(likeNumber) : likeNumber / 10000 + "万+");
-        } else {
-            likeNumber--;
-            //TODO 上传取消赞
-            like.setBackgroundResource(R.drawable.like);
-            if (likeNumber == 0) {
-                likeText.setText(null);
-            } else {
-                likeText.setText(likeNumber < 10000 ? String.valueOf(likeNumber) : likeNumber / 10000 + "万+");
-            }
-        }
-        isLike = !isLike;
-    }
-*/
     public void showProgress(boolean show) {
 
         refreshingProgressBar.setVisibility(show ? View.VISIBLE : View.GONE);
@@ -617,7 +586,6 @@ public class ViewPictureActivity extends GeneralActivity implements ScrollViewLi
                 String bigurl = returnmap.get("image_big");
                 String baseurl = "http://192.168.253.1/media/";
                 new ImageGet(imgview, baseurl + bigurl, imageid, db, "big");
-                //TODO:后续处理
             } else {
                 myToast.show(getString(R.string.toast_downloading_picture_error));
             }
@@ -655,7 +623,6 @@ public class ViewPictureActivity extends GeneralActivity implements ScrollViewLi
         @Override
         protected void onPostExecute(final Boolean success) {
             if (success) {
-                //TODO:后续处理
                 isLike = (returnmap.get("islike").equals("true"));
                 likeNumber = returnmap.get("likenumber");
                 changeLike();
@@ -787,8 +754,8 @@ public class ViewPictureActivity extends GeneralActivity implements ScrollViewLi
                         throw new Exception();
                     }
                     url = "http://192.168.253.1/" + LoginState.username + "/tag_insert/";
-                    map.put("tagname", tagnameorid);
-                    map.put("imageid", imageid);
+                    map.put("tag", tagnameorid);
+                    map.put("image_id", imageid);
                 } else {//删除TAG
                     url = "http://192.168.253.1/" + LoginState.username + "/tag_delete/";
                     map.put("tagid",tagnameorid);
@@ -797,7 +764,7 @@ public class ViewPictureActivity extends GeneralActivity implements ScrollViewLi
                     //图片ID获取错误
                     throw new Exception();
                 }
-                returnmap= new JsonPost(map, url,type,db).getReturnmap();
+                returnmap= new JsonPost(map, url,type,db).getReturnmap();//TODO:返回TAGID
             } catch (Exception e) {
                 return false;
             }

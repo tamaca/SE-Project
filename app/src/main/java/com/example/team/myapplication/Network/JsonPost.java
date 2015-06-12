@@ -54,7 +54,7 @@ public class JsonPost {
         post.PostExecuteLogin(returnjsonObject);
     }
 
-    //注册、修改密码 图片信息获取 上传评论 上传删除标签
+    //注册、修改密码 图片信息获取 上传评论
     public JsonPost(HashMap<String, String> map, String url, String type, DB db) throws Exception {
         this.url = url;
         this.db = db;
@@ -69,7 +69,7 @@ public class JsonPost {
         } else if (type.equals("commentinsert")) {
             post.PostExecuteCommentInsert(returnjsonObject);
         } else if (type.equals("taginsert")) {
-            returnmap = getTag(returnjsonObject);
+            returnmap = post.PostExecuteTag(returnjsonObject);
         } else if (type.equals("tagdelete")) {
             post.PostExecute(returnjsonObject);
         } else {
@@ -83,14 +83,11 @@ public class JsonPost {
         this.url = url;
         Post post = new Post(map);
         returnjsonObject = post.PostToServer();
-        if(type.equals("relation")) {
+        if (type.equals("relation")) {
             post.PostExecuteRelation(returnjsonObject);
-        }else if(type.equals("concern"))
-        {
+        } else if (type.equals("concern")) {
             post.PostExecuteIODRelation(returnjsonObject);
-        }
-        else
-        {
+        } else {
             post.PostExecute(returnjsonObject);
         }
     }
@@ -274,6 +271,17 @@ public class JsonPost {
             }
         }
 
+        private HashMap<String, String> PostExecuteTag(JSONObject info) throws Exception {
+            String status = info.getString("status");
+            HashMap<String, String> tag = new HashMap<String, String>();
+            tag.put("tagnum", "1");
+            tag.put("imageid", info.getString("image_id"));
+            tag.put("tagname" + 0, info.getString("tag" + 0));
+            tag.put("tagid" + 0, info.getString("tagid" + 0));
+            dbtagsave(tag);
+            return tag;
+        }
+
         protected void PostExecuteImageInformation(JSONObject jsonObject) throws Exception {
             if (jsonObject == null) {
                 throw new nullException();
@@ -319,16 +327,17 @@ public class JsonPost {
                 if (status.equals("normal")) {
                     String _concern = jsonObject.getString("concern");
                     String _blacklist = jsonObject.getString("blacklist");
-                    String picturecount=jsonObject.getString("count");
-                    returnmap=new HashMap<String,String>();
+                    String picturecount = jsonObject.getString("count");
+                    returnmap = new HashMap<String, String>();
                     returnmap.put("concern", _concern);
                     returnmap.put("blacklist", _blacklist);
-                    returnmap.put("picturecount",picturecount);
+                    returnmap.put("picturecount", picturecount);
                 } else {
                     throw new executeException();
                 }
             }
         }
+
         protected void PostExecuteIODRelation(JSONObject jsonObject) throws Exception {
             if (jsonObject == null) {
                 throw new nullException();
@@ -336,14 +345,15 @@ public class JsonPost {
             } else {
                 String status = jsonObject.getString("status");
                 if (status.equals("normal")) {
-                    String picturecount=jsonObject.getString("count");
-                    returnmap=new HashMap<String,String>();
-                    returnmap.put("picturecount",picturecount);
+                    String picturecount = jsonObject.getString("count");
+                    returnmap = new HashMap<String, String>();
+                    returnmap.put("picturecount", picturecount);
                 } else {
                     throw new executeException();
                 }
             }
         }
+
         protected void PostExecuteCommentInsert(JSONObject jsonObject) throws Exception {
             if (jsonObject == null) {
                 throw new nullException();
