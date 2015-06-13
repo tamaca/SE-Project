@@ -19,6 +19,7 @@ import android.widget.Toast;
 
 import com.example.team.myapplication.Database.DB;
 import com.example.team.myapplication.Network.JsonPost;
+import com.example.team.myapplication.util.CheckValid;
 import com.example.team.myapplication.util.GeneralActivity;
 import com.example.team.myapplication.util.MyToast;
 
@@ -175,7 +176,7 @@ public class RegisterActivity extends GeneralActivity {
             userName.setError(getString(R.string.error_field_required));
             cancel = true;
             focusView = userName;
-        } else if (!isUserNameValid(user_name)) {
+        } else if (CheckValid.isUserNameValid(user_name)) {
             userName.setError(getString(R.string.user_name_invalid));
             cancel = true;
             focusView = userName;
