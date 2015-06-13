@@ -499,7 +499,8 @@ public class ViewPictureActivity extends GeneralActivity implements ScrollViewLi
                 builder.setPositiveButton("继续", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-                        //TODO 进入系统图库打开图片
+                        String bigfilepath = Localstorage.getImageFilePath(imageid, "big");
+                        openPicture(bigfilepath);
                     }
                 });
                 builder.setNegativeButton("不了", new DialogInterface.OnClickListener() {
@@ -510,17 +511,18 @@ public class ViewPictureActivity extends GeneralActivity implements ScrollViewLi
                 });
                 builder.create().show();
             } else {
-                Intent intent = new Intent(getApplicationContext(), PictureActivity.class);
                 //TODO 在这里添加想传入查看原图页面的信息，比如图片主人的名字，图片ID 啥的。
-
-                startActivity(intent);
+                String bigfilepath = Localstorage.getImageFilePath(imageid, "big");
+                openPicture(bigfilepath);
             }
         } else {
+            //TODO:异常
+            /*
             Intent intent = new Intent(this, PictureActivity.class);
             view.setDrawingCacheEnabled(true);
             Bitmap bitmap = view.getDrawingCache();
             intent.putExtra("pic", bitmap);
-            startActivity(intent);
+            startActivity(intent);*/
         }
 
 

@@ -9,7 +9,9 @@ import com.example.team.myapplication.ViewPictureActivity;
 import com.example.team.myapplication.util.GalleryItem;
 import com.example.team.myapplication.util.MyException;
 
+import org.apache.http.HttpEntity;
 import org.apache.http.NameValuePair;
+import org.apache.http.entity.InputStreamEntity;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.client.entity.UrlEncodedFormEntityHC4;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -19,6 +21,7 @@ import org.apache.http.impl.client.HttpClients;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -236,7 +239,7 @@ public class JsonPost {
                 CloseableHttpResponse response;
                 httpPost.setHeader("Content-Type", "application/x-www-form-urlencoded");
                 httpPost.setHeader("Accept", "application/json");
-                httpPost.setHeader("Content-type", "application/json");
+              //  httpPost.setHeader("Content-type", "application/json");
                 httpPost.setEntity(new UrlEncodedFormEntityHC4(nameValuePair, "UTF-8"));
                 response = client.execute(httpPost);
                 int a = response.getStatusLine().getStatusCode();

@@ -106,7 +106,7 @@ public class JsonGet {
                 CloseableHttpResponse response = null;
                 httpget.setHeader("Content-Type", "application/x-www-form-urlencoded");
                 httpget.setHeader("Accept", "application/json");
-                httpget.setHeader("Content-type", "application/json");
+               // httpget.setHeader("Content-type", "application/json");
                 response = client.execute(httpget);
                 int a = response.getStatusLine().getStatusCode();
                 StringBuilder builder = new StringBuilder();
