@@ -14,7 +14,7 @@ public class CheckValid {
     }
 
     static public boolean isUserNameValid(String userName) {
-        return userName.length() >= 2 && userName.length() <= 15 && userName.matches("^[A-Za-z0-9_\u4e00-\u9fa5]{2,15}$");
+        return userName.getBytes().length >= 2 && userName.getBytes().length <= 14 && userName.matches("^[A-Za-z0-9_\u4e00-\u9fa5]{2,15}$");
     }
 
     static public boolean isInputValid(String str) {
