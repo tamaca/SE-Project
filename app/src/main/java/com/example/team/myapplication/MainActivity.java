@@ -3,7 +3,6 @@ package com.example.team.myapplication;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Intent;
-import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -40,10 +39,10 @@ import com.example.team.myapplication.Network.JsonGet;
 import com.example.team.myapplication.Network.NetworkState;
 import com.example.team.myapplication.util.GalleryItem;
 import com.example.team.myapplication.util.LoadingView;
+import com.example.team.myapplication.util.MyException;
 import com.example.team.myapplication.util.MyScrollView;
 import com.example.team.myapplication.util.MyToast;
 import com.example.team.myapplication.util.ScrollViewListener;
-import com.example.team.myapplication.util.MyException;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -471,9 +470,6 @@ public class MainActivity extends Activity implements ScrollViewListener {
                     scrollContent.addView(loadingView, params);
                     imagedownload();
                 }
-            } else {
-                if (scrollContent.getChildAt(scrollContent.getChildCount() - 1) == loadingView)
-                    scrollContent.removeView(loadingView);
             }
         }
     }
@@ -714,6 +710,8 @@ public class MainActivity extends Activity implements ScrollViewListener {
 
         @Override
         protected void onPostExecute(final Boolean success) {
+            if (scrollContent.getChildAt(scrollContent.getChildCount() - 1) == loadingView)
+                scrollContent.removeView(loadingView);
             if (success) {
                 if (galleryItem != null) {
                     LoginState.setPage(LoginState.getPage() + 1);
@@ -732,10 +730,11 @@ public class MainActivity extends Activity implements ScrollViewListener {
                     squareView.postInvalidate();
                 }
             } else {
-                if (end){
+                if (end) {
                     myToast.show("没有更多图片了");
+                } else {
+                    myToast.show(getString(R.string.toast_downloading_picture_error));
                 }
-                myToast.show(getString(R.string.toast_downloading_picture_error));
             }
         }
     }

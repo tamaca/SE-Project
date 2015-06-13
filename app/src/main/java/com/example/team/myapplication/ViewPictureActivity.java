@@ -1,7 +1,6 @@
 package com.example.team.myapplication;
 
 import android.app.AlertDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
@@ -9,7 +8,6 @@ import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -742,6 +740,9 @@ public class ViewPictureActivity extends GeneralActivity implements ScrollViewLi
         protected void onPostExecute(final Boolean success) {
             showProgress(false);
             getCommentProgress = null;
+            if (scrollContent.getChildAt(scrollContent.getChildCount() - 1) == loadingView) {
+                scrollContent.removeView(loadingView);
+            }
             if (success) {
                 commentpage = commentpage + 1;
                 String _commentnum = returnmap.get("commentnum");
@@ -752,13 +753,11 @@ public class ViewPictureActivity extends GeneralActivity implements ScrollViewLi
                     mycomments[i].textView2.setText(returnmap.get("comment" + i));
                     comments.add(mycomments[i]);
                 }
-                if (scrollContent.getChildAt(scrollContent.getChildCount() - 1) == loadingView) {
-                    scrollContent.removeView(loadingView);
-                }
                 refreshComments();
             } else {
                 //TODO:评论获取错误
             }
+
         }
 
     }
