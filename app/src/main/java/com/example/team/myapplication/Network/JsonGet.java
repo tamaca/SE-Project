@@ -189,7 +189,7 @@ public class JsonGet {
                     }
                 } else if (galleryItems != null) {
                     for (int i = 0; i < count; i++) {
-                        image_time[i] = jsonObject.getString("image" + i + "_time");
+                        image_time[i] = jsonObject.getString("image" + i + "_date");
                         galleryItems[i].textView.setText(image_time[i]);
                         galleryItems[i].textView.setVisibility(View.VISIBLE);
                     }
@@ -197,7 +197,8 @@ public class JsonGet {
                 else if(recentItems!=null)
                 {
                     for (int i = 0; i < count; i++) {
-                        image_author[i] = jsonObject.getString("image" + i + "_author");
+                        image_time[i] = jsonObject.getString("image" + i + "_date");
+                        image_author[i] = jsonObject.getString("image" + i + "_owner");
                         recentItems[i].time.setText(image_time[i]);
                         recentItems[i].author.setText(image_author[i]);//todo:发送 图片上传者姓名
                         dbimagecaresave(image_id[i],image_author[i],image_time[i]);

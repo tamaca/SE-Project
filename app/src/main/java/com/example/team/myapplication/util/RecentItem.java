@@ -21,16 +21,10 @@ public class RecentItem extends LinearLayout {
 
     public RecentItem(Context context) {
         super(context);
-    }
-    public RecentItem(Context context,String _author,String _time,Bitmap _bitmap) {
-        super(context);
         View view = LayoutInflater.from(context).inflate(R.layout.layout_recent_item, null);
         author = (TextView)view.findViewById(R.id.textView6);
         time = (TextView)view.findViewById(R.id.textView7);
         imageView = (ImageView)view.findViewById(R.id.imageView9);
-        author.setText(_author);
-        time.setText(_time);
-        imageView.setImageBitmap(_bitmap);
         addView(view);
     }
     public RecentItem(Context context, AttributeSet attrs) {

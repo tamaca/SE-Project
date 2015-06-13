@@ -126,7 +126,16 @@ public class UserPageActivity extends GeneralActivity implements ScrollViewListe
             }
             concernButton.setVisibility(View.GONE);
             hateButton.setVisibility(View.GONE);
-
+            if (gallery.getChildAt(gallery.getChildCount() - 1) != loadingView) {
+                if (getPicture == null) {
+                    GalleryItem galleryItems[] = new GalleryItem[8];
+                    for (int i = 0; i < 8; i++) {
+                        galleryItems[i] = new GalleryItem(this);
+                    }
+                    getPicture = new GetPicture(userName, galleryItems);
+                    getPicture.execute();
+                }
+            }
         } else {
             //加载别人的主页
             manageButton.setVisibility(View.GONE);

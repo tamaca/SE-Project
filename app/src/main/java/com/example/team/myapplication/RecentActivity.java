@@ -100,13 +100,6 @@ public class RecentActivity extends GeneralActivity implements ScrollViewListene
         return super.onOptionsItemSelected(item);
     }
 
-    /**
-     * 添加图片时请使用这个函数，注意每次只能添加一个进recentItems
-     */
-    public void addRecentItem(String author, String date, Bitmap bitmap) {
-        RecentItem recentItem = new RecentItem(RecentActivity.this, author, date, bitmap);
-        recentItems.add(recentItem);
-    }
 
     /**
      * 这是添加完成之后的UI操作。
@@ -213,7 +206,7 @@ public class RecentActivity extends GeneralActivity implements ScrollViewListene
             scrollContent.removeView(loadingView);
             getPicture = null;
             if (success) {
-                for (RecentItem _recentItem : recentItems) {
+                for (RecentItem _recentItem : newrecentItems) {
                     if (_recentItem.imageView.getContentDescription() != null) {
                         recentItems.add(_recentItem);
                         _recentItem.imageView.setOnClickListener(new View.OnClickListener() {
