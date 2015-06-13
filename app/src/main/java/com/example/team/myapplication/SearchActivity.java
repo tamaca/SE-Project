@@ -49,7 +49,7 @@ public class SearchActivity extends GeneralActivity {
     private TextView noResultTextView;
     private List<Map<String, Object>> listItems;
     private int page = 1;
-
+    private boolean end=false;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -224,6 +224,8 @@ public class SearchActivity extends GeneralActivity {
                 returnmap = new JsonPost(map, url, "searchuser").getReturnmap();
                 Thread.sleep(1000);
             } catch (MyException.zeroException e) {
+                end=true;
+                return false;
                 //TODO:搜索结果为空
             } catch (Exception e) {
                 return false;

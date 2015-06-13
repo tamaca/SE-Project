@@ -1,21 +1,17 @@
 package com.example.team.myapplication.Network;
 
-import android.util.Log;
-import android.view.View;
-
 import com.example.team.myapplication.Database.DB;
 import com.example.team.myapplication.ViewPictureActivity;
-import com.example.team.myapplication.util.Comment;
 import com.example.team.myapplication.util.GalleryItem;
 import com.example.team.myapplication.util.MyException;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
-import org.apache.http4.client.entity.UrlEncodedFormEntityHC4;
-import org.apache.http4.client.methods.CloseableHttpResponse;
-import org.apache.http4.client.methods.HttpPostHC4;
-import org.apache.http4.impl.client.CloseableHttpClient;
-import org.apache.http4.impl.client.HttpClients;
+import org.apache.http.client.entity.UrlEncodedFormEntityHC4;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpPostHC4;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;

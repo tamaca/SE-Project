@@ -7,10 +7,10 @@ import com.example.team.myapplication.Database.DB;
 import com.example.team.myapplication.LoginState;
 import com.example.team.myapplication.util.*;
 
-import org.apache.http4.client.methods.CloseableHttpResponse;
-import org.apache.http4.client.methods.HttpGetHC4;
-import org.apache.http4.impl.client.CloseableHttpClient;
-import org.apache.http4.impl.client.HttpClients;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpGetHC4;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;

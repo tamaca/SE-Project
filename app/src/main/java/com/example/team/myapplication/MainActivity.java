@@ -35,6 +35,7 @@ import android.widget.Toast;
 
 import com.example.team.myapplication.Cache.Localstorage;
 import com.example.team.myapplication.Database.DB;
+import com.example.team.myapplication.Network.ImagePost;
 import com.example.team.myapplication.Network.JsonGet;
 import com.example.team.myapplication.Network.NetworkState;
 import com.example.team.myapplication.util.GalleryItem;
@@ -52,7 +53,9 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class MainActivity extends Activity implements ScrollViewListener {
     private TabHost mTabHost;
@@ -527,7 +530,9 @@ public class MainActivity extends Activity implements ScrollViewListener {
             }
         }
     }
-
+    private String getFileType(String fileName) {
+        return fileName.substring(fileName.lastIndexOf("."), fileName.length());
+    }
     /**
      * 从相机中获取拍摄的照片
      *
@@ -543,6 +548,16 @@ public class MainActivity extends Activity implements ScrollViewListener {
                 case REQUEST_TAKE_PHOTO:
                     /*setPic();*/
                     Toast.makeText(getApplicationContext(), "Picture is Taken", Toast.LENGTH_LONG).show();
+                    Map<String, String> params = new HashMap<String, String>();;
+                    params.clear();
+                    File file = new File(mCurrentPhotoPath);
+                    StringBuffer sbFileTypes = new StringBuffer();
+                    String fileName = file.getName();
+                    sbFileTypes.append(getFileType(fileName));
+                    params.put("fileTypes", sbFileTypes.toString());
+                    String actionUrl = "http://192.168.253.1/upload/"+LoginState.username+"/";
+                    ImagePost imagePost = new ImagePost(this, actionUrl, params, file,100);
+                    imagePost.execute();
                     break;
             }
         } else {

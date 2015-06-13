@@ -102,6 +102,7 @@
     <orderEntry type="library" exported="" name="play-services-location-7.0.0" level="project" />
     <orderEntry type="library" exported="" name="play-services-gcm-7.0.0" level="project" />
     <orderEntry type="library" exported="" name="play-services-safetynet-7.0.0" level="project" />
+    <orderEntry type="library" exported="" name="httpmime-4.3.1" level="project" />
     <orderEntry type="library" exported="" name="play-services-nearby-7.0.0" level="project" />
     <orderEntry type="library" exported="" name="support-v4-22.1.1" level="project" />
     <orderEntry type="library" exported="" name="play-services-fitness-7.0.0" level="project" />

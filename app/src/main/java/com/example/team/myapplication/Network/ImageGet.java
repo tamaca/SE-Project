@@ -12,13 +12,12 @@ import android.widget.ImageView;
 import com.example.team.myapplication.Cache.Localstorage;
 import com.example.team.myapplication.Cache.LruCacheImageLoader;
 import com.example.team.myapplication.Database.DB;
-import com.example.team.myapplication.R;
 
 import org.apache.http.HttpEntity;
-import org.apache.http4.client.methods.CloseableHttpResponse;
-import org.apache.http4.client.methods.HttpGetHC4;
-import org.apache.http4.impl.client.CloseableHttpClient;
-import org.apache.http4.impl.client.HttpClientBuilder;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpGetHC4;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
 
 import java.io.File;
 import java.io.FileOutputStream;
