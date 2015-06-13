@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.Menu;
@@ -477,6 +478,15 @@ public class ViewPictureActivity extends GeneralActivity implements ScrollViewLi
     }
 
     /**
+     * 使用系统图库打开图片
+     */
+    public void openPicture(String path){
+        Intent intent = new Intent(Intent.ACTION_VIEW);
+        File file = new File(path);
+        intent.setDataAndType(Uri.fromFile(file), "image/*");
+        startActivity(intent);
+    }
+    /**
      * 跳转到查看原图
      *
      * @param view
@@ -489,10 +499,7 @@ public class ViewPictureActivity extends GeneralActivity implements ScrollViewLi
                 builder.setPositiveButton("继续", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-                        Intent intent = new Intent(getApplicationContext(), PictureActivity.class);
-                        //TODO 在这里添加想传入查看原图页面的信息，比如图片主人的名字，图片ID 啥的。
-
-                        startActivity(intent);
+                        //TODO 进入系统图库打开图片
                     }
                 });
                 builder.setNegativeButton("不了", new DialogInterface.OnClickListener() {
