@@ -31,6 +31,8 @@
         android:layout_height="160dp"
         android:id="@+id/imageView9"
         android:scaleType="centerCrop"
+        android:layout_marginLeft="2dp"
+        android:layout_marginRight="2dp"
         android:layout_gravity="center_horizontal"
         android:layout_marginBottom="5dp"/>
 </LinearLayout>

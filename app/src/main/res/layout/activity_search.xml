@@ -71,7 +71,8 @@
         <com.example.team.myapplication.util.MyScrollView
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/picture_scrollView" >
+            android:id="@+id/picture_scrollView"
+            android:layout_marginTop="10dp">
 
             <LinearLayout
                 android:orientation="vertical"
@@ -89,6 +90,8 @@
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
                         android:layout_weight="1"
+                        android:layout_marginLeft="5dp"
+                        android:layout_marginRight="2dp"
                         android:id="@+id/scroll_content_left"/>
 
                     <LinearLayout
@@ -96,6 +99,8 @@
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
                         android:layout_weight="1"
+                        android:layout_marginLeft="2dp"
+                        android:layout_marginRight="5dp"
                         android:id="@+id/scroll_content_right"/>
                 </LinearLayout>
             </LinearLayout>
