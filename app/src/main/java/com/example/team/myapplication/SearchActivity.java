@@ -2,7 +2,6 @@ package com.example.team.myapplication;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.Menu;
@@ -23,9 +22,11 @@ import com.example.team.myapplication.Network.JsonPost;
 import com.example.team.myapplication.util.CheckValid;
 import com.example.team.myapplication.util.GalleryItem;
 import com.example.team.myapplication.util.GeneralActivity;
+import com.example.team.myapplication.util.LoadingView;
 import com.example.team.myapplication.util.MyException;
 import com.example.team.myapplication.util.MyScrollView;
 import com.example.team.myapplication.util.MyToast;
+import com.example.team.myapplication.util.ScrollViewListener;
 
 import org.json.JSONObject;
 
@@ -35,15 +36,15 @@ import java.util.List;
 import java.util.Map;
 
 
-public class SearchActivity extends GeneralActivity {
+public class SearchActivity extends GeneralActivity implements ScrollViewListener{
     private Button searchUserButton;
     private Button searchTagButton;
     private ListView userNameListView;
     private MyScrollView pictureScrollView;
-    private LinearLayout scrollViewContent;
+    private LinearLayout scrollContent;
     private LinearLayout scrollViewContentLeft;
     private LinearLayout scrollViewContentRight;
-
+    private LoadingView loadingView;
     public ArrayList<String> resultUsers;
     public ArrayList<GalleryItem> resultPictures;
     private SearchUserTask searchUserTask;
@@ -74,10 +75,10 @@ public class SearchActivity extends GeneralActivity {
         onSearchProgressBar = (ProgressBar) findViewById(R.id.progressBar7);
         textView = (EditText) findViewById(R.id.editText);
         noResultTextView = (TextView) findViewById(R.id.textView8);
-        scrollViewContent = (LinearLayout) findViewById(R.id.scroll_content_in_search_activity);
+        scrollContent = (LinearLayout) findViewById(R.id.scroll_content_in_search_activity);
         scrollViewContentLeft = (LinearLayout) findViewById(R.id.scroll_content_left);
         scrollViewContentRight = (LinearLayout) findViewById(R.id.scroll_content_right);
-
+        loadingView = new LoadingView(this);
         resultUsers = new ArrayList<>();
         resultPictures = new ArrayList<>();
         searchUserTask = null;
@@ -207,6 +208,18 @@ public class SearchActivity extends GeneralActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onScrollChanged(MyScrollView scrollView, int x, int y, int oldX, int oldY) {
+        if (y + scrollView.getMeasuredHeight() + 50 > scrollContent.getMeasuredHeight()) {
+            if (!end) {
+                if (scrollContent.getChildAt(scrollContent.getChildCount() - 1) != loadingView) {
+                    scrollContent.addView(loadingView);
+                    
+                }
+            }
+        }
     }
 
     class SearchUserTask extends AsyncTask<Void, Void, Boolean> {

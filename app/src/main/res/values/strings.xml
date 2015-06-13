@@ -41,7 +41,7 @@
     <string name="error_field_required">该项不能为空</string>
     <string name="register">立即注册</string>
     <string name="user_name">用户名</string>
-    <string name="user_name_invalid">用户名只能使用英文字母，下划线，数字及汉字，长度2~20个字符</string>
+    <string name="user_name_invalid">用户名只能使用英文字母，下划线，数字及汉字，长度2~15个字符</string>
     <string name="title_activity_user_list">名单</string>
     <string name="enter_password">输入密码</string>
     <string name="reenter_password">再次输入密码</string>
@@ -52,8 +52,8 @@
     <string name="remember_password">记住密码</string>
     <string name="title_activity_general">GeneralActivity</string>
     <string name="view_origin_picture">原图</string>
-    <string name="author">Jack</string>
-    <string name="upload_time">2015-10-02</string>
+    <string name="author">  </string>
+    <string name="upload_time">  </string>
     <string name="title_activity_change_password">修改密码</string>
     <string name="old_password">旧密码</string>
     <string name="new_password">新密码</string>

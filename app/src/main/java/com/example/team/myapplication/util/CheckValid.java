@@ -14,11 +14,11 @@ public class CheckValid {
     }
 
     static public boolean isUserNameValid(String userName) {
-        return userName.length() >= 2 && userName.length() <= 20 && userName.matches("^[A-Za-z0-9_\u4e00-\u9fa5]{2,15}$");
+        return userName.length() >= 2 && userName.length() <= 15 && userName.matches("^[A-Za-z0-9_\u4e00-\u9fa5]{2,15}$");
     }
 
     static public boolean isInputValid(String str) {
-        return str.length() < 20 && str.charAt(0) != ' ';
+        return str.length() < 20 && str.charAt(0) != ' '&&str.matches("^[A-Za-z0-9_\u4e00-\u9fa5]{2,15}$");
     }
 
     static public boolean isTagUnique(ArrayList<Tag> tags, String tagContent) {
@@ -32,6 +32,6 @@ public class CheckValid {
 
     static public boolean isTagValid(String tagContent) {
         byte[] x = tagContent.getBytes();
-        return x.length <= 10 && !tagContent.contains(" ");
+        return x.length <= 10 && !tagContent.contains(" ")&&tagContent.matches("^[A-Za-z0-9_\u4e00-\u9fa5]{2,15}$");
     }
 }
