@@ -4,25 +4,52 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="0dp"
     android:paddingBottom="0dp"
-    tools:context="com.example.team.myapplication.RecentActivity">
+    tools:context="com.example.team.myapplication.RecentActivity"
+    android:background="@color/背景蓝">
+    <com.example.team.myapplication.util.RefreshableView
+        android:id="@+id/refreshable_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <com.example.team.myapplication.util.MyScrollView
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:id="@+id/scrollView4" >
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:id="@+id/linearLayout5">
 
-    <com.example.team.myapplication.util.MyScrollView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/scrollView4" >
+                <LinearLayout
+                    android:orientation="horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:weightSum="1"
+                    android:baselineAligned="false">
 
-        <LinearLayout
-            android:orientation="vertical"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:id="@+id/linearLayout5"/>
-    </com.example.team.myapplication.util.MyScrollView>
+                    <LinearLayout
+                        android:orientation="vertical"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:weightSum="1"
+                        android:layout_gravity="left"
+                        android:layout_weight="0.5"
+                        android:id="@+id/linearLayout6">
 
-    <ProgressBar
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/progressBar6"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:visibility="gone" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:orientation="vertical"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:weightSum="1"
+                        android:layout_gravity="right"
+                        android:layout_weight="0.5"
+                        android:id="@+id/linearLayout7">
+
+                    </LinearLayout>
+                </LinearLayout>
+            </LinearLayout>
+        </com.example.team.myapplication.util.MyScrollView>
+    </com.example.team.myapplication.util.RefreshableView>
 </RelativeLayout>

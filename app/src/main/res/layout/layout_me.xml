@@ -61,7 +61,8 @@
                     android:textColor="@drawable/button_me_text"
                     android:id="@+id/button2"
                     android:drawableTop="@drawable/moments"
-                    android:background="@drawable/button_me"/>
+                    android:background="@drawable/button_me"
+                    android:onClick="toRecentActivity"/>
 
                 <Button
                     android:layout_width="fill_parent"
@@ -74,7 +75,8 @@
                     android:textColor="@drawable/button_me_text"
                     android:id="@+id/change_password_button"
                     android:drawableTop="@drawable/re_password"
-                    android:background="@drawable/button_me"/>
+                    android:background="@drawable/button_me"
+                     android:onClick="toChangePasswordActivity"/>
             </LinearLayout>
 
             <LinearLayout

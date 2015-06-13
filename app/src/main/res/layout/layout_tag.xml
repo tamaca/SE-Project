@@ -5,6 +5,31 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Tag1"
-        android:id="@+id/showing_tag" />
+        android:text="1234567890"
+        android:id="@+id/showing_tag"
+        android:textSize="16sp"
+        android:padding="5dp"
+        android:visibility="gone"
+        android:layout_gravity="center_vertical" />
+
+    <ImageButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/imageButton4"
+        android:background="@color/透明"
+        android:src="@drawable/remove"
+        android:layout_gravity="center_vertical"
+        android:visibility="gone"/>
+
+    <ImageButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/imageButton5"
+        android:background="@color/透明"
+        android:src="@drawable/add"
+        android:layout_gravity="center"
+        android:visibility="gone"
+        android:layout_marginTop="5dp"
+        android:layout_marginBottom="5dp" />
+
 </LinearLayout>

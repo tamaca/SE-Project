@@ -1,108 +1,60 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/背景蓝"
     android:orientation="vertical">
-
+<com.example.team.myapplication.util.MyScrollView
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:id="@+id/scrollView5">
     <LinearLayout
-        android:orientation="horizontal"
-        android:layout_width="fill_parent"
-        android:layout_height="160dp"
-        android:background="@color/背景蓝">
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingTop="5dp"
+        android:id="@+id/linearLayout8"
+        android:gravity="center_horizontal">
 
-        <ImageView
+        <LinearLayout
+            android:orientation="horizontal"
             android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
-            android:layout_weight="1"
-            android:id="@+id/imageView1"
-            android:adjustViewBounds="true"
-            android:scaleType="centerCrop"
-            android:onClick="toViewPictureActivity" />
+            android:layout_height="match_parent">
 
-        <ImageView
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
-            android:layout_weight="1"
-            android:id="@+id/imageView2"
-            android:adjustViewBounds="true"
-            android:scaleType="centerCrop"
-            android:onClick="toViewPictureActivity" />
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:id="@+id/square_left"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="2dp">
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:id="@+id/square_right"
+                android:layout_marginRight="5dp"
+                android:layout_marginLeft="2dp">
+
+            </LinearLayout>
+        </LinearLayout>
     </LinearLayout>
+</com.example.team.myapplication.util.MyScrollView>
 
-    <LinearLayout
-        android:orientation="horizontal"
-        android:layout_width="fill_parent"
-        android:layout_height="160dp"
-        android:background="@color/背景蓝">
 
-        <ImageView
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
-            android:layout_weight="1"
-            android:id="@+id/imageView3"
-            android:adjustViewBounds="true"
-            android:scaleType="centerCrop"
-            android:onClick="toViewPictureActivity" />
+    <ImageButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/imageButton"
+        android:background="@drawable/button_camera"
+        android:onClick="dispatchTakePictureIntent"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="5dp"
+        android:layout_centerHorizontal="true" />
 
-        <ImageView
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
-            android:layout_weight="1"
-            android:id="@+id/imageView4"
-            android:adjustViewBounds="true"
-            android:scaleType="centerCrop"
-            android:onClick="toViewPictureActivity" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:orientation="horizontal"
-        android:layout_width="fill_parent"
-        android:layout_height="160dp"
-        android:background="@color/背景蓝" >
-
-        <ImageView
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
-            android:layout_weight="1"
-            android:id="@+id/imageView5"
-            android:adjustViewBounds="true"
-            android:scaleType="centerCrop"
-            android:onClick="toViewPictureActivity" />
-
-        <ImageView
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
-            android:layout_weight="1"
-            android:id="@+id/imageView6"
-            android:adjustViewBounds="true"
-            android:scaleType="centerCrop"
-            android:onClick="toViewPictureActivity" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:orientation="horizontal"
-        android:layout_width="fill_parent"
-        android:layout_height="160dp"
-        android:background="@color/背景蓝" >
-
-        <ImageView
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
-            android:layout_weight="1"
-            android:id="@+id/imageView7"
-            android:adjustViewBounds="true"
-            android:scaleType="centerCrop"
-            android:onClick="toViewPictureActivity" />
-
-        <ImageView
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
-            android:layout_weight="1"
-            android:id="@+id/imageView8"
-            android:adjustViewBounds="true"
-            android:scaleType="centerCrop"
-            android:onClick="toViewPictureActivity" />
-    </LinearLayout>
-
-</LinearLayout>
+</RelativeLayout>

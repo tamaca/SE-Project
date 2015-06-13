@@ -19,7 +19,9 @@ import android.widget.Toast;
 
 import com.example.team.myapplication.Database.DB;
 import com.example.team.myapplication.Network.JsonPost;
+import com.example.team.myapplication.util.CheckValid;
 import com.example.team.myapplication.util.GeneralActivity;
+import com.example.team.myapplication.util.MyToast;
 
 import java.util.HashMap;
 
@@ -33,6 +35,7 @@ public class RegisterActivity extends GeneralActivity {
     private EditText secondPassword;
     private View progressView;
     private View registerView;
+    private MyToast myToast;
     private DB db;
 
     @Override
@@ -44,7 +47,9 @@ public class RegisterActivity extends GeneralActivity {
         }*/
         setContentView(R.layout.activity_register);
         getActionBar().setDisplayHomeAsUpEnabled(true);
-
+        /**
+         * 初始化变量
+         */
         db = new DB(this);
         okButton = (Button) findViewById(R.id.register_ok);
         userName = (TextView) findViewById(R.id.register_user_name);
@@ -53,6 +58,7 @@ public class RegisterActivity extends GeneralActivity {
         secondPassword = (EditText) findViewById(R.id.register_password_again);
         progressView = findViewById(R.id.login_progress);
         registerView = findViewById(R.id.register_view);
+        myToast = new MyToast(this);
         okButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -170,7 +176,7 @@ public class RegisterActivity extends GeneralActivity {
             userName.setError(getString(R.string.error_field_required));
             cancel = true;
             focusView = userName;
-        } else if (!isUserNameValid(user_name)) {
+        } else if (CheckValid.isUserNameValid(user_name)) {
             userName.setError(getString(R.string.user_name_invalid));
             cancel = true;
             focusView = userName;
@@ -252,7 +258,7 @@ public class RegisterActivity extends GeneralActivity {
                 //map.put("email", encrptEmail);
                 // map.put("password", encrptPassword);
                 //  map.put("username", encrptname);
-                new JsonPost(map, url, 2, db);
+                new JsonPost(map, url, "register", db);
                 Thread.sleep(3000);
             } catch (Exception e) {
 
@@ -279,7 +285,7 @@ public class RegisterActivity extends GeneralActivity {
                 RegisterActivity.this.finish();
 
             } else {
-                Toast.makeText(getApplicationContext(), "注册失败", Toast.LENGTH_LONG).show();
+                myToast.show(getString(R.string.toast_register_failed));
             }
         }
 

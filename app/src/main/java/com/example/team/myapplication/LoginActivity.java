@@ -30,7 +30,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.team.myapplication.Database.DB;
-import com.example.team.myapplication.Network.AES;
 import com.example.team.myapplication.Network.JsonPost;
 import com.example.team.myapplication.util.CheckValid;
 import com.example.team.myapplication.util.GeneralActivity;
@@ -84,7 +83,21 @@ public class LoginActivity extends GeneralActivity implements LoaderCallbacks<Cu
 
 
         // Set up the login form.
+        //TODO:测试
         mUserNameView = (AutoCompleteTextView) findViewById(R.id.name_in_login);
+        mUserNameView.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (mUserNameView.hasFocus() == false) {
+                    String username = mUserNameView.getText().toString();
+                    String password;
+                    password = db.getmUserPassword(username);
+                    if (password != null) {
+                        mPasswordView.setText(password);
+                    }
+                }
+            }
+        });
         mPasswordView = (EditText) findViewById(R.id.password);
         mPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
@@ -121,14 +134,10 @@ public class LoginActivity extends GeneralActivity implements LoaderCallbacks<Cu
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
                 //b为真，表示自动登录打勾
-
-
                 if (b) {
                     rememPassword.setChecked(true);
-                    rememPassword.setEnabled(false);
                 } else {
                     rememPassword.setChecked(false);
-                    rememPassword.setEnabled(true);
                 }
             }
         });
@@ -136,35 +145,32 @@ public class LoginActivity extends GeneralActivity implements LoaderCallbacks<Cu
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
                 //b为真，表示记住密码打勾
+                if (!b) {
+                    if (autoLogin.isChecked()) {
+                        autoLogin.setChecked(false);
+                    }
+                }
 
             }
         });
-        //autologin();
+        autologin();
     }
 
-
-    public void testLogin(View view) {
-        LoginState.setLogined(true, "test");
-        Toast.makeText(getApplicationContext(), "isLogin?" + LoginState.getLogined(), Toast.LENGTH_SHORT).show();
-        if (LoginState.getLogined()) {
-            Toast.makeText(getApplicationContext(), "Username" + LoginState.username, Toast.LENGTH_SHORT).show();
-        }
-        showProgress(true);
-        finish();
-
-
-    }
 
     private void autologin() {
         Cursor cursor = db.lastuserselect();
         if (cursor.moveToFirst()) {
             String encryptid = cursor.getString(cursor.getColumnIndex("m_lastuser_id"));
             String encryptpassword = cursor.getString(cursor.getColumnIndex("m_lastuser_password"));
+            //String id=AES.decrypt(encryptid);
+            //String password=AES.decrypt(encryptpassword);
+            String id = encryptid;
+            String password = encryptpassword;
             if (mAuthTask != null) {
                 return;
             }
             showProgress(true);
-            mAuthTask = new UserLoginTask(encryptid, encryptpassword, 2);
+            mAuthTask = new UserLoginTask(id, password, 2);
             mAuthTask.execute((Void) null);
         }
     }
@@ -380,15 +386,17 @@ public class LoginActivity extends GeneralActivity implements LoaderCallbacks<Cu
 
 
             try {
-                String encryptEmail = "";
+                String encryptuserName = "";
                 String encryptPassword = "";
                 if (1 == type) {
-                    encryptEmail = AES.encrypt(mUserName);
-                    encryptPassword = AES.encrypt(mPassword);
+                    //  encryptuserName = AES.encrypt(mUserName);
+                    // encryptPassword = AES.encrypt(mPassword);
 
                 } else if (2 == type) {
-                    encryptEmail = mUserName;
-                    encryptPassword = mPassword;
+                    //   encryptuserName = mUserName;
+                    //  encryptPassword = mPassword;
+                    autoLogin.setChecked(true);
+                    rememPassword.setChecked(true);
                 } else {
                     try {
                         throw new Exception("参数错误");
@@ -397,14 +405,15 @@ public class LoginActivity extends GeneralActivity implements LoaderCallbacks<Cu
 
                     }
                 }
-                String url = "http://192.168.137.1/php2/index.php";
+                String url = "http://192.168.253.1/login/";
                 HashMap<String, String> map = new HashMap<String, String>();
-                map.put("email", encryptEmail);
-                map.put("password", encryptPassword);
-                JsonPost post = new JsonPost(map, url, 1, autoLogin.isChecked(), rememPassword.isChecked(), db);
-                Thread.sleep(3000);
+                // map.put("username", encryptuserName);
+                // map.put("password", encryptPassword);
+                map.put("username", mUserName);
+                map.put("password", mPassword);
+                JsonPost post = new JsonPost(map, url, autoLogin.isChecked(), rememPassword.isChecked(), db);
+                Thread.sleep(500);
             } catch (Exception e) {
-                String name=e.getClass().getName();
                 return false;
             }
 
@@ -441,4 +450,3 @@ public class LoginActivity extends GeneralActivity implements LoaderCallbacks<Cu
 
     }
 }
-

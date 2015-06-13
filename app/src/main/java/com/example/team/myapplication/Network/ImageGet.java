@@ -14,10 +14,10 @@ import com.example.team.myapplication.Cache.LruCacheImageLoader;
 import com.example.team.myapplication.Database.DB;
 
 import org.apache.http.HttpEntity;
-import org.apache.http4.client.methods.CloseableHttpResponse;
-import org.apache.http4.client.methods.HttpGetHC4;
-import org.apache.http4.impl.client.CloseableHttpClient;
-import org.apache.http4.impl.client.HttpClientBuilder;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpGetHC4;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -39,13 +39,12 @@ public class ImageGet {
     private String imageUrl;
     private String imageId;
     private DB db;
-
-    public ImageGet(ImageView imageView, String imageUrl, DB db, String type) {
+    public ImageGet(ImageView imageView, String imageUrl,String imageid, DB db, String type) {
         imageViewWeakReference = new WeakReference<ImageView>(imageView);
         mLoadImageAsyncTaskHashSet = new HashSet<BitmapDownloaderTask>();
         this.imageUrl = imageUrl;
         this.db = db;
-        imageId = Localstorage.getImagesId(imageUrl);
+        this.imageId=imageid;
         mLruCacheImageLoader = LruCacheImageLoader.getLruCacheImageLoaderInstance();
         Load(imageUrl, type);
     }
@@ -55,7 +54,7 @@ public class ImageGet {
         imageView = imageViewWeakReference.get();
         Bitmap bitmap = mLruCacheImageLoader.getBitmapFromLruCache(imageUrl);
         if (bitmap == null) {
-            String filePath = Localstorage.getImageFilePath(imageUrl, type);
+            String filePath = Localstorage.getImageFilePath(imageId, type);
             File imageFile = new File(filePath);
             if (!type.equals("origin") && !imageFile.exists()) {
                 if (cancelPotentialDownload(imageUrl, imageView)) {
@@ -64,8 +63,8 @@ public class ImageGet {
                     bitmapDownloaderTask.execute(imageUrl);
                 }
             }
-            if (filePath != null && imageView != null) {
-                bitmap = Localstorage.getBitmapFromSDCard(filePath, imageView.getWidth());
+            else if (filePath != null && imageView != null) {
+                bitmap = Localstorage.getBitmapFromSDCard(filePath);
                 if (bitmap != null) {
                     BitmapShowInCache bitmapShowInCache = new BitmapShowInCache();
                     bitmapShowInCache.execute(bitmap);
@@ -115,12 +114,12 @@ public class ImageGet {
     private class BitmapDownloaderTask extends AsyncTask<String, Void, Bitmap> {
         private String url = imageUrl;
         private final WeakReference<ImageView> imageViewWeakReference;
-        private final WeakReference<String> filepathWeakReference;
+        private String filepath;
         private String type;
 
         public BitmapDownloaderTask(ImageView imageView, String filepath, String type) {
             imageViewWeakReference = new WeakReference<ImageView>(imageView);
-            filepathWeakReference = new WeakReference<String>(filepath);
+            this.filepath =filepath;
             this.type = type;
         }
 
@@ -148,7 +147,7 @@ public class ImageGet {
                     bitmap = null;
                 }
                 ImageView imageView = imageViewWeakReference.get();
-                String filePath = filepathWeakReference.get();
+                String filePath = filepath;
                 if (imageView != null) {
                     BitmapDownloaderTask bitmapDownloaderTask = getBitmapDownloader(imageView);
                     if (this == bitmapDownloaderTask) {
@@ -156,6 +155,7 @@ public class ImageGet {
                     }
                 }
                 try {
+                    mLruCacheImageLoader.addBitmapToLruCache(imageUrl, bitmap);
                     mLoadImageAsyncTaskHashSet.remove(this);
                     if (!type.equals("origin")) {
                         File imageFile = new File(filePath);
@@ -235,7 +235,7 @@ public class ImageGet {
         private final WeakReference<BitmapDownloaderTask> bitmapDownloaderTaskWeakReference;
 
         public DownloadDrawable(BitmapDownloaderTask bitmapDownloaderTask) {
-            super(Color.BLACK);
+            super(Color.argb(0x00,0xf0,0xf8,0xf8));
             bitmapDownloaderTaskWeakReference = new WeakReference<BitmapDownloaderTask>(bitmapDownloaderTask);
         }
 

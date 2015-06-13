@@ -1,24 +1,21 @@
 package com.example.team.myapplication.Network;
 
-import android.os.AsyncTask;
 import android.view.View;
 import android.widget.ImageView;
 
 import com.example.team.myapplication.Database.DB;
-import com.example.team.myapplication.R;
-import com.example.team.myapplication.ViewPictureActivity;
+import com.example.team.myapplication.LoginState;
+import com.example.team.myapplication.util.*;
 
-import org.apache.http4.client.methods.CloseableHttpResponse;
-import org.apache.http4.client.methods.HttpGetHC4;
-import org.apache.http4.impl.client.CloseableHttpClient;
-import org.apache.http4.impl.client.HttpClients;
-import org.json.JSONException;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpGetHC4;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -28,19 +25,58 @@ import java.util.HashMap;
 public class JsonGet {
     private String url;
     private DB db;
-    private View view;
+    private GalleryItem[] galleryItems;
+    private RecentItem[] recentItems;
+
+    //关注或黑名单中的人
     public ArrayList<String> getUserNames() {
         return userNames;
     }
+
     private ArrayList<String> userNames;
-    //图片获取
-    public JsonGet(String url, DB db, View view) throws Exception {
+
+    public HashMap<String, String> getReturnmap() {
+        return returnmap;
+    }
+
+    private HashMap<String, String> returnmap;
+
+
+    //图片获取(url)
+    public JsonGet(String url, DB db, GalleryItem[] galleryItems, String type) throws Exception {
         this.url = url;
         this.db = db;
-        this.view = view;
+        this.galleryItems = galleryItems;
         Get get = new Get();
         JSONObject jsonObject = get.GetFromServer();
-        get.PostExecuteImage(jsonObject);
+        get.PostExecuteImageUrl(jsonObject, type);
+    }
+
+    //图片获取url ta动态获取
+    //TODO:只读取了第一个人
+    public JsonGet(String url, RecentItem[] recentItems, DB db, String type) throws Exception {
+        this.url = url;
+        this.db = db;
+        this.recentItems = recentItems;
+        Get get = new Get();
+        JSONObject jsonObject = get.GetFromServer();
+        get.PostExecuteImageUrl(jsonObject, type);
+    }
+
+    //图片获取(id)
+    public JsonGet(String url, String key, String type) throws Exception {
+        this.url = url;
+        Get get = new Get();
+        JSONObject jsonObject = get.GetFromServer();
+        get.PostExecuteId(jsonObject, key);
+    }
+
+    //原始地址获取
+    public JsonGet(String url, String type) throws Exception {
+        this.url = url;
+        Get get = new Get();
+        JSONObject jsonObject = get.GetFromServer();
+        get.PostExecuteOrigin(jsonObject);
     }
 
     //关注的人获取 或 黑名单获取
@@ -48,7 +84,29 @@ public class JsonGet {
         this.url = url;
         Get get = new Get();
         JSONObject jsonObject = get.GetFromServer();
-        userNames=get.PostExecuteList(jsonObject);
+        userNames = get.PostExecuteList(jsonObject);
+    }
+
+    //赞或取消赞
+    public JsonGet(String url, DB db) throws Exception {
+        this.url = url;
+        this.db = db;
+        Get get = new Get();
+        JSONObject jsonObject = get.GetFromServer();
+        get.PostExecuteLike(jsonObject);
+    }
+
+    //获得标签
+    public JsonGet(String url, DB db, String type) throws Exception {
+        this.url = url;
+        this.db = db;
+        Get get = new Get();
+        JSONObject jsonObject = get.GetFromServer();
+        if (type.equals("gettag")) {
+            get.PostExecuteTag(jsonObject);
+        } else if (type.equals("getcomment")) {
+            get.PostExecuteComment(jsonObject);
+        }
     }
 
     private class Get {
@@ -60,7 +118,7 @@ public class JsonGet {
                 CloseableHttpResponse response = null;
                 httpget.setHeader("Content-Type", "application/x-www-form-urlencoded");
                 httpget.setHeader("Accept", "application/json");
-                httpget.setHeader("Content-type", "application/json");
+                // httpget.setHeader("Content-type", "application/json");
                 response = client.execute(httpget);
                 int a = response.getStatusLine().getStatusCode();
                 StringBuilder builder = new StringBuilder();
@@ -76,86 +134,272 @@ public class JsonGet {
                 client.close();
                 return jsonObject1;
             } catch (Exception e) {
-                throw new getException();
+                throw new MyException.getException();
             }
         }
 
-        //接收图片
-        protected void PostExecuteImage(JSONObject jsonObject) throws Exception {
+        //接收图片(url) 大厅
+        protected void PostExecuteImageUrl(JSONObject jsonObject, String type) throws Exception {
             if (jsonObject != null) {
                 String status = jsonObject.getString("status");
+                String baseurl = "http://192.168.253.1/media/";
+                String image_small[] = new String[8];
+                String image_big[] = new String[8];
+                String image_id[] = new String[8];
+                String image_time[] = new String[8];
+                String image_author[] = new String[8];
+                ImageView imageView[] = new ImageView[8];
+                int count;
                 if (status.equals("normal")) {
-                    String baseurl = "http://192.168.253.1/media/";
-                    String image_small[] = new String[4];
-                    String image_big[] = new String[4];
-                    for (int i = 0; i <= 3; i++) {
-                        image_small[i] = baseurl + jsonObject.getString("image" + i + "_small");
-                        image_big[i] = baseurl + jsonObject.getString("image" + i + "_big");
+                    count = 8;
+                } else if (status.equals("no_more_image")) {
+                    String _count = jsonObject.getString("count");
+                    count = Integer.valueOf(_count);
+                    if (count == 0) {
+                        throw new MyException.zeroException();
                     }
-                    if (view != null) {
-                        ImageView imageView1 = (ImageView) view.findViewById(R.id.imageView1);
-                        ImageView imageView2 = (ImageView) view.findViewById(R.id.imageView2);
-                        ImageView imageView3 = (ImageView) view.findViewById(R.id.imageView3);
-                        ImageView imageView4 = (ImageView) view.findViewById(R.id.imageView4);
-                        ImageGet imageGet1 = new ImageGet(imageView1, image_small[0], db, "small");
-                        ImageGet imageGet2 = new ImageGet(imageView2, image_small[1], db, "small");
-                        ImageGet imageGet3 = new ImageGet(imageView3, image_small[2], db, "small");
-                        ImageGet imageGet4 = new ImageGet(imageView4, image_small[3], db, "small");
-                        imageView1.setContentDescription(image_big[0]);
-                        imageView2.setContentDescription(image_big[1]);
-                        imageView3.setContentDescription(image_big[2]);
-                        imageView4.setContentDescription(image_big[3]);
-                    } else {
-                        ImageGet imageGet6 = new ImageGet(null, image_small[0], db, "small");
-                        ImageGet imageGet7 = new ImageGet(null, image_small[1], db, "small");
-                        ImageGet imageGet8 = new ImageGet(null, image_small[2], db, "small");
-                        ImageGet imageGet9 = new ImageGet(null, image_small[3], db, "small");
-                    }
-                    //TODO 此处需要加入本地数据库
                 } else {
-                    throw new executeException();
+                    throw new MyException.executeException();
                     //TODO:接收信息错误
                 }
-                //这里写跳转代码
-                //loginActivity.showProgress(false);
+                for (int i = 0; i < count; i++) {
+                    image_small[i] = baseurl + jsonObject.getString("image" + i + "_small");
+                    image_big[i] = baseurl + jsonObject.getString("image" + i + "_big");
+                    image_id[i] = jsonObject.getString("image" + i + "_id");
+                }
+                if (recentItems != null || galleryItems != null) {
+                    if (galleryItems != null) {
+                        for (int i = 0; i < count; i++) {
+                            imageView[i] = galleryItems[i].imageView;
+                        }
+                    } else {
+                        for (int i = 0; i < count; i++) {
+                            imageView[i] = recentItems[i].imageView;
+                        }
+                    }
+                    for (int i = 0; i < count; i++) {
+                        new ImageGet(imageView[i], image_small[i], image_id[i], db, "small");
+                        JSONObject jsonObject1 = new JSONObject();
+                        jsonObject1.put("type", "online");
+                        jsonObject1.put("imageid", image_id[i]);
+                        jsonObject1.put("imagebigurl", image_big[i]);
+                        imageView[i].setContentDescription(jsonObject1.toString());
+                    }
+                } else {
+                    for (int i = 0; i < count; i++) {
+                        new ImageGet(null, image_small[i], image_id[i], db, "small");
+                    }
+                }
+                for (int i = 0; i < count; i++) {
+                    dbimagesave(image_id[i]);
+                }
+                if (type.equals("lobby")) {
+                    for (int i = 0; i < count; i++) {
+                        dblobbyimagesave(String.valueOf(LoginState.getPage() * 8 + i + 1), image_id[i]);
+                    }
+                } else if (galleryItems != null) {
+                    for (int i = 0; i < count; i++) {
+                        image_time[i] = jsonObject.getString("image" + i + "_date");
+                        galleryItems[i].textView.setText(image_time[i]);
+                        galleryItems[i].textView.setVisibility(View.VISIBLE);
+                    }
+                } else if (recentItems != null) {
+                    for (int i = 0; i < count; i++) {
+                        image_time[i] = jsonObject.getString("image" + i + "_date");
+                        image_author[i] = jsonObject.getString("image" + i + "_owner");
+                        recentItems[i].time.setText(image_time[i]);
+                        recentItems[i].author.setText(image_author[i]);//todo:发送 图片上传者姓名
+                        dbimagecaresave(image_id[i], image_author[i], image_time[i]);
+                    }
+                }
             } else {
                 //TODO:接收信息错误
-                throw new nullException();
+                throw new MyException.nullException();
             }
-
         }
+
 
         //黑名单 和 关注的人
         protected ArrayList<String> PostExecuteList(JSONObject jsonObject) throws Exception {
             if (jsonObject != null) {
                 String status = jsonObject.getString("status");
                 if (status.equals("normal")) {
+                    String _num = jsonObject.getString("now");
+                    int num = Integer.parseInt(_num);
                     ArrayList<String> userNames = new ArrayList<String>();
-                    for (int i = 0; i <= 15; i++) {
-                        String _username = jsonObject.getString("username" + i);
+                    for (int i = 0; i < num; i++) {
+                        String _username = jsonObject.getString("target" + i);
                         userNames.add(_username);
                     }
                     return userNames;
                 } else {
-                    throw new executeException();
+                    throw new MyException.executeException();
                 }
             } else {
                 //TODO:接收信息错误
-                throw new nullException();
+                throw new MyException.nullException();
             }
         }
-//异常类
 
-        class getException extends Exception {
-            public String name = "get";
+        //赞或取消赞
+        protected void PostExecuteLike(JSONObject jsonObject) throws Exception {
+            if (jsonObject != null) {
+                String status = jsonObject.getString("status");
+                if (status.equals("normal")) {
+                    returnmap = new HashMap<String, String>();
+                    // HashMap<String, String> returnmap = new HashMap<String, String>();
+                    String islike = jsonObject.getString("is_like");
+                    String likenumber = jsonObject.getString("like_number");
+                    String imageid = jsonObject.getString("image_id");
+                    dbimagelikesave(imageid, islike, likenumber);
+                    returnmap.put("islike", islike);
+                    returnmap.put("likenumber", likenumber);
+                    //return returnmap;
+                } else {
+                    throw new MyException.executeException();
+                }
+            } else {
+                //TODO:接收信息错误
+                throw new MyException.nullException();
+            }
         }
 
-        class nullException extends Exception {
-            public String name = "null";
+        protected void PostExecuteTag(JSONObject jsonObject) throws Exception {
+            if (jsonObject != null) {
+                int tagnum;
+                String status = jsonObject.getString("status");
+                returnmap = new HashMap<String, String>();
+                if (status.equals("normal")) {
+                    tagnum = 5;
+                } else {
+                    String _tagnum = jsonObject.getString("count");
+                    returnmap.put("tagnum", String.valueOf(_tagnum));
+                    tagnum = Integer.parseInt(_tagnum);
+                }
+                returnmap.put("imageid", jsonObject.getString("image_id"));
+                for (int i = 0; i < tagnum; i++) {
+                    returnmap.put("tagname" + i, jsonObject.getString("tag" + String.valueOf(i)));
+                    returnmap.put("tagid" + i, jsonObject.getString("tag" + String.valueOf(i) + "_id"));
+                }
+                dbtagsave(returnmap);
+            } else {
+                //TODO:接收信息错误
+                throw new MyException.nullException();
+            }
         }
 
-        class executeException extends Exception {
-            public String name = "execute";
+        protected void PostExecuteComment(JSONObject jsonObject) throws Exception {
+            if (jsonObject != null) {
+                int commentnum;
+                String status = jsonObject.getString("status");
+                returnmap = new HashMap<String, String>();
+                if (status.equals("normal")) {
+                    commentnum = 8;
+                    returnmap.put("commentnum", "8");
+                } else {
+                    String _commentnum = jsonObject.getString("now");
+                    returnmap.put("commentnum", String.valueOf(_commentnum));
+                    commentnum = Integer.parseInt(_commentnum);
+                    if (commentnum == 0) {
+                        throw new MyException.zeroException();
+                    }
+                }
+                returnmap.put("imageid", jsonObject.getString("image_id"));
+                for (int i = 0; i < commentnum; i++) {
+                    returnmap.put("comment" + i, jsonObject.getString("comment" + String.valueOf(i) + "_text"));
+                    returnmap.put("commentid" + i, jsonObject.getString("comment" + String.valueOf(i) + "_id"));
+                    returnmap.put("commentdate" + i, jsonObject.getString("comment" + String.valueOf(i) + "_date"));
+                    returnmap.put("commentuser" + i, jsonObject.getString("comment" + String.valueOf(i) + "_username"));
+                }
+                dbcommentsave(returnmap);
+            } else {
+                //TODO:接收信息错误
+                throw new MyException.nullException();
+            }
+        }
+
+        protected void PostExecuteId(JSONObject jsonObject, String key) throws Exception {
+            if (jsonObject != null) {
+                String status = jsonObject.getString("status");
+                if (status.equals("normal")) {
+                    returnmap = new HashMap<String, String>();
+                    returnmap.put(key, jsonObject.getString(key));
+                    //return returnmap;
+                } else {
+                    throw new MyException.executeException();
+                }
+            } else {
+                //TODO:接收信息错误
+                throw new MyException.nullException();
+            }
+        }
+
+        protected void PostExecuteOrigin(JSONObject jsonObject) throws Exception {
+            if (jsonObject != null) {
+                String status = jsonObject.getString("status");
+                if (status.equals("normal")) {
+                    returnmap = new HashMap<String, String>();
+                    returnmap.put("url", jsonObject.getString("url"));
+                } else {
+                    throw new MyException.executeException();
+                }
+            } else {
+                //TODO:接收信息错误
+                throw new MyException.nullException();
+            }
+        }
+    }
+
+
+    //数据库
+    //缩略图数据库保存
+    private void dbimagesave(String imageid) {
+        db.imageinsert(imageid);
+    }
+
+    //大厅缩略图保存
+    private void dblobbyimagesave(String rank, String imageid) {
+
+        db.lobbyimageinsert(rank, imageid);
+    }
+
+    private void dbimagecaresave(String imageid, String userid, String time) {
+        Timestamp updatetime = new Timestamp(System.currentTimeMillis());
+        updatetime.valueOf(time);
+        db.imagecaredinsert(imageid, userid, updatetime);
+    }
+
+    private void dbimagelikesave(String imageid, String islike, String likenumber) {
+        db.imageupdateislike(imageid, islike);
+        db.imageupdatelikenumber(imageid, likenumber);
+    }
+
+    private void dbcommentsave(HashMap<String, String> comment) {
+        String _commentnum = comment.get("commentnum");
+        int commentnum = Integer.parseInt(_commentnum);
+        String imageid = comment.get("imageid");
+        Timestamp updatetime = new Timestamp(System.currentTimeMillis());
+        for (int i = 0; i < commentnum; i++) {
+            updatetime.valueOf(comment.get("commentdate" + i));
+            db.commentinsert(comment.get("commentid" + i), comment.get("commentuser" + i), imageid, comment.get("comment"), updatetime);
+        }
+    }
+
+    //关注的人缩略图保存
+    private void imagecaredsave(String imageid, String updatedate, String userid) {
+        if (!db.checkuserimage(imageid, userid)) {
+            Timestamp updatetime = new Timestamp(System.currentTimeMillis());
+            updatetime.valueOf(updatedate);
+            db.imagecaredinsert(imageid, userid, updatetime);
+        }
+    }
+
+    //数据库存储标签
+    private void dbtagsave(HashMap<String, String> tag) {
+        String _tagnum = tag.get("tagnum");
+        int tagnum = Integer.parseInt(_tagnum);
+        for (int i = 0; i < tagnum; i++) {
+            db.taginsert(tag.get("tagid" + i), tag.get("tagname" + i), tag.get("imageid"));
         }
     }
 }
