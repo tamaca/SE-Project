@@ -560,7 +560,7 @@ public class MainActivity extends Activity implements ScrollViewListener {
                     sbFileTypes.append(getFileType(fileName));
                     params.put("fileTypes", sbFileTypes.toString());
                     String actionUrl = "http://192.168.253.1/upload/"+LoginState.username+"/";
-                    ImagePost imagePost = new ImagePost(this, actionUrl, params, file,100);
+                    ImagePost imagePost = new ImagePost(this, actionUrl, params, file,50);
                     imagePost.execute();
                     break;
             }

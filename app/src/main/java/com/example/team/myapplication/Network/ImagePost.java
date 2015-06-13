@@ -128,7 +128,7 @@ public class ImagePost extends AsyncTask<String, Integer, String> {
             }
             JSONObject jsonObject = new JSONObject(builder.toString());
             String status = jsonObject.getString("status");
-            if (httpResponse.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
+            if (status.equals("normal")) {
                 return "图片上传成功";
             }
         } catch (ClientProtocolException e) {

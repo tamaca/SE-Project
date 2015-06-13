@@ -282,7 +282,6 @@ public class ViewPictureActivity extends GeneralActivity implements ScrollViewLi
                 new ImageGet(imgview, bigurl, imageid, db, "big");
                 mAuthTask = new getImageInformationProgress(informationurl, imageid, db);
                 mAuthTask.execute();
-
                 getCommentProgress = new GetCommentProgress(db, newcomments);
                 getCommentProgress.execute();
             } else if (type.equals("offline")) {
@@ -579,7 +578,6 @@ public class ViewPictureActivity extends GeneralActivity implements ScrollViewLi
                     tags.get(i).changeState(Tag.showingTag);
                 }
                 refreshTags();
-
             } else {
                 myToast.show(getString(R.string.toast_fetching_information_failed));
             }
@@ -732,6 +730,7 @@ public class ViewPictureActivity extends GeneralActivity implements ScrollViewLi
                 returnmap = new JsonGet(url, db, "getcomment").getReturnmap();
             } catch (MyException.zeroException e) {
                 end = true;
+                return false;
                 //TODO:没有更多的评论了 把正在载入替换
             } catch (Exception e) {
                 return false;
