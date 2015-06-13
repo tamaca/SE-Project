@@ -67,8 +67,9 @@ public class RecentActivity extends GeneralActivity implements ScrollViewListene
         /**
          * 请在getRecent里获得所有动态
          */
-        getRecent();
-
+        getPicture=new GetPicture();
+        getPicture.execute();
+        //getRecent();
 
     }
 
@@ -181,7 +182,9 @@ public class RecentActivity extends GeneralActivity implements ScrollViewListene
         }*/
         @Override
         protected void onPreExecute() {
+            newrecentItems=new RecentItem[8];
             for (int i = 0; i < 8; i++) {
+
                 newrecentItems[i] = new RecentItem(context);
             }
             scrollContent.addView(loadingView);

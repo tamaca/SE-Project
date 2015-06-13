@@ -27,6 +27,8 @@ import com.example.team.myapplication.util.MyException;
 import com.example.team.myapplication.util.MyScrollView;
 import com.example.team.myapplication.util.MyToast;
 
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -153,7 +155,7 @@ public class SearchActivity extends GeneralActivity {
                 scrollViewContentRight.addView(resultPictures.get(i));
             }
         }
-        scrollViewContent.setVisibility(View.VISIBLE);
+        pictureScrollView.setVisibility(View.VISIBLE);
     }
 
     /**
@@ -164,10 +166,20 @@ public class SearchActivity extends GeneralActivity {
     public void toViewPictureActivity(View view) {
         Intent intent = new Intent(this, ViewPictureActivity.class);
         //view.setDrawingCacheEnabled(true);
-        //Bitmap bitmap = view.getDrawingCache();
-        String bigurl = view.getContentDescription().toString();
-        intent.putExtra("bigurl", bigurl);
-        startActivity(intent);
+        //Bitmap bitmap = view.getDrawingCache();\
+        try {
+            String imageviewJsonString = view.getContentDescription().toString();
+            JSONObject imageviewJson = new JSONObject(imageviewJsonString);
+            String bigurl = imageviewJson.getString("imagebigurl");
+            String id = imageviewJson.getString("imageid");
+            intent.putExtra("type", "online");
+            intent.putExtra("bigurl", bigurl);
+            intent.putExtra("imageid", id);
+            startActivity(intent);
+        }catch(Exception e)
+        {
+            //解码错误
+        }
     }
 
     @Override
@@ -334,7 +346,7 @@ public class SearchActivity extends GeneralActivity {
             resultUsers.clear();
             noResultTextView.setVisibility(View.GONE);
             userNameListView.setVisibility(View.GONE);
-            scrollViewContent.setVisibility(View.GONE);
+            pictureScrollView.setVisibility(View.GONE);
             String content = textView.getText().toString();
             if (content.isEmpty()) {
                 textView.setError(getString(R.string.search_content_missing));
@@ -368,7 +380,7 @@ public class SearchActivity extends GeneralActivity {
             resultPictures.clear();
             noResultTextView.setVisibility(View.GONE);
             userNameListView.setVisibility(View.GONE);
-            scrollViewContent.setVisibility(View.GONE);
+            pictureScrollView.setVisibility(View.GONE);
             String content = textView.getText().toString();
             if (content.isEmpty()) {
                 textView.setError(getString(R.string.search_content_missing));
