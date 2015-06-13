@@ -39,29 +39,37 @@ import org.apache.http.entity.ContentType;
 import org.json.JSONObject;
 
 public class ImagePost extends AsyncTask<String, Integer, String> {
-    /**服务器路径**/
+    /**
+     * 服务器路径*
+     */
     private String url;
-    /**上传的参数**/
-    private Map<String,String>paramMap;
-    /**要上传的文件**/
+    /**
+     * 上传的参数*
+     */
+    private Map<String, String> paramMap;
+    /**
+     * 要上传的文件*
+     */
     private File file;
     private long totalSize;
     private Context context;
     private ProgressDialog progressDialog;
     private int y;
-    public ImagePost(Context context, String url, Map<String, String> paramMap, File file,int y) {
+
+    public ImagePost(Context context, String url, Map<String, String> paramMap, File file, int y) {
         this.context = context;
         this.url = url;
         this.paramMap = paramMap;
         this.file = file;
-        this.y=y;
+        this.y = y;
     }
+
     @Override
     protected void onPreExecute() {//执行前的初始化
 
         // TODO Auto-generated method stub
 
-        progressDialog=new ProgressDialog(context);
+        progressDialog = new ProgressDialog(context);
         progressDialog.setTitle("请稍等...");
         progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
         progressDialog.setCancelable(true);
@@ -80,7 +88,7 @@ public class ImagePost extends AsyncTask<String, Integer, String> {
         MultipartEntityBuilder builder = MultipartEntityBuilder.create();
         builder.setCharset(Charset.forName(HTTP.UTF_8));//设置请求的编码格式
         builder.setMode(HttpMultipartMode.BROWSER_COMPATIBLE);//设置浏览器兼容模式
-        int count=0;
+        int count = 0;
         builder.addBinaryBody("file" + count, file, ContentType.DEFAULT_BINARY, String.valueOf(count) + "." + paramMap.get("fileTypes"));
         builder.addTextBody("fileTypes", paramMap.get("fileTypes"));//设置请求参数
         HttpEntity entity = builder.build();// 生成 HTTP POST 实体
@@ -98,8 +106,8 @@ public class ImagePost extends AsyncTask<String, Integer, String> {
     @Override
     protected void onProgressUpdate(Integer... values) {//执行进度
         // TODO Auto-generated method stub
-        Log.i("info", "values:"+values[0]);
-        progressDialog.setProgress((int)values[0]);//更新进度条
+        Log.i("info", "values:" + values[0]);
+        progressDialog.setProgress((int) values[0]);//更新进度条
         super.onProgressUpdate(values);
     }
 
@@ -111,14 +119,16 @@ public class ImagePost extends AsyncTask<String, Integer, String> {
         progressDialog.dismiss();
         super.onPostExecute(result);
     }
+
     /**
      * 向服务器上传文件
+     *
      * @param url
      * @param entity
      * @return
      */
     public String uploadFile(String url, ProgressOutHttpEntity entity) {
-        HttpClient httpClient=new DefaultHttpClient();// 开启一个客户端 HTTP 请求
+        HttpClient httpClient = new DefaultHttpClient();// 开启一个客户端 HTTP 请求
         httpClient.getParams().setParameter(CoreProtocolPNames.PROTOCOL_VERSION, HttpVersion.HTTP_1_1);
         httpClient.getParams().setParameter(CoreConnectionPNames.CONNECTION_TIMEOUT, 5000);// 设置连接超时时间
         HttpPost httpPost = new HttpPost(url);//创建 HTTP POST 请求
@@ -149,4 +159,4 @@ public class ImagePost extends AsyncTask<String, Integer, String> {
         }
         return "图片上传失败";
     }
-    }
+}

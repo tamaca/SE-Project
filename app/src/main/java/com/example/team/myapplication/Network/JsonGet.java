@@ -27,6 +27,7 @@ public class JsonGet {
     private DB db;
     private GalleryItem[] galleryItems;
     private RecentItem[] recentItems;
+
     //关注或黑名单中的人
     public ArrayList<String> getUserNames() {
         return userNames;
@@ -50,8 +51,10 @@ public class JsonGet {
         JSONObject jsonObject = get.GetFromServer();
         get.PostExecuteImageUrl(jsonObject, type);
     }
+
     //图片获取url ta动态获取
-    public JsonGet(String url,RecentItem[] recentItems,DB db,String type) throws Exception {
+    //TODO:只读取了第一个人
+    public JsonGet(String url, RecentItem[] recentItems, DB db, String type) throws Exception {
         this.url = url;
         this.db = db;
         this.recentItems = recentItems;
@@ -59,12 +62,21 @@ public class JsonGet {
         JSONObject jsonObject = get.GetFromServer();
         get.PostExecuteImageUrl(jsonObject, type);
     }
+
     //图片获取(id)
-    public JsonGet(String url, String key) throws Exception {
+    public JsonGet(String url, String key, String type) throws Exception {
         this.url = url;
         Get get = new Get();
         JSONObject jsonObject = get.GetFromServer();
         get.PostExecuteId(jsonObject, key);
+    }
+
+    //原始地址获取
+    public JsonGet(String url, String type) throws Exception {
+        this.url = url;
+        Get get = new Get();
+        JSONObject jsonObject = get.GetFromServer();
+        get.PostExecuteOrigin(jsonObject);
     }
 
     //关注的人获取 或 黑名单获取
@@ -106,7 +118,7 @@ public class JsonGet {
                 CloseableHttpResponse response = null;
                 httpget.setHeader("Content-Type", "application/x-www-form-urlencoded");
                 httpget.setHeader("Accept", "application/json");
-               // httpget.setHeader("Content-type", "application/json");
+                // httpget.setHeader("Content-type", "application/json");
                 response = client.execute(httpget);
                 int a = response.getStatusLine().getStatusCode();
                 StringBuilder builder = new StringBuilder();
@@ -155,14 +167,12 @@ public class JsonGet {
                     image_big[i] = baseurl + jsonObject.getString("image" + i + "_big");
                     image_id[i] = jsonObject.getString("image" + i + "_id");
                 }
-                if (recentItems!=null||galleryItems != null) {
-                    if(galleryItems!=null) {
+                if (recentItems != null || galleryItems != null) {
+                    if (galleryItems != null) {
                         for (int i = 0; i < count; i++) {
                             imageView[i] = galleryItems[i].imageView;
                         }
-                    }
-                    else
-                    {
+                    } else {
                         for (int i = 0; i < count; i++) {
                             imageView[i] = recentItems[i].imageView;
                         }
@@ -193,15 +203,13 @@ public class JsonGet {
                         galleryItems[i].textView.setText(image_time[i]);
                         galleryItems[i].textView.setVisibility(View.VISIBLE);
                     }
-                }
-                else if(recentItems!=null)
-                {
+                } else if (recentItems != null) {
                     for (int i = 0; i < count; i++) {
                         image_time[i] = jsonObject.getString("image" + i + "_date");
                         image_author[i] = jsonObject.getString("image" + i + "_owner");
                         recentItems[i].time.setText(image_time[i]);
                         recentItems[i].author.setText(image_author[i]);//todo:发送 图片上传者姓名
-                        dbimagecaresave(image_id[i],image_author[i],image_time[i]);
+                        dbimagecaresave(image_id[i], image_author[i], image_time[i]);
                     }
                 }
             } else {
@@ -292,8 +300,7 @@ public class JsonGet {
                     String _commentnum = jsonObject.getString("now");
                     returnmap.put("commentnum", String.valueOf(_commentnum));
                     commentnum = Integer.parseInt(_commentnum);
-                    if(commentnum==0)
-                    {
+                    if (commentnum == 0) {
                         throw new MyException.zeroException();
                     }
                 }
@@ -327,7 +334,22 @@ public class JsonGet {
             }
         }
 
+        protected void PostExecuteOrigin(JSONObject jsonObject) throws Exception {
+            if (jsonObject != null) {
+                String status = jsonObject.getString("status");
+                if (status.equals("normal")) {
+                    returnmap = new HashMap<String, String>();
+                    returnmap.put("url", jsonObject.getString("url"));
+                } else {
+                    throw new MyException.executeException();
+                }
+            } else {
+                //TODO:接收信息错误
+                throw new MyException.nullException();
+            }
+        }
     }
+
 
     //数据库
     //缩略图数据库保存
@@ -340,12 +362,13 @@ public class JsonGet {
 
         db.lobbyimageinsert(rank, imageid);
     }
-    private void dbimagecaresave(String imageid, String userid, String time)
-    {
+
+    private void dbimagecaresave(String imageid, String userid, String time) {
         Timestamp updatetime = new Timestamp(System.currentTimeMillis());
         updatetime.valueOf(time);
-        db.imagecaredinsert(imageid,userid,updatetime);
+        db.imagecaredinsert(imageid, userid, updatetime);
     }
+
     private void dbimagelikesave(String imageid, String islike, String likenumber) {
         db.imageupdateislike(imageid, islike);
         db.imageupdatelikenumber(imageid, likenumber);
@@ -357,7 +380,7 @@ public class JsonGet {
         String imageid = comment.get("imageid");
         Timestamp updatetime = new Timestamp(System.currentTimeMillis());
         for (int i = 0; i < commentnum; i++) {
-            updatetime.valueOf(comment.get("commentdate"+i));
+            updatetime.valueOf(comment.get("commentdate" + i));
             db.commentinsert(comment.get("commentid" + i), comment.get("commentuser" + i), imageid, comment.get("comment"), updatetime);
         }
     }

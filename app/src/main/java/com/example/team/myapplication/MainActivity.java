@@ -329,16 +329,6 @@ public class MainActivity extends Activity implements ScrollViewListener {
     }
 
     /**
-     * 转到查看大图页面
-     *
-     * @param view
-     */
-    public void toPictureActivity(View view) {
-        Intent intent = new Intent(this, PictureActivity.class);
-        startActivity(intent);
-    }
-
-    /**
      * 转到更改密码页面
      *
      * @param view

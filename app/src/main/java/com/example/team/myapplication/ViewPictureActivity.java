@@ -1,6 +1,7 @@
 package com.example.team.myapplication;
 
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
@@ -26,6 +27,7 @@ import com.example.team.myapplication.Network.ImageGet;
 import com.example.team.myapplication.Network.JsonGet;
 import com.example.team.myapplication.Network.JsonPost;
 import com.example.team.myapplication.Network.NetworkState;
+import com.example.team.myapplication.Network.Origindownload;
 import com.example.team.myapplication.util.CheckValid;
 import com.example.team.myapplication.util.Comment;
 import com.example.team.myapplication.util.GeneralActivity;
@@ -74,7 +76,7 @@ public class ViewPictureActivity extends GeneralActivity implements ScrollViewLi
     private int commentpage = 1;
     private boolean end = false;
     private GetCommentProgress getCommentProgress = null;
-
+    private GetOrigin getOrigin=null;
     @Override
 
     protected void onCreate(Bundle savedInstanceState) {
@@ -436,7 +438,7 @@ public class ViewPictureActivity extends GeneralActivity implements ScrollViewLi
                 for (int i = 0; i < 8; i++) {
                     newcomments[i] = new Comment(this);
                 }
-                getCommentProgress = new GetCommentProgress(db,newcomments);
+                getCommentProgress = new GetCommentProgress(db, newcomments);
                 getCommentProgress.execute();
                 //TODO 可以开始加载剩余评论，加载完之后使用 scrollContent.removeView(loadingView);
             }
@@ -480,12 +482,13 @@ public class ViewPictureActivity extends GeneralActivity implements ScrollViewLi
     /**
      * 使用系统图库打开图片
      */
-    public void openPicture(String path){
+    public void openPicture(String path) {
         Intent intent = new Intent(Intent.ACTION_VIEW);
         File file = new File(path);
         intent.setDataAndType(Uri.fromFile(file), "image/*");
         startActivity(intent);
     }
+
     /**
      * 跳转到查看原图
      *
@@ -526,6 +529,11 @@ public class ViewPictureActivity extends GeneralActivity implements ScrollViewLi
         }
 
 
+    }
+
+    public void toOriginDownload(View view) {
+        getOrigin=new GetOrigin(this);
+        getOrigin.execute();
     }
 
     public class getImageInformationProgress extends AsyncTask<Void, Void, Boolean> {
@@ -653,7 +661,7 @@ public class ViewPictureActivity extends GeneralActivity implements ScrollViewLi
         protected Boolean doInBackground(Void... params) {
             try {
                 String key = "image_big";
-                returnmap = new JsonGet(url, key).getReturnmap();
+                returnmap = new JsonGet(url, key, "getimagefromid").getReturnmap();
             } catch (Exception e) {
                 return false;
             }
@@ -932,6 +940,45 @@ public class ViewPictureActivity extends GeneralActivity implements ScrollViewLi
         @Override
         public void onClick(View view) {
             toUserPageActivity(view);
+        }
+    }
+
+    class GetOrigin extends AsyncTask<Void, Void, Boolean> {
+        private String targeturl;
+        HashMap<String, String> returnmap;
+        Context context;
+        public GetOrigin(Context context) {
+            this.context=context;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            showProgress(true);
+        }
+
+        @Override
+        protected Boolean doInBackground(Void... voids) {
+            try {
+                String url = "http://192.168.253.1/download_origin/" + imageid + "/";
+                returnmap = new JsonGet(url, "origin").getReturnmap();
+            } catch (Exception e) {
+                return false;
+            }
+            return true;
+        }
+
+        @Override
+        protected void onPostExecute(final Boolean success) {
+
+            showProgress(false);
+            getOrigin=null;
+            if (success) {
+                String baseurl = "http://192.168.253.1/media/";
+                String originurl=returnmap.get("url");
+                targeturl=baseurl+originurl;
+                Origindownload origindownload=new Origindownload(context,targeturl,50,imageid);
+                origindownload.execute();
+            }
         }
     }
 }

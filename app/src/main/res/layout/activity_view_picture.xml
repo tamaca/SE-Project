@@ -195,7 +195,7 @@
                         android:layout_marginRight="10dp"
                         android:id="@+id/comment_all"
                         android:background="@drawable/button_style1"
-                        android:onClick="toPictureActivity"/>
+                        android:onClick="toOriginDownload"/>
 
                 </LinearLayout>
 
