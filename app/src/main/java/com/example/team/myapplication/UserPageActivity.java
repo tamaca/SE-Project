@@ -615,7 +615,7 @@ public class UserPageActivity extends GeneralActivity implements ScrollViewListe
             gallery.removeView(loadingView);
             getPicture = null;
             if (success) {
-                for (GalleryItem _galleryitem : galleryItem) {
+                for (final GalleryItem _galleryitem : galleryItem) {
                     if (_galleryitem.imageView.getContentDescription() != null) {
                         picturehave = true;
                         galleryItems.add(_galleryitem);
@@ -623,6 +623,17 @@ public class UserPageActivity extends GeneralActivity implements ScrollViewListe
                             @Override
                             public void onClick(View v) {
                                 toViewPictureActivity(v);
+                            }
+                        });
+                        _galleryitem.removeButton.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                //TODO 删除该图片的操作。
+                                /**
+                                 * UI操作
+                                 */
+                                galleryItems.remove(_galleryitem);
+                                refreshGallery();
                             }
                         });
                     }
