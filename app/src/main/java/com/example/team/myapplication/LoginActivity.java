@@ -30,7 +30,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.team.myapplication.Database.DB;
-import com.example.team.myapplication.Network.AES;
 import com.example.team.myapplication.Network.JsonPost;
 import com.example.team.myapplication.util.CheckValid;
 import com.example.team.myapplication.util.GeneralActivity;
@@ -157,18 +156,6 @@ public class LoginActivity extends GeneralActivity implements LoaderCallbacks<Cu
         autologin();
     }
 
-
-    public void testLogin(View view) {
-        LoginState.setLogined(true, "test");
-        Toast.makeText(getApplicationContext(), "isLogin?" + LoginState.getLogined(), Toast.LENGTH_SHORT).show();
-        if (LoginState.getLogined()) {
-            Toast.makeText(getApplicationContext(), "Username" + LoginState.username, Toast.LENGTH_SHORT).show();
-        }
-        showProgress(true);
-        finish();
-
-
-    }
 
     private void autologin() {
         Cursor cursor = db.lastuserselect();

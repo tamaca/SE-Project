@@ -118,7 +118,7 @@ public class UserPageActivity extends GeneralActivity implements ScrollViewListe
      * @param my
      */
     public void loadView(boolean my) {
-        setTitle((my ? "我" : userName) + "的个人主页");
+        setTitle(userName + "的个人主页");
         if (my) {
             //加载我的个人主页
             if (!getGallery(userName)) {
@@ -527,7 +527,7 @@ public class UserPageActivity extends GeneralActivity implements ScrollViewListe
             if (success) {
                 for (GalleryItem _galleryitem : galleryItem) {
                     if (_galleryitem.imageView.getContentDescription() != null) {
-                        picturehave=true;
+                        picturehave = true;
                         galleryItems.add(_galleryitem);
                         _galleryitem.imageView.setOnClickListener(new View.OnClickListener() {
                             @Override
