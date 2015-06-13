@@ -183,7 +183,7 @@
                             android:id="@+id/textView5"
                             android:layout_marginLeft="10dp"
                             android:textColor="@color/中灰色"
-                            android:background="@drawable/textview_list1"/>
+                            android:background="@drawable/textview_like"/>
                     </LinearLayout>
 
                     <Button

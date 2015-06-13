@@ -19,5 +19,6 @@
         android:layout_alignParentStart="true"
         android:divider="@color/天依蓝"
         android:dividerHeight="1dp"
-        android:listSelector="@drawable/textview_list1"/>
+        android:listSelector="@drawable/textstyle_list"
+        android:drawSelectorOnTop="false"/>
 </RelativeLayout>
