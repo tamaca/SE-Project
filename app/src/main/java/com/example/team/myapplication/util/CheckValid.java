@@ -18,7 +18,7 @@ public class CheckValid {
     }
 
     static public boolean isInputValid(String str) {
-        return str.length() < 20 && str.charAt(0) != ' '&&str.matches("^[A-Za-z0-9_\u4e00-\u9fa5]{2,15}$");
+        return str.length() < 15 && !str.contains(" ") && str.matches("^[A-Za-z0-9_\u4e00-\u9fa5]{2,15}$");
     }
 
     static public boolean isTagUnique(ArrayList<Tag> tags, String tagContent) {
@@ -32,6 +32,6 @@ public class CheckValid {
 
     static public boolean isTagValid(String tagContent) {
         byte[] x = tagContent.getBytes();
-        return x.length <= 10 && !tagContent.contains(" ")&&tagContent.matches("^[A-Za-z0-9_\u4e00-\u9fa5]{2,15}$");
+        return x.length <= 10 && !tagContent.contains(" ") && tagContent.matches("^[A-Za-z0-9_\u4e00-\u9fa5]{2,15}$");
     }
 }
