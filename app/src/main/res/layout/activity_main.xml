@@ -11,8 +11,6 @@
     android:paddingRight="0dp"
     android:paddingTop="0dp"
     tools:context="com.example.team.myapplication.MainActivity">
-
-
     <RelativeLayout
         android:id="@+id/main_layout"
         android:layout_width="match_parent"

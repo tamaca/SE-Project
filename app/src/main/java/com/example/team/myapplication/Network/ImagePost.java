@@ -16,6 +16,8 @@ import java.util.Map;
 import android.os.AsyncTask;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.MotionEvent;
+import android.view.View;
 import android.view.WindowManager;
 import android.widget.Toast;
 
@@ -56,7 +58,9 @@ public class ImagePost extends AsyncTask<String, Integer, String> {
     }
     @Override
     protected void onPreExecute() {//执行前的初始化
+
         // TODO Auto-generated method stub
+
         progressDialog=new ProgressDialog(context);
         progressDialog.setTitle("请稍等...");
         progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
@@ -66,6 +70,7 @@ public class ImagePost extends AsyncTask<String, Integer, String> {
         progressDialog.show();
         params.y = y;
         progressDialog.getWindow().setAttributes(params);
+        progressDialog.setCanceledOnTouchOutside(false);
         super.onPreExecute();
     }
 
@@ -144,4 +149,4 @@ public class ImagePost extends AsyncTask<String, Integer, String> {
         }
         return "图片上传失败";
     }
-}
+    }

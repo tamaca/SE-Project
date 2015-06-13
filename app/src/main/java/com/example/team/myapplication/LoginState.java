@@ -4,7 +4,7 @@ package com.example.team.myapplication;
 public class LoginState {
     public static boolean logined = false;
     public static String username="guest";
-
+    public static boolean fresh=false;
     public static int getPage() {
         return page;
     }

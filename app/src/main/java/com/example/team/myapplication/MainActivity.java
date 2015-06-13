@@ -99,6 +99,7 @@ public class MainActivity extends Activity implements ScrollViewListener {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         //Localstroage
         Localstorage.setpath(this);
         db = new DB(this);
@@ -207,7 +208,6 @@ public class MainActivity extends Activity implements ScrollViewListener {
          * 展示出相应的界面
          */
         changeView(LoginState.getLogined());
-        imagedownload();
 
     }
 
@@ -255,7 +255,6 @@ public class MainActivity extends Activity implements ScrollViewListener {
         }
     }
 
-
     /**
      * 重写函数，当返回到MainActivity的时候显示相应的界面
      */
@@ -263,6 +262,9 @@ public class MainActivity extends Activity implements ScrollViewListener {
     public void onResume() {
         super.onResume();
         changeView(LoginState.getLogined());
+        if(LoginState.fresh) {
+            imagedownload();
+        }
     }
 
     public void logout(View view) {
@@ -526,13 +528,15 @@ public class MainActivity extends Activity implements ScrollViewListener {
                     startActivityForResult(takePictureIntent, REQUEST_TAKE_PHOTO);
                 }
             }
-        }else {
+        } else {
             myToast.show(getString(R.string.toast_before_login));
         }
     }
+
     private String getFileType(String fileName) {
         return fileName.substring(fileName.lastIndexOf("."), fileName.length());
     }
+
     /**
      * 从相机中获取拍摄的照片
      *
@@ -548,15 +552,16 @@ public class MainActivity extends Activity implements ScrollViewListener {
                 case REQUEST_TAKE_PHOTO:
                     /*setPic();*/
                     Toast.makeText(getApplicationContext(), "Picture is Taken", Toast.LENGTH_LONG).show();
-                    Map<String, String> params = new HashMap<String, String>();;
+                    Map<String, String> params = new HashMap<String, String>();
+                    ;
                     params.clear();
                     File file = new File(mCurrentPhotoPath);
                     StringBuffer sbFileTypes = new StringBuffer();
                     String fileName = file.getName();
                     sbFileTypes.append(getFileType(fileName));
                     params.put("fileTypes", sbFileTypes.toString());
-                    String actionUrl = "http://192.168.253.1/upload/"+LoginState.username+"/";
-                    ImagePost imagePost = new ImagePost(this, actionUrl, params, file,50);
+                    String actionUrl = "http://192.168.253.1/upload/" + LoginState.username + "/";
+                    ImagePost imagePost = new ImagePost(this, actionUrl, params, file, 50);
                     imagePost.execute();
                     break;
             }
