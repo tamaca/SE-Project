@@ -467,9 +467,10 @@ public class MainActivity extends Activity implements ScrollViewListener {
 
                     scrollContent.addView(loadingView, params);
                     imagedownload();
-                } else {
-                    //TODO:图片没了
                 }
+            } else {
+                if (scrollContent.getChildAt(scrollContent.getChildCount() - 1) == loadingView)
+                    scrollContent.removeView(loadingView);
             }
         }
     }
@@ -687,7 +688,6 @@ public class MainActivity extends Activity implements ScrollViewListener {
             try {
                 new JsonGet(url, db, galleryItem, "lobby").getReturnmap();
             } catch (MyException.zeroException e) {
-                //TODO:没有下一页图片了
                 end = true;
             } catch (Exception e) {
                 return false;
@@ -715,6 +715,9 @@ public class MainActivity extends Activity implements ScrollViewListener {
                     squareView.postInvalidate();
                 }
             } else {
+                if (end){
+                    myToast.show("没有更多图片了");
+                }
                 myToast.show(getString(R.string.toast_downloading_picture_error));
             }
         }

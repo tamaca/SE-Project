@@ -9,7 +9,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
-import android.widget.TextView;
 
 import com.example.team.myapplication.Database.DB;
 import com.example.team.myapplication.Network.JsonGet;
@@ -17,10 +16,10 @@ import com.example.team.myapplication.Network.JsonPost;
 import com.example.team.myapplication.util.GalleryItem;
 import com.example.team.myapplication.util.GeneralActivity;
 import com.example.team.myapplication.util.LoadingView;
+import com.example.team.myapplication.util.MyException;
 import com.example.team.myapplication.util.MyScrollView;
 import com.example.team.myapplication.util.MyToast;
 import com.example.team.myapplication.util.ScrollViewListener;
-import com.example.team.myapplication.util.MyException;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -28,7 +27,7 @@ import java.util.HashMap;
 public class UserPageActivity extends GeneralActivity implements ScrollViewListener {
     static public boolean concern;
     static public boolean blacklist;
-    private boolean isMe = false;
+    private static boolean isMe = false;
     private Button concernButton;
     private Button hateButton;
     private Button uploadImageButton;
@@ -49,8 +48,9 @@ public class UserPageActivity extends GeneralActivity implements ScrollViewListe
     private boolean isManagingPicture = false;
     private int page = 1;//page从1开始
     private DB db = new DB(this);
-    private boolean end=false;
+    private boolean end = false;
     private MyScrollView myScrollView;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -63,8 +63,8 @@ public class UserPageActivity extends GeneralActivity implements ScrollViewListe
          * userName 是这个主页的所有者
          */
         userName = intent.getExtras().get("user_name").toString();
-        TextView name = (TextView) findViewById(R.id.name);
-        name.setText(userName);
+        /*TextView name = (TextView) findViewById(R.id.name);
+        name.setText(userName);*/
         if (userName.equals(LoginState.username)) {
             isMe = true;
         }
@@ -86,7 +86,7 @@ public class UserPageActivity extends GeneralActivity implements ScrollViewListe
         loadingView = new LoadingView(this);
         galleryLeft = (LinearLayout) findViewById(R.id.gallery_left);
         galleryRight = (LinearLayout) findViewById(R.id.gallery_right);
-        myScrollView = (MyScrollView)findViewById(R.id.scrollView3);
+        myScrollView = (MyScrollView) findViewById(R.id.scrollView3);
         //////////
         concernButton.setOnClickListener(new OnClickConcernListener());
         hateButton.setOnClickListener(new OnClickHateListener());
@@ -116,8 +116,8 @@ public class UserPageActivity extends GeneralActivity implements ScrollViewListe
      * @param my
      */
     public void loadView(boolean my) {
+        setTitle((my ? "我" : userName) + "的个人主页");
         if (my) {
-            setTitle((isMe ? "我" : userName) + "的个人主页");
             //加载我的个人主页
             if (!getGallery(userName)) {
                 findViewById(R.id.textView4).setVisibility(View.VISIBLE);
@@ -234,8 +234,8 @@ public class UserPageActivity extends GeneralActivity implements ScrollViewListe
         startActivity(intent);
     }
 
-    public void toChoosePictureActivity(View view){
-        Intent intent = new Intent(this,ChoosePictureActivity.class);
+    public void toChoosePictureActivity(View view) {
+        Intent intent = new Intent(this, ChoosePictureActivity.class);
         startActivity(intent);
     }
 
@@ -380,13 +380,11 @@ public class UserPageActivity extends GeneralActivity implements ScrollViewListe
                 HashMap<String, String> map = new HashMap<String, String>();
                 map.put("username", otherUsername);
                 //添加关注获取图片总数
-                if(type==1&&!concern) {
-                    HashMap<String, String> returnmap = new JsonPost(map, url,"concern").getReturnmap();
+                if (type == 1 && !concern) {
+                    HashMap<String, String> returnmap = new JsonPost(map, url, "concern").getReturnmap();
                     pictureCount = Integer.valueOf(returnmap.get("picturecount"));
-                }
-                else
-                {
-                    new JsonPost(map,url,"else");
+                } else {
+                    new JsonPost(map, url, "else");
                 }
                 Thread.sleep(100);
 
@@ -479,15 +477,17 @@ public class UserPageActivity extends GeneralActivity implements ScrollViewListe
     class GetPicture extends AsyncTask<Void, Void, Boolean> {
         private String userid;
         private GalleryItem galleryItem[];
+
         public GetPicture(String userid, GalleryItem[] galleryItem) {
             this.userid = userid;
             this.galleryItem = galleryItem;
         }
+
         @Override
-        protected void onPreExecute()
-        {
+        protected void onPreExecute() {
             gallery.addView(loadingView);
         }
+
         @Override
         protected Boolean doInBackground(Void... params) {
             try {
@@ -498,12 +498,10 @@ public class UserPageActivity extends GeneralActivity implements ScrollViewListe
                 new JsonGet(url1, db, galleryItem, "userpage");
                 new JsonGet(url2, db, null, "userpage");
                 Thread.sleep(1000);
-            }catch (MyException.zeroException e)
-            {
+            } catch (MyException.zeroException e) {
                 //TODO:没有下一页图片了
-                end=true;
-            }
-            catch (Exception e) {
+                end = true;
+            } catch (Exception e) {
                 return false;
             }
             return true;
@@ -515,7 +513,7 @@ public class UserPageActivity extends GeneralActivity implements ScrollViewListe
             getPicture = null;
             if (success) {
                 for (GalleryItem _galleryitem : galleryItem) {
-                    if(_galleryitem.imageView.getContentDescription()!=null) {
+                    if (_galleryitem.imageView.getContentDescription() != null) {
                         galleryItems.add(_galleryitem);
                         _galleryitem.imageView.setOnClickListener(new View.OnClickListener() {
                             @Override
