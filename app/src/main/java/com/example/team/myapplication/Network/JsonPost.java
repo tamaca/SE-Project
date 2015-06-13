@@ -172,7 +172,7 @@ public class JsonPost {
         String _author = info.getString("author");
         String _like = info.getString("like");
         String _isLike = info.getString("is_like");
-        String _updateTime = info.getString("update_time");
+        String _updateTime = info.getString("update_date");
         HashMap<String, String> image = new HashMap<String, String>();
         image.put("origin", originImageurl);
         image.put("imageid", imageId);
@@ -347,11 +347,9 @@ public class JsonPost {
                 if (status.equals("normal")) {
                     String _concern = jsonObject.getString("concern");
                     String _blacklist = jsonObject.getString("blacklist");
-                    String picturecount = jsonObject.getString("count");
                     returnmap = new HashMap<String, String>();
                     returnmap.put("concern", _concern);
                     returnmap.put("blacklist", _blacklist);
-                    returnmap.put("picturecount", picturecount);
                 } else {
                     throw new executeException();
                 }

@@ -42,7 +42,7 @@ public class UserPageActivity extends GeneralActivity implements ScrollViewListe
     private ProgressBar progressBar;
     private GetPicture getPicture = null;
     private LinearLayout scrollContent;
-    private int pictureCount;
+    private boolean picturehave = false;
     public ArrayList<GalleryItem> galleryItems = null;
     private BlackConcerenTask mAuthTask = null;
     private GetInfomation getInfomationtask = null;
@@ -189,7 +189,7 @@ public class UserPageActivity extends GeneralActivity implements ScrollViewListe
             gallery.setVisibility(View.VISIBLE);
             if (!getGallery(userName)) {
                 findViewById(R.id.textView4).setVisibility(View.VISIBLE);
-            }else {
+            } else {
                 findViewById(R.id.textView4).setVisibility(View.GONE);
             }
             findViewById(R.id.textView3).setVisibility(View.GONE);
@@ -252,8 +252,7 @@ public class UserPageActivity extends GeneralActivity implements ScrollViewListe
             intent.putExtra("bigurl", bigurl);
             intent.putExtra("imageid", id);
             startActivity(intent);
-        }catch(Exception e)
-        {
+        } catch (Exception e) {
             //解码错误
         }
     }
@@ -323,7 +322,7 @@ public class UserPageActivity extends GeneralActivity implements ScrollViewListe
         //TODO 在这里加载该用户的图片，如果用户没有图片，返回false,如果有，把 pictureCount 设置为该用户照片总数；
         // addGalleryItem(bitmap);
         //pictureCount = 0;
-        if (pictureCount != 0) {
+        if (!picturehave) {
             return true;
         }
         return false;
@@ -332,17 +331,15 @@ public class UserPageActivity extends GeneralActivity implements ScrollViewListe
     @Override
     public void onScrollChanged(MyScrollView scrollView, int x, int y, int oldX, int oldY) {
         if (y + scrollView.getMeasuredHeight() + 50 > scrollContent.getMeasuredHeight()) {
-            if (galleryItems.size() != pictureCount) {
-                if (gallery.getChildAt(gallery.getChildCount() - 1) != loadingView) {
-                    if (getPicture == null) {
-                        GalleryItem galleryItems[] = new GalleryItem[8];
-                        for (int i = 0; i < 8; i++) {
-                            galleryItems[i] = new GalleryItem(this);
-                        }
-                        //TODO:测试
-                        getPicture = new GetPicture(userName, galleryItems);
-                        getPicture.execute();
+            if (gallery.getChildAt(gallery.getChildCount() - 1) != loadingView) {
+                if (getPicture == null) {
+                    GalleryItem galleryItems[] = new GalleryItem[8];
+                    for (int i = 0; i < 8; i++) {
+                        galleryItems[i] = new GalleryItem(this);
                     }
+                    //TODO:测试
+                    getPicture = new GetPicture(userName, galleryItems);
+                    getPicture.execute();
                 }
             }
         }
@@ -400,7 +397,6 @@ public class UserPageActivity extends GeneralActivity implements ScrollViewListe
                 //添加关注获取图片总数
                 if (type == 1 && !concern) {
                     HashMap<String, String> returnmap = new JsonPost(map, url, "concern").getReturnmap();
-                    pictureCount = Integer.valueOf(returnmap.get("picturecount"));
                 } else {
                     new JsonPost(map, url, "else");
                 }
@@ -469,7 +465,6 @@ public class UserPageActivity extends GeneralActivity implements ScrollViewListe
                 HashMap<String, String> returnmap = new JsonPost(map, url, "relation").getReturnmap();
                 concern = returnmap.get("concern").equals("true");
                 blacklist = returnmap.get("blacklist").equals("true");
-                pictureCount = Integer.valueOf(returnmap.get("picturecount"));
             } catch (Exception e) {
                 return false;
             }
@@ -532,6 +527,7 @@ public class UserPageActivity extends GeneralActivity implements ScrollViewListe
             if (success) {
                 for (GalleryItem _galleryitem : galleryItem) {
                     if (_galleryitem.imageView.getContentDescription() != null) {
+                        picturehave=true;
                         galleryItems.add(_galleryitem);
                         _galleryitem.imageView.setOnClickListener(new View.OnClickListener() {
                             @Override
