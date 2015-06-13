@@ -1,16 +1,21 @@
 package com.example.team.myapplication;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Environment;
+import android.provider.MediaStore;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import com.example.team.myapplication.Database.DB;
+import com.example.team.myapplication.Network.ImagePost;
 import com.example.team.myapplication.Network.JsonGet;
 import com.example.team.myapplication.Network.JsonPost;
 import com.example.team.myapplication.util.GalleryItem;
@@ -23,8 +28,13 @@ import com.example.team.myapplication.util.ScrollViewListener;
 
 import org.json.JSONObject;
 
+import java.io.File;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.Map;
 
 public class UserPageActivity extends GeneralActivity implements ScrollViewListener {
     static public boolean concern;
@@ -96,7 +106,7 @@ public class UserPageActivity extends GeneralActivity implements ScrollViewListe
         uploadImageButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                toChoosePictureActivity(view);
+                dispatchTakePictureIntent(view);
             }
         });
 
@@ -158,24 +168,102 @@ public class UserPageActivity extends GeneralActivity implements ScrollViewListe
     @Override
     protected void onResume() {
         super.onResume();
+        isMe = userName.equals(LoginState.username);
         loadView(isMe);
     }
 
-    static final int REQUEST_CODE_PICK_IMAGE = 2;
 
-    protected void getImageFromAlbum(View view) {
-        Intent intent = new Intent(Intent.ACTION_PICK);
-        intent.setType("image/*");//相片类型
-        startActivityForResult(intent, REQUEST_CODE_PICK_IMAGE);
+    /**
+     * 以下是获取拍摄的照片
+     */
+    static final int REQUEST_TAKE_PHOTO = 1;
+
+    String mCurrentPhotoPath;
+
+    public void dispatchTakePictureIntent(View view) {
+        if (LoginState.logined) {
+            Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+            // Ensure that there's a camera activity to handle the intent
+            if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
+                // Create the File where the photo should go
+                File photoFile = null;
+                try {
+                    photoFile = createImageFile();
+                } catch (IOException ex) {
+                    // Error occurred while creating the File
+
+                }
+                // Continue only if the File was successfully created
+                if (photoFile != null) {
+                    takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT,
+                            Uri.fromFile(photoFile));
+                    startActivityForResult(takePictureIntent, REQUEST_TAKE_PHOTO);
+                }
+            }
+        }else {
+            myToast.show(getString(R.string.toast_before_login));
+        }
     }
-
+    private String getFileType(String fileName) {
+        return fileName.substring(fileName.lastIndexOf("."), fileName.length());
+    }
+    /**
+     * 从相机中获取拍摄的照片
+     *
+     * @param requestCode
+     * @param resultCode
+     * @param data
+     */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        switch (resultCode) {
-            case REQUEST_CODE_PICK_IMAGE:
-                break;
+        if (resultCode == RESULT_OK) {
+            switch (requestCode) {
+                case REQUEST_TAKE_PHOTO:
+                    /*setPic();*/
+                    Toast.makeText(getApplicationContext(), "Picture is Taken", Toast.LENGTH_LONG).show();
+                    Map<String, String> params = new HashMap<String, String>();;
+                    params.clear();
+                    File file = new File(mCurrentPhotoPath);
+                    StringBuffer sbFileTypes = new StringBuffer();
+                    String fileName = file.getName();
+                    sbFileTypes.append(getFileType(fileName));
+                    params.put("fileTypes", sbFileTypes.toString());
+                    String actionUrl = "http://192.168.253.1/upload/"+LoginState.username+"/";
+                    ImagePost imagePost = new ImagePost(this, actionUrl, params, file,50);
+                    imagePost.execute();
+                    break;
+            }
+        } else {
+            Toast.makeText(getApplicationContext(), "Picture is not Taken", Toast.LENGTH_SHORT).show();
         }
+    }
+
+
+    /**
+     * 把拍摄的图片写入储存卡 没有问题
+     *
+     * @return
+     * @throws IOException
+     */
+    private File createImageFile() throws IOException {
+        // Create an image file name
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        String imageFileName = "JPEG_" + timeStamp + "_";
+        File storageDir = Environment.getExternalStoragePublicDirectory(
+                Environment.DIRECTORY_PICTURES);
+        if (!storageDir.exists()) {
+            storageDir.mkdirs();
+        }
+        File image = File.createTempFile(
+                imageFileName,  /* prefix */
+                ".jpg",         /* suffix */
+                storageDir      /* directory */
+        );
+
+        // Save a file: path for use with ACTION_VIEW intents
+        mCurrentPhotoPath = image.getAbsolutePath();
+        return image;
     }
 
     /**
@@ -261,6 +349,8 @@ public class UserPageActivity extends GeneralActivity implements ScrollViewListe
         Intent intent = new Intent(this, ChoosePictureActivity.class);
         startActivity(intent);
     }
+
+
 
     /**
      * 添加图片进gallery，每次加一张
