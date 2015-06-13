@@ -10,17 +10,25 @@ import android.util.Log;
  * Created by coco on 2015/6/14.
  */
 public class BaseApplication extends Application {
+    private int foregroundActivities;
     public void onCreate() {
         super.onCreate();
         this.registerActivityLifecycleCallbacks(new ActivityLifecycleCallbacks() {
 
             @Override
             public void onActivityStopped(Activity activity) {
+                foregroundActivities--;
+                if (foregroundActivities == 0) {
+                    LoginState.setPage(0);
+                    LoginState.fresh=true;
+                }
             }
 
             @Override
             public void onActivityStarted(Activity activity) {
+                foregroundActivities++;
             }
+
 
             @Override
             public void onActivitySaveInstanceState(Activity activity, Bundle outState) {
@@ -36,8 +44,7 @@ public class BaseApplication extends Application {
 
             @Override
             public void onActivityResumed(Activity activity) {
-                LoginState.setPage(1);
-                LoginState.fresh=true;
+
             }
 
             @Override
