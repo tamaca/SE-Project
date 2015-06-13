@@ -21,6 +21,8 @@ import com.example.team.myapplication.util.MyScrollView;
 import com.example.team.myapplication.util.MyToast;
 import com.example.team.myapplication.util.ScrollViewListener;
 
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -231,10 +233,20 @@ public class UserPageActivity extends GeneralActivity implements ScrollViewListe
     public void toViewPictureActivity(View view) {
         Intent intent = new Intent(this, ViewPictureActivity.class);
         //view.setDrawingCacheEnabled(true);
-        //Bitmap bitmap = view.getDrawingCache();
-        String bigurl = view.getContentDescription().toString();
-        intent.putExtra("bigurl", bigurl);
-        startActivity(intent);
+        //Bitmap bitmap = view.getDrawingCache();\
+        try {
+            String imageviewJsonString = view.getContentDescription().toString();
+            JSONObject imageviewJson = new JSONObject(imageviewJsonString);
+            String bigurl = imageviewJson.getString("imagebigurl");
+            String id = imageviewJson.getString("imageid");
+            intent.putExtra("type", "online");
+            intent.putExtra("bigurl", bigurl);
+            intent.putExtra("imageid", id);
+            startActivity(intent);
+        }catch(Exception e)
+        {
+            //解码错误
+        }
     }
 
     public void toChoosePictureActivity(View view) {

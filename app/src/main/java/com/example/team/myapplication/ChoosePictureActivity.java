@@ -266,7 +266,7 @@ public class ChoosePictureActivity extends GeneralActivity {
     private void setPic(ImageView imageView) {
         // Get the dimensions of the View
         int targetW = imageView.getMaxHeight();
-        int targetH = imageView.getMaxWidth();
+       // int targetH = imageView.getMaxWidth();
         /*
         // Get the dimensions of the bitmap
         BitmapFactory.Options bmOptions = new BitmapFactory.Options();

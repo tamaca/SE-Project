@@ -1,6 +1,10 @@
 package com.example.team.myapplication.Network;
 
+import android.view.View;
+import android.widget.ImageView;
+
 import com.example.team.myapplication.Database.DB;
+import com.example.team.myapplication.LoginState;
 import com.example.team.myapplication.ViewPictureActivity;
 import com.example.team.myapplication.util.GalleryItem;
 import com.example.team.myapplication.util.MyException;
@@ -93,6 +97,15 @@ public class JsonPost {
         }
     }
 
+    public JsonPost(HashMap<String, String> map, String url,DB db, GalleryItem[] galleryItems) throws Exception {
+        this.url = url;
+        this.galleryItems = galleryItems;
+        this.db=db;
+        Post post = new Post(map);
+        returnjsonObject = post.PostToServer();
+        post.PostExecuteSearchTag(returnjsonObject);
+    }
+
     //数据库储存用户
     private void dbsaveuser(String id, String password) {
         if (rememPassword) {
@@ -129,7 +142,9 @@ public class JsonPost {
         updatetime.valueOf(image.get("updatetime"));
         db.imageinsert(image.get("imageid"), image.get("userid"), image.get("islike"), image.get("likenumber"), updatetime);
     }
-
+    private void dbimagesave(String imageid) {
+        db.imageinsert(imageid);
+    }
     //数据库存储标签
     private void dbtagsave(HashMap<String, String> tag) {
         String _tagnum = tag.get("tagnum");
@@ -382,6 +397,52 @@ public class JsonPost {
                 }
                 for (int i = 0; i < count; i++) {
                     returnmap.put("name" + i, jsonObject.getString("target_name" + i));
+                }
+            }
+        }
+
+        protected void PostExecuteSearchTag(JSONObject jsonObject) throws Exception {
+            if (jsonObject == null) {
+                throw new nullException();
+                //TODO:网络通信错误
+            } else {
+                String status = jsonObject.getString("status");
+                String baseurl = "http://192.168.253.1/media/";
+                String image_small[] = new String[8];
+                String image_big[] = new String[8];
+                String image_id[] = new String[8];
+                ImageView imageView[] = new ImageView[8];
+                int count;
+                if (status.equals("normal")) {
+                    count = 8;
+                } else if (status.equals("no_more_image")) {
+                    String _count = jsonObject.getString("now");
+                    count = Integer.valueOf(_count);
+                    if (count == 0) {
+                        throw new MyException.zeroException();
+                    }
+                } else {
+                    throw new MyException.executeException();
+                    //TODO:接收信息错误
+                }
+                for (int i = 0; i < count; i++) {
+                    image_small[i] = baseurl + jsonObject.getString("image" + i + "_small");
+                    image_big[i] = baseurl + jsonObject.getString("image" + i + "_big");
+                    image_id[i] = jsonObject.getString("image" + i + "_id");
+                }
+                for (int i = 0; i < count; i++) {
+                    imageView[i] = galleryItems[i].imageView;
+                }
+                for (int i = 0; i < count; i++) {
+                    new ImageGet(imageView[i], image_small[i], image_id[i], db, "small");
+                    JSONObject jsonObject1 = new JSONObject();
+                    jsonObject1.put("type", "online");
+                    jsonObject1.put("imageid", image_id[i]);
+                    jsonObject1.put("imagebigurl", image_big[i]);
+                    imageView[i].setContentDescription(jsonObject1.toString());
+                }
+                for (int i = 0; i < count; i++) {
+                    dbimagesave(image_id[i]);
                 }
             }
         }

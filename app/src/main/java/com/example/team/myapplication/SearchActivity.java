@@ -2,6 +2,7 @@ package com.example.team.myapplication;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.Menu;
@@ -17,6 +18,7 @@ import android.widget.ProgressBar;
 import android.widget.SimpleAdapter;
 import android.widget.TextView;
 
+import com.example.team.myapplication.Database.DB;
 import com.example.team.myapplication.Network.JsonPost;
 import com.example.team.myapplication.util.CheckValid;
 import com.example.team.myapplication.util.GalleryItem;
@@ -43,13 +45,16 @@ public class SearchActivity extends GeneralActivity {
     public ArrayList<String> resultUsers;
     public ArrayList<GalleryItem> resultPictures;
     private SearchUserTask searchUserTask;
+    private SearchTagTask searchTagTask;
     private ProgressBar onSearchProgressBar;
     private EditText textView;
     private MyToast myToast;
     private TextView noResultTextView;
     private List<Map<String, Object>> listItems;
     private int page = 1;
-    private boolean end=false;
+    private boolean end = false;
+    private Context context=this;
+    private DB db = new DB(this);
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -91,11 +96,11 @@ public class SearchActivity extends GeneralActivity {
         /**
          * 添加 搜索用户 监听器
          */
-        searchUserButton.setOnClickListener(new MyOnClickListener());
+        searchUserButton.setOnClickListener(new MyOnClickListener1());
         /**
          * 添加 搜索具有该标签的图片 监听器
          */
-        searchTagButton.setOnClickListener(new MyOnClickListener());
+        searchTagButton.setOnClickListener(new MyOnClickListener2());
 
     }
 
@@ -224,7 +229,7 @@ public class SearchActivity extends GeneralActivity {
                 returnmap = new JsonPost(map, url, "searchuser").getReturnmap();
                 Thread.sleep(1000);
             } catch (MyException.zeroException e) {
-                end=true;
+                end = true;
                 return false;
                 //TODO:搜索结果为空
             } catch (Exception e) {
@@ -286,9 +291,11 @@ public class SearchActivity extends GeneralActivity {
                 String url = "http://192.168.253.1/search/tag/page/" + page + "/";
                 HashMap<String, String> map = new HashMap<String, String>();
                 map.put("tag", searchContent);
-                returnmap = new JsonPost(map, url, "searchtag").getReturnmap();
+                new JsonPost(map, url, db,galleryItem);
                 Thread.sleep(1000);
             } catch (MyException.zeroException e) {
+                end=true;
+                return false;
                 //TODO:搜索结果为空
             } catch (Exception e) {
                 return false;
@@ -299,25 +306,28 @@ public class SearchActivity extends GeneralActivity {
         @Override
         protected void onPostExecute(Boolean success) {
             onSearchProgressBar.setVisibility(View.GONE);
-            searchUserTask = null;
+            searchTagTask = null;
             if (success) {
-                int count = Integer.valueOf(returnmap.get("count"));
-                for (int i = 0; i < count; i++) {
-                    resultUsers.add(returnmap.get("name" + i));
+                for (GalleryItem _galleryitem : galleryItem) {
+                    if (_galleryitem.imageView.getContentDescription() != null) {
+                        resultPictures.add(_galleryitem);
+                    }
                 }
+                refreshScrollView();
+            }
                 /*
                 if (searchUserTask == search_users) {
                     refreshListView();
                 } else {
                     refreshScrollView();
                 }*/
-            } else {
+            else {
                 //TODO:搜索错误
             }
         }
     }
 
-    class MyOnClickListener implements View.OnClickListener {
+    class MyOnClickListener1 implements View.OnClickListener {
 
         @Override
         public void onClick(View view) {
@@ -336,7 +346,7 @@ public class SearchActivity extends GeneralActivity {
             }
             InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
             imm.hideSoftInputFromWindow(textView.getWindowToken(), 0);
-            if (searchUserTask == null) {
+            if (searchUserTask == null && searchTagTask == null) {
                 /*
                 onSearchProgressBar.setVisibility(View.VISIBLE);
                 searchTask = new SearchTask(view == searchUserButton ? search_users : search_by_tags, content);
@@ -344,6 +354,44 @@ public class SearchActivity extends GeneralActivity {
                 */
                 searchUserTask = new SearchUserTask(content);
                 searchUserTask.execute();
+
+            } else {
+                myToast.show(getString(R.string.toast_in_searching));
+            }
+        }
+    }
+
+    class MyOnClickListener2 implements View.OnClickListener {
+        @Override
+        public void onClick(View view) {
+            resultUsers.clear();
+            resultPictures.clear();
+            noResultTextView.setVisibility(View.GONE);
+            userNameListView.setVisibility(View.GONE);
+            scrollViewContent.setVisibility(View.GONE);
+            String content = textView.getText().toString();
+            if (content.isEmpty()) {
+                textView.setError(getString(R.string.search_content_missing));
+                return;
+            }
+            if (!CheckValid.isInputValid(content)) {
+                textView.setError(getString(R.string.invalid_input_in_search));
+                return;
+            }
+            InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(textView.getWindowToken(), 0);
+            if (searchUserTask == null && searchTagTask == null) {
+                /*
+                onSearchProgressBar.setVisibility(View.VISIBLE);
+                searchTask = new SearchTask(view == searchUserButton ? search_users : search_by_tags, content);
+                searchTask.execute((Void) null);
+                */
+                GalleryItem galleryItems[] = new GalleryItem[8];
+                for (int i = 0; i < 8; i++) {
+                    galleryItems[i] = new GalleryItem(context);
+                }
+                searchTagTask = new SearchTagTask(content,galleryItems);
+                searchTagTask.execute();
 
             } else {
                 myToast.show(getString(R.string.toast_in_searching));

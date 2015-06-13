@@ -16,7 +16,8 @@
         android:id="@+id/imageView5"
         android:scaleType="centerCrop"
         android:layout_gravity="center_horizontal"
-        android:layout_below="@+id/textView2" />
+        android:layout_below="@+id/textView2"
+        android:layout_marginBottom="5dp"/>
 
     <ImageButton
         android:layout_width="wrap_content"

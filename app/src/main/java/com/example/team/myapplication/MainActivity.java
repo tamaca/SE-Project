@@ -692,8 +692,6 @@ public class MainActivity extends Activity implements ScrollViewListener {
 
         private String url;
         private DB db;
-        private Resources res;
-        private String packageName;
         private GalleryItem galleryItem[];
 
         DownloadPictureProgress(String url, DB db, GalleryItem[] galleryItems) {
