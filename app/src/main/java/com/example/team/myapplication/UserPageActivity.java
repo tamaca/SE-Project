@@ -178,12 +178,15 @@ public class UserPageActivity extends GeneralActivity implements ScrollViewListe
             gallery.setVisibility(View.VISIBLE);
             if (!getGallery(userName)) {
                 findViewById(R.id.textView4).setVisibility(View.VISIBLE);
+            }else {
+                findViewById(R.id.textView4).setVisibility(View.GONE);
             }
             findViewById(R.id.textView3).setVisibility(View.GONE);
             concernButton.setText(getString(R.string.remove_from_concern));
         } else {
             gallery.setVisibility(View.INVISIBLE);
             findViewById(R.id.textView3).setVisibility(View.VISIBLE);
+            findViewById(R.id.textView4).setVisibility(View.GONE);
             concernButton.setText(getString(R.string.concern));
         }
         if (blacklist) {
