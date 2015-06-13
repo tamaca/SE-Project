@@ -26,7 +26,7 @@ public class JsonGet {
     private String url;
     private DB db;
     private GalleryItem[] galleryItems;
-
+    private RecentItem[] recentItems;
     //关注或黑名单中的人
     public ArrayList<String> getUserNames() {
         return userNames;
@@ -50,7 +50,15 @@ public class JsonGet {
         JSONObject jsonObject = get.GetFromServer();
         get.PostExecuteImageUrl(jsonObject, type);
     }
-
+    //图片获取url ta动态获取
+    public JsonGet(String url,RecentItem[] recentItems,DB db,String type) throws Exception {
+        this.url = url;
+        this.db = db;
+        this.recentItems = recentItems;
+        Get get = new Get();
+        JSONObject jsonObject = get.GetFromServer();
+        get.PostExecuteImageUrl(jsonObject, type);
+    }
     //图片获取(id)
     public JsonGet(String url, String key) throws Exception {
         this.url = url;
@@ -127,6 +135,7 @@ public class JsonGet {
                 String image_big[] = new String[8];
                 String image_id[] = new String[8];
                 String image_time[] = new String[8];
+                String image_author[] = new String[8];
                 ImageView imageView[] = new ImageView[8];
                 int count;
                 if (status.equals("normal")) {
@@ -146,9 +155,17 @@ public class JsonGet {
                     image_big[i] = baseurl + jsonObject.getString("image" + i + "_big");
                     image_id[i] = jsonObject.getString("image" + i + "_id");
                 }
-                if (galleryItems != null) {
-                    for (int i = 0; i < count; i++) {
-                        imageView[i] = galleryItems[i].imageView;
+                if (recentItems!=null||galleryItems != null) {
+                    if(galleryItems!=null) {
+                        for (int i = 0; i < count; i++) {
+                            imageView[i] = galleryItems[i].imageView;
+                        }
+                    }
+                    else
+                    {
+                        for (int i = 0; i < count; i++) {
+                            imageView[i] = recentItems[i].imageView;
+                        }
                     }
                     for (int i = 0; i < count; i++) {
                         new ImageGet(imageView[i], image_small[i], image_id[i], db, "small");
@@ -175,6 +192,15 @@ public class JsonGet {
                         image_time[i] = jsonObject.getString("image" + i + "_time");
                         galleryItems[i].textView.setText(image_time[i]);
                         galleryItems[i].textView.setVisibility(View.VISIBLE);
+                    }
+                }
+                else if(recentItems!=null)
+                {
+                    for (int i = 0; i < count; i++) {
+                        image_author[i] = jsonObject.getString("image" + i + "_author");
+                        recentItems[i].time.setText(image_time[i]);
+                        recentItems[i].author.setText(image_author[i]);//todo:发送 图片上传者姓名
+                        dbimagecaresave(image_id[i],image_author[i],image_time[i]);
                     }
                 }
             } else {
@@ -310,9 +336,15 @@ public class JsonGet {
 
     //大厅缩略图保存
     private void dblobbyimagesave(String rank, String imageid) {
+
         db.lobbyimageinsert(rank, imageid);
     }
-
+    private void dbimagecaresave(String imageid, String userid, String time)
+    {
+        Timestamp updatetime = new Timestamp(System.currentTimeMillis());
+        updatetime.valueOf(time);
+        db.imagecaredinsert(imageid,userid,updatetime);
+    }
     private void dbimagelikesave(String imageid, String islike, String likenumber) {
         db.imageupdateislike(imageid, islike);
         db.imageupdatelikenumber(imageid, likenumber);

@@ -15,9 +15,10 @@ import com.example.team.myapplication.R;
  * Created by Y400 on 2015/6/5.
  */
 public class RecentItem extends LinearLayout {
-    private TextView author;
-    private TextView time;
-    private ImageView imageView;
+    public TextView author;
+    public TextView time;
+    public ImageView imageView;
+
     public RecentItem(Context context) {
         super(context);
     }
@@ -31,9 +32,6 @@ public class RecentItem extends LinearLayout {
         time.setText(_time);
         imageView.setImageBitmap(_bitmap);
         addView(view);
-
-
-
     }
     public RecentItem(Context context, AttributeSet attrs) {
         super(context, attrs);

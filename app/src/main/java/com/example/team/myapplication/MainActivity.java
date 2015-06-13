@@ -592,41 +592,6 @@ public class MainActivity extends Activity implements ScrollViewListener {
         return image;
     }
 
-    /**
-     * 把从路径读到的图片压缩 (可能是这里出了问题，读得了图片，但是不能获得真实图片的宽高)
-     */
-    @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
-    /*private void setPic() {
-        // Get the dimensions of the View
-        int targetW = imageView.getMaxHeight();
-        int targetH = imageView.getMaxWidth();
-        *//*
-        // Get the dimensions of the bitmap
-        BitmapFactory.Options bmOptions = new BitmapFactory.Options();
-        bmOptions.inJustDecodeBounds = true;
-        bmOptions.inSampleSize=2;
-        BitmapFactory.decodeFile(mCurrentPhotoPath, bmOptions);
-        int photoW = bmOptions.outWidth;
-        int photoH = bmOptions.outHeight;
-
-        // Determine how much to scale down the image
-        int scaleFactor = Math.min(photoW / targetW, photoH / targetH);
-
-        // Decode the image file into a Bitmap sized to fill the View
-        bmOptions.inJustDecodeBounds = false;
-        bmOptions.inSampleSize = scaleFactor;
-        bmOptions.inPurgeable = true;
-
-        Bitmap bitmap = BitmapFactory.decodeFile(mCurrentPhotoPath, bmOptions);*//*
-        BitmapFactory.Options options = new BitmapFactory.Options();
-        BitmapFactory.decodeFile(mCurrentPhotoPath, options);
-        options.inJustDecodeBounds = true;
-        options.inSampleSize = calculateInSampleSize(options, targetW);
-        options.inJustDecodeBounds = false;
-        Bitmap bitmap = BitmapFactory.decodeFile(mCurrentPhotoPath, options);
-        imageView.setImageBitmap(bitmap);
-    }*/
-
     public void refreshSquare() {
         scrollContentLeft.removeAllViews();
         scrollContentRight.removeAllViews();
@@ -639,50 +604,6 @@ public class MainActivity extends Activity implements ScrollViewListener {
         }
     }
 
-    public static int calculateInSampleSize(BitmapFactory.Options options, int requestWidth) {
-        int inSampleSize = 1;
-        //SD卡中图片的宽
-        int outWidth = options.outWidth;
-        if (outWidth > requestWidth) {
-            inSampleSize = Math.round((float) outWidth / (float) requestWidth);
-        }
-        return inSampleSize;
-    }
-
-    /**
-     * 上传图片的线程
-     */
-    class UploadPictureProgress extends AsyncTask<Void, Void, Boolean> {
-
-        Bitmap bitmap;
-
-        public UploadPictureProgress(Bitmap bitmap) {
-            this.bitmap = bitmap;
-        }
-
-        @Override
-        protected Boolean doInBackground(Void... params) {
-            try {
-                //TODO 上传图片
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
-
-
-                return false;
-            }
-            return true;
-
-        }
-
-        @Override
-        protected void onPostExecute(Boolean success) {
-            if (success) {
-
-            } else {
-
-            }
-        }
-    }
 
     public class DownloadPictureProgress extends AsyncTask<Void, Void, Boolean> {
 

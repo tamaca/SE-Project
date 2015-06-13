@@ -455,6 +455,17 @@ public class DB extends SQLiteOpenHelper {
         Cursor cursor = db.rawQuery("select * from M_LOBBYIMAGE where M_LOBBYIMAGE_RANK>='" + min.trim() + "'" + "and M_LOBBYIMAGE_RANK<='" + max.trim() + "'", null);
         return  cursor;
     }
+    //TODO:设计说明书
+    public boolean checklobbyimage (String rank,String imageid) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cur = db.rawQuery("select * from M_LOBBYIMAGE where M_LOBBYIMAGE_RANK='" + rank.trim() + "'", null);
+        if (cur.moveToFirst()) {
+        
+            return true;
+        } else {
+            return false;
+        }
+    }
     public long lobbyimageinsert(String rank, String imageid) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues cv = new ContentValues();

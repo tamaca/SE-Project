@@ -776,6 +776,7 @@ public class ViewPictureActivity extends GeneralActivity implements ScrollViewLi
 
 
         protected void onPreExecute() {
+            scrollContent.removeView(loadingView);
             showProgress(true);
         }
 

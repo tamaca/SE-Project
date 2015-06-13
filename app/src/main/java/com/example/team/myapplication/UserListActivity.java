@@ -188,7 +188,7 @@ public class UserListActivity extends GeneralActivity {
                 if (type.equals("concern")) {
                     url = "http://192.168.253.1/" + LoginState.username + "/concern/show/";
                 } else {
-                    url = "";
+                    url = "http://192.168.253.1/" + LoginState.username + "/blacklist/show/";
                 }
                 userNames = new JsonGet(url).getUserNames();
                 for (int i = 0; i < userNames.size(); i++) {

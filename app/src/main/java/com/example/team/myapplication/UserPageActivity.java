@@ -355,14 +355,8 @@ public class UserPageActivity extends GeneralActivity implements ScrollViewListe
         @Override
         public void onClick(View view) {
             //我 拉黑/取黑 该用户
-            if (blacklist) {
-                //TODO 把该用户从黑名单中移除
-                blacklist = !blacklist;
-                hateButton.setText(getString(R.string.add_to_blacklist));
-            } else {
-                blacklist = !blacklist;
-                hateButton.setText(getString(R.string.remove_from_blackList));
-            }
+            mAuthTask = new BlackConcerenTask(userName, 2);
+            mAuthTask.execute();
         }
     }
 
