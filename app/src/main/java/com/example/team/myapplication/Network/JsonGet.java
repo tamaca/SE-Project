@@ -272,6 +272,7 @@ public class JsonGet {
                 returnmap = new HashMap<String, String>();
                 if (status.equals("normal")) {
                     tagnum = 5;
+                    returnmap.put("tagnum","5");
                 } else {
                     String _tagnum = jsonObject.getString("count");
                     returnmap.put("tagnum", String.valueOf(_tagnum));

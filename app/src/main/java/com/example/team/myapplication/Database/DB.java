@@ -403,6 +403,7 @@ public class DB extends SQLiteOpenHelper {
     }
 
     //Tag
+    /*
     public Cursor tagselect() {
 
         SQLiteDatabase db = this.getReadableDatabase();
@@ -410,7 +411,13 @@ public class DB extends SQLiteOpenHelper {
                 .query(M_TAG, null, null, null, null, null, null);
         return cursor;
     }
-
+    */
+    //TODO:说明书
+    public Cursor tagselect(String imageid) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor = db.rawQuery("select * from M_TAG where M_TAG_IMAGEID='" + imageid.trim() + "'" +" order by M_TAG_ID ASC", null);
+        return cursor;
+    }
     public long taginsert(String tagid, String tagname, String imageid) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues cv = new ContentValues();

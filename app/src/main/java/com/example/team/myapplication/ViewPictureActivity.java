@@ -312,6 +312,17 @@ public class ViewPictureActivity extends GeneralActivity implements ScrollViewLi
                         //数据库存储错误
                         throw new Exception();
                     }
+                    int i=0;
+                    mCursor=db.tagselect(imageid);
+                    for (mCursor.moveToFirst(); !mCursor.isAfterLast(); mCursor.moveToNext()) {
+                        String tagname=mCursor.getString((mCursor.getColumnIndex("m_tag_name")));
+                        String tagid=mCursor.getString((mCursor.getColumnIndex("m_tag_id")));
+                        tags.get(i).tagText.setText(tagname);
+                        tags.get(i).setTagid(tagid);
+                        tags.get(i).changeState(Tag.showingTag);
+                        i++;
+                    }
+                    refreshTags();
                     refreshingProgressBar.setVisibility(View.GONE);
                 } else {
                     throw new Exception();
