@@ -119,7 +119,7 @@ public class DB extends SQLiteOpenHelper {
         db.execSQL(sql);
         onCreate(db);
     }
-
+/*
     public Cursor userselect() {
 
         SQLiteDatabase db = this.getReadableDatabase();
@@ -127,7 +127,8 @@ public class DB extends SQLiteOpenHelper {
                 .query(M_USER, null, null, null, null, null, null);
         return cursor;
     }
-
+*/
+    //todo:删除了userselect userdelete usercheck
     public long userinsert(String id) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues cv = new ContentValues();
@@ -144,13 +145,13 @@ public class DB extends SQLiteOpenHelper {
         long row = db.insert(M_USER, null, cv);
         return row;
     }
-
+    /*
     public void userdelete(String id) {
         SQLiteDatabase db = this.getWritableDatabase();
         String where = M_USER_ID + " = ?";
         String[] whereValue = {id};
         db.delete(M_USER, where, whereValue);
-    }
+    }*/
 
     public String getmUserPassword(String id) {
         // String encryptid = AES.encrypt(id);
@@ -171,6 +172,7 @@ public class DB extends SQLiteOpenHelper {
         return null;
     }
 
+    /*
     private boolean usercheck(String id, SQLiteDatabase db) {
         Cursor cursor = db.rawQuery("select * from M_USER where M_USER_ID='" + id.trim() + "'", null);
         if (cursor.moveToFirst()) {
@@ -178,7 +180,7 @@ public class DB extends SQLiteOpenHelper {
         } else {
             return false;
         }
-    }
+    }*/
 
     public boolean checkuser(String id) {
         SQLiteDatabase db = this.getWritableDatabase();
@@ -261,20 +263,6 @@ public class DB extends SQLiteOpenHelper {
         }
     }
 
-    public void lastuserupdatepassword(String newpassword) {
-        SQLiteDatabase db = this.getWritableDatabase();
-        Cursor cursor = db.rawQuery("select * from M_LASTUSER", null);
-        if (cursor.moveToFirst()) {//
-            String id = cursor.getString((cursor.getColumnIndex("m_lastuser_id")));
-            String where = M_LASTUSER_ID + " = ?";
-            String[] whereValue = {id};
-            ContentValues cv = new ContentValues();
-            cv.put(M_LASTUSER_PASSWORD, newpassword);
-            db.update(M_LASTUSER, cv, where, whereValue);
-        } else {
-            Log.e("errorbig", "Can't");
-        }
-    }
 
     /*
         public boolean checklastuserpassword() {
@@ -315,7 +303,7 @@ public class DB extends SQLiteOpenHelper {
         return row;
     }
 
-    //大图插入数据库
+    //大图插入数据库 TODO:删除了 userimageselect 说明书
     public void imageinsert(String imageid, String userid, String islike, String likenumber, Timestamp updatedate) {
         SQLiteDatabase db = this.getWritableDatabase();
         String where = M_IMAGE_IMAGEID + " = ?";
@@ -353,12 +341,6 @@ public class DB extends SQLiteOpenHelper {
         db.update(M_IMAGE, cv, where, whereValue);
     }
 
-    public Cursor userimageselect(String userid) {
-        SQLiteDatabase db = this.getWritableDatabase();
-        Cursor cursor = db.rawQuery("select * from M_IMAGE where M_IMAGE_USERID='" + userid.trim() + "'", null);
-        return cursor;
-    }
-
     //Comment
     /*
     public Cursor commentselect() {
@@ -368,7 +350,7 @@ public class DB extends SQLiteOpenHelper {
                 .query(M_COMMENT, null, null, null, null, null, null);
         return cursor;
     }*/
-    //TODO:设计说明书 删除了commentdelete
+    //TODO:设计说明书 删除了commentdelete commentupdatecontent image imagecommentselect改为commentselect tagselect更改
     public Cursor commentselect(String imageid) {
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor cursor = db.rawQuery("select * from M_COMMENT where M_COMMENT_IMAGEID='" + imageid.trim() + "'" + " order by M_COMMENT_COMMENTDATE ASC", null);
@@ -385,22 +367,6 @@ public class DB extends SQLiteOpenHelper {
         long row = db.insert(M_COMMENT, null, cv);
         return row;
     }
-
-    public void commentupdatecontent(String commentid, String newcontent) {
-        SQLiteDatabase db = this.getWritableDatabase();
-        String where = M_COMMENT_COMMENTID + " = ?";
-        String[] whereValue = {commentid};
-        ContentValues cv = new ContentValues();
-        cv.put(M_COMMENT_CONTENT, newcontent);
-        db.update(M_COMMENT, cv, where, whereValue);
-    }
-
-    public Cursor imagecommentselect(String imageid) {
-        SQLiteDatabase db = this.getWritableDatabase();
-        Cursor cursor = db.rawQuery("select * from M_COMMENT where M_COMMENT_IMAGEID='" + imageid.trim() + "'", null);
-        return cursor;
-    }
-
     //Tag
     /*
     public Cursor tagselect() {
@@ -411,7 +377,7 @@ public class DB extends SQLiteOpenHelper {
         return cursor;
     }
     */
-    //TODO:说明书
+    //TODO:说明书 删除了tagupdate tagimageselect
     public Cursor tagselect(String imageid) {
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor cursor = db.rawQuery("select * from M_TAG where M_TAG_IMAGEID='" + imageid.trim() + "'" +" order by M_TAG_ID ASC", null);
@@ -433,22 +399,6 @@ public class DB extends SQLiteOpenHelper {
         String[] whereValue = {tagid};
         db.delete(M_TAG, where, whereValue);
     }
-
-    public void tagupdate(String tagid, String newtagname) {
-        SQLiteDatabase db = this.getWritableDatabase();
-        String where = M_TAG_ID + " = ?";
-        String[] whereValue = {tagid};
-        ContentValues cv = new ContentValues();
-        cv.put(M_TAG_NAME, newtagname);
-        db.update(M_TAG, cv, where, whereValue);
-    }
-
-    public Cursor tagimageselect(String tagname) {
-        SQLiteDatabase db = this.getWritableDatabase();
-        Cursor cursor = db.rawQuery("select * from M_TAG where M_TAG_NAME='" + tagname.trim() + "'", null);
-        return cursor;
-    }
-
     //lobbyimage
    /* public Cursor lobbyimageselect() {
         SQLiteDatabase db = this.getReadableDatabase();
@@ -464,7 +414,7 @@ public class DB extends SQLiteOpenHelper {
         return cursor;
     }
 
-    //TODO:设计说明书
+    //TODO:设计说明书 加入了checklobbyimage
     public boolean checklobbyimage(String rank, String imageid) {
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor cur = db.rawQuery("select * from M_LOBBYIMAGE where M_LOBBYIMAGE_RANK='" + rank.trim() + "'", null);

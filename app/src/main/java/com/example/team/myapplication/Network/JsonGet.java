@@ -193,9 +193,9 @@ public class JsonGet {
                 for (int i = 0; i < count; i++) {
                     dbimagesave(image_id[i]);
                 }
-                if (type.equals("lobby")&&galleryItems!=null) {
+                if (type.equals("lobby") && galleryItems != null) {
                     for (int i = 0; i < count; i++) {
-                        if(db.checklobbyimage(String.valueOf(i),image_id[i]));
+                        if (db.checklobbyimage(String.valueOf(i), image_id[i])) ;
                         dblobbyimagesave(String.valueOf(LoginState.getPage() * 8 + i + 1), image_id[i]);
                     }
                 } else if (galleryItems != null) {
@@ -209,8 +209,8 @@ public class JsonGet {
                         image_time[i] = jsonObject.getString("image" + i + "_date");
                         image_author[i] = jsonObject.getString("image" + i + "_owner");
                         recentItems[i].time.setText(image_time[i]);
-                        recentItems[i].author.setText(image_author[i]);//todo:发送 图片上传者姓名
-                        dbimagecaresave(image_id[i], image_author[i], image_time[i]);
+                        recentItems[i].author.setText(image_author[i]);
+                        dbimagecaresave(image_id[i], LoginState.username, image_time[i]);
                     }
                 }
             } else {
@@ -272,7 +272,7 @@ public class JsonGet {
                 returnmap = new HashMap<String, String>();
                 if (status.equals("normal")) {
                     tagnum = 5;
-                    returnmap.put("tagnum","5");
+                    returnmap.put("tagnum", "5");
                 } else {
                     String _tagnum = jsonObject.getString("count");
                     returnmap.put("tagnum", String.valueOf(_tagnum));
@@ -383,7 +383,7 @@ public class JsonGet {
         Timestamp updatetime = new Timestamp(System.currentTimeMillis());
         for (int i = 0; i < commentnum; i++) {
             updatetime.valueOf(comment.get("commentdate" + i));
-            db.commentinsert(comment.get("commentid" + i), comment.get("commentuser" + i), imageid, comment.get("comment"+i), updatetime);
+            db.commentinsert(comment.get("commentid" + i), comment.get("commentuser" + i), imageid, comment.get("comment" + i), updatetime);
         }
     }
 

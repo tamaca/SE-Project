@@ -246,8 +246,14 @@ public class MainActivity extends Activity implements ScrollViewListener {
                     Toast.makeText(getApplicationContext(), "数据传输错误", Toast.LENGTH_LONG).show();
                     e.printStackTrace();
                 }
-                galleryItem.setContentDescription(jsonObject.toString());
+                galleryItem.imageView.setContentDescription(jsonObject.toString());
                 galleryItems.add(galleryItem);
+                galleryItem.imageView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        toViewPictureActivity(view);
+                    }
+                });
                 if (scrollContent.getChildAt(scrollContent.getChildCount() - 1) == loadingView) {
                     scrollContent.removeView(loadingView);
                 }

@@ -2,15 +2,20 @@ package com.example.team.myapplication;
 
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
+import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
+import com.example.team.myapplication.Cache.Localstorage;
 import com.example.team.myapplication.Database.DB;
 import com.example.team.myapplication.Network.JsonGet;
+import com.example.team.myapplication.Network.NetworkState;
 import com.example.team.myapplication.util.GeneralActivity;
 import com.example.team.myapplication.util.LoadingView;
 import com.example.team.myapplication.util.MyException;
@@ -20,6 +25,7 @@ import com.example.team.myapplication.util.RecentItem;
 import com.example.team.myapplication.util.RefreshableView;
 import com.example.team.myapplication.util.ScrollViewListener;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
@@ -39,7 +45,8 @@ public class RecentActivity extends GeneralActivity implements ScrollViewListene
     private int page = 1;
     private DB db;
     private boolean end = false;
-    private Context context=this;
+    private Context context = this;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -66,11 +73,55 @@ public class RecentActivity extends GeneralActivity implements ScrollViewListene
         /**
          * 请在getRecent里获得所有动态
          */
-        scrollContent.addView(loadingView);
+       /* scrollContent.addView(loadingView);
         getPicture=new GetPicture();
-        getPicture.execute();
-        //getRecent();
+        getPicture.execute();*/
+        getData();
 
+    }
+
+    public void getData() {
+        if (NetworkState.isNetworkConnected(this)) {
+            if (getPicture == null) {
+                scrollContent.addView(loadingView);
+                getPicture = new GetPicture();
+                getPicture.execute();
+            }
+        } else {
+            getPicture = null;
+            Cursor mCursor = db.userimagecaredselect(LoginState.username);
+            for (mCursor.moveToFirst(); !mCursor.isAfterLast(); mCursor.moveToNext()) {
+                RecentItem recentItem = new RecentItem(this);
+                String imageid = mCursor.getString((mCursor.getColumnIndex("m_imagecared_imageid")));
+                String time = mCursor.getString((mCursor.getColumnIndex("m_imagecared_updatedate")));
+                String userid = mCursor.getString((mCursor.getColumnIndex("m_imagecared_userid")));
+                String smallfilepath = Localstorage.getImageFilePath(imageid, "small");
+                Bitmap bitmap = Localstorage.getBitmapFromSDCard(smallfilepath);
+                recentItem.imageView.setImageBitmap(bitmap);
+                JSONObject jsonObject = new JSONObject();
+                try {
+                    jsonObject.put("type", "offline");
+                    jsonObject.put("imageid", imageid);
+                } catch (JSONException e) {
+                    Toast.makeText(getApplicationContext(), "数据传输错误", Toast.LENGTH_LONG).show();
+                    e.printStackTrace();
+                }
+                recentItem.imageView.setContentDescription(jsonObject.toString());
+                recentItem.time.setText(time);
+                recentItem.author.setText(userid);
+                recentItems.add(recentItem);
+                recentItem.imageView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        toViewPictureActivity(v);
+                    }
+                });
+            }
+            refreshRecentItems();
+            scrollContent.postInvalidate();
+            //  page++;
+
+        }
     }
 
     @Override
@@ -117,9 +168,6 @@ public class RecentActivity extends GeneralActivity implements ScrollViewListene
 
     }
 
-    public void getRecent() {
-
-    }
 
     public void toViewPictureActivity(View view) {
         Intent intent = new Intent(this, ViewPictureActivity.class);
@@ -128,12 +176,30 @@ public class RecentActivity extends GeneralActivity implements ScrollViewListene
         try {
             String imageviewJsonString = view.getContentDescription().toString();
             JSONObject imageviewJson = new JSONObject(imageviewJsonString);
-            String bigurl = imageviewJson.getString("imagebigurl");
-            String id = imageviewJson.getString("imageid");
-            intent.putExtra("type", "online");
-            intent.putExtra("bigurl", bigurl);
-            intent.putExtra("imageid", id);
-            startActivity(intent);
+            if (NetworkState.isNetworkConnected(this)) {
+                String type = imageviewJson.getString("type");
+                if (type.equals("online")) {
+                    String bigurl = imageviewJson.getString("imagebigurl");
+                    String id = imageviewJson.getString("imageid");
+                    intent.putExtra("type", "online");
+                    intent.putExtra("bigurl", bigurl);
+                    intent.putExtra("imageid", id);
+                    startActivity(intent);
+                } else {
+                    //获取缩略图时未联网 无大图地址 获取大图时联网
+                    String id = imageviewJson.getString("imageid");
+                    intent.putExtra("type", "halfline");
+                    intent.putExtra("imageid", id);
+                    startActivity(intent);
+                }
+            } else {
+                String id = imageviewJson.getString("imageid");
+                String filePath = Localstorage.getImageFilePath(id, "big");
+                intent.putExtra("type", "offline");
+                intent.putExtra("filepath", filePath);
+                intent.putExtra("imageid", id);
+                startActivity(intent);
+            }
         } catch (Exception e) {
             //解码错误
         }
@@ -152,16 +218,12 @@ public class RecentActivity extends GeneralActivity implements ScrollViewListene
     public void onScrollChanged(MyScrollView scrollView, int x, int y, int oldX, int oldY) {
         if (y + scrollView.getMeasuredHeight() + 50 > scrollContent.getMeasuredHeight()) {
             if (!end && scrollContent.getChildAt(scrollContent.getChildCount() - 1) != loadingView) {
-                if (getPicture == null) {
+               /* if (getPicture == null) {
                     scrollContent.addView(loadingView);
-                   /* RecentItem recentItems[] = new RecentItem[8];
-                    for (int i = 0; i < 8; i++) {
-                        recentItems[i] = new RecentItem(this);
-                    }
-                    getPicture = new GetPicture(recentItems);*/
                     getPicture=new GetPicture();
                     getPicture.execute();
-                }
+                }*/
+                getData();
             }
         }
         if (oldY - y >= 10) {
@@ -181,7 +243,7 @@ public class RecentActivity extends GeneralActivity implements ScrollViewListene
         }*/
         @Override
         protected void onPreExecute() {
-            newrecentItems=new RecentItem[8];
+            newrecentItems = new RecentItem[8];
             for (int i = 0; i < 8; i++) {
 
                 newrecentItems[i] = new RecentItem(context);
@@ -245,7 +307,7 @@ public class RecentActivity extends GeneralActivity implements ScrollViewListene
                 page = 1;
                 getPicture = new GetPicture();
                 getPicture.execute();
-                end=false;
+                end = false;
                 /*
                 Thread.sleep(3000);
                 scrollContent.post(new Runnable() {

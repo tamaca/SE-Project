@@ -342,7 +342,7 @@ public class ViewPictureActivity extends GeneralActivity implements ScrollViewLi
                 } else {
                     throw new Exception();
                 }
-            } else {
+            } else {//halfline
                 imageid = (String) intent.getExtras().get("imageid");
                 if (imageid == null) {
                     //id错误
@@ -351,6 +351,11 @@ public class ViewPictureActivity extends GeneralActivity implements ScrollViewLi
                 String url = "http://192.168.253.1/big_get/" + imageid + "/";
                 getImageFromIdProgress getImageFromIdProgress = new getImageFromIdProgress(url, imageid);
                 getImageFromIdProgress.execute();
+                String informationurl = "http://192.168.253.1/" + LoginState.username + "/image_detail/";
+                mAuthTask = new getImageInformationProgress(informationurl, imageid, db);
+                mAuthTask.execute();
+                getCommentProgress = new GetCommentProgress(db, newcomments);
+                getCommentProgress.execute();
             }
         } catch (Exception e) {
             showFail.setVisibility(View.VISIBLE);
