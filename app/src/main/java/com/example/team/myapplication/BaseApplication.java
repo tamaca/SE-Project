@@ -18,7 +18,7 @@ public class BaseApplication extends Application {
             @Override
             public void onActivityStopped(Activity activity) {
                 foregroundActivities--;
-                if (foregroundActivities == 0) {
+                if (foregroundActivities == 0&&!LoginState.photo) {
                     LoginState.setPage(0);
                     LoginState.fresh=true;
                 }

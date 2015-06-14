@@ -208,7 +208,7 @@ public class MainActivity extends Activity implements ScrollViewListener {
          * 展示出相应的界面
          */
         changeView(LoginState.getLogined());
-        if(!LoginState.fresh) {
+        if (!LoginState.fresh) {
             imagedownload();
         }
     }
@@ -248,9 +248,7 @@ public class MainActivity extends Activity implements ScrollViewListener {
             }
             if (!(mCursor.getCount() == 0)) {
                 LoginState.setPage(LoginState.getPage() + 1);
-            } else
-
-            {
+            } else {
                 end = true;
             }
             refreshSquare();
@@ -264,7 +262,7 @@ public class MainActivity extends Activity implements ScrollViewListener {
     public void onResume() {
         super.onResume();
         changeView(LoginState.getLogined());
-        if(LoginState.fresh) {
+        if (LoginState.fresh) {
             imagedownload();
         }
     }
@@ -454,7 +452,11 @@ public class MainActivity extends Activity implements ScrollViewListener {
                 showCameraTask = new ShowCameraTask();
                 showCameraTask.execute();
             }
+            if (end) {
+                end = false;
+            }
         }
+
         if (y + scrollView.getMeasuredHeight() + 50 > scrollContent.getMeasuredHeight()) {
             if (!end) {
                 if (scrollContent.getChildAt(scrollContent.getChildCount() - 1) != loadingView) {
@@ -466,6 +468,7 @@ public class MainActivity extends Activity implements ScrollViewListener {
                 }
             }
         }
+
     }
 
     class MyPagerAdapter extends PagerAdapter {
@@ -515,6 +518,7 @@ public class MainActivity extends Activity implements ScrollViewListener {
                 }
                 // Continue only if the File was successfully created
                 if (photoFile != null) {
+                    LoginState.photo=true;
                     takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT,
                             Uri.fromFile(photoFile));
                     startActivityForResult(takePictureIntent, REQUEST_TAKE_PHOTO);
@@ -560,6 +564,7 @@ public class MainActivity extends Activity implements ScrollViewListener {
         } else {
             Toast.makeText(getApplicationContext(), "Picture is not Taken", Toast.LENGTH_SHORT).show();
         }
+        LoginState.photo=false;
     }
 
 

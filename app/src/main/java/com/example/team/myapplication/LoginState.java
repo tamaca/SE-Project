@@ -8,7 +8,7 @@ public class LoginState {
     public static int getPage() {
         return page;
     }
-
+    public static boolean photo=false;
     public static void setPage(int page) {
         LoginState.page = page;
     }
