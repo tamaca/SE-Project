@@ -31,6 +31,7 @@ public class CheckValid {
     }
 
     static public boolean isTagValid(String tagContent) {
-        return tagContent.getBytes().length <= 15 && !tagContent.contains(" ") && tagContent.matches("^[A-Za-z0-9_\u4e00-\u9fa5]{2,15}$");
+        byte[] x = tagContent.getBytes();
+        return x.length <= 10 && !tagContent.contains(" ") && tagContent.matches("^[A-Za-z0-9_\u4e00-\u9fa5]{2,15}$");
     }
 }
