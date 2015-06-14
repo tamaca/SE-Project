@@ -127,7 +127,7 @@ public class Origindownload extends AsyncTask<String, Integer, Bitmap> {
                     imageFile.createNewFile();
                 }
                 FileOutputStream fileOutputStream = new FileOutputStream(imageFile);
-                bitmap.compress(Bitmap.CompressFormat.PNG, 100, fileOutputStream);
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fileOutputStream);
                 fileOutputStream.flush();
                 fileOutputStream.close();
                 //TODO:图片下载完成

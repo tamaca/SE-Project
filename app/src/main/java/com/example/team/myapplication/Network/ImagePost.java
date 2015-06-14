@@ -21,6 +21,8 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.Toast;
 
+import com.example.team.myapplication.UserPageActivity;
+
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
@@ -55,13 +57,14 @@ public class ImagePost extends AsyncTask<String, Integer, String> {
     private Context context;
     private ProgressDialog progressDialog;
     private int y;
-
-    public ImagePost(Context context, String url, Map<String, String> paramMap, File file, int y) {
+    private UserPageActivity userPageActivity;
+    public ImagePost(Context context, String url, Map<String, String> paramMap, File file, int y,UserPageActivity userPageActivity) {
         this.context = context;
         this.url = url;
         this.paramMap = paramMap;
         this.file = file;
         this.y = y;
+        userPageActivity=this.userPageActivity;
     }
 
     @Override
@@ -116,6 +119,9 @@ public class ImagePost extends AsyncTask<String, Integer, String> {
         // TODO Auto-generated method stub
         Log.i("info", result);
         Toast.makeText(context, result, Toast.LENGTH_LONG).show();
+        if(userPageActivity!=null) {
+            userPageActivity.loadView(userPageActivity.isMe);
+        }
         progressDialog.dismiss();
         super.onPostExecute(result);
     }

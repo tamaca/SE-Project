@@ -39,7 +39,7 @@ import java.util.Map;
 public class UserPageActivity extends GeneralActivity implements ScrollViewListener {
     static public boolean concern;
     static public boolean blacklist;
-    private static boolean isMe = false;
+    public static boolean isMe = false;
     private Button concernButton;
     private Button hateButton;
     private Button uploadImageButton;
@@ -233,8 +233,9 @@ public class UserPageActivity extends GeneralActivity implements ScrollViewListe
                     sbFileTypes.append(getFileType(fileName));
                     params.put("fileTypes", sbFileTypes.toString());
                     String actionUrl = "http://192.168.253.1/upload/"+LoginState.username+"/";
-                    ImagePost imagePost = new ImagePost(this, actionUrl, params, file,50);
+                    ImagePost imagePost = new ImagePost(this, actionUrl, params, file,100,this);
                     imagePost.execute();
+
                     break;
             }
         } else {
