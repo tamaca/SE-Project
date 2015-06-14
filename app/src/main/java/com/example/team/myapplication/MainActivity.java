@@ -1,15 +1,12 @@
 package com.example.team.myapplication;
 
-import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
@@ -652,12 +649,12 @@ public class MainActivity extends Activity implements ScrollViewListener {
                     refreshSquare();
                     squareView.postInvalidate();
                 }
-            } else {
                 if (end) {
                     myToast.show("没有更多图片了");
-                } else {
-                    myToast.show(getString(R.string.toast_downloading_picture_error));
                 }
+            } else {
+                myToast.show(getString(R.string.toast_downloading_picture_error));
+
             }
         }
     }

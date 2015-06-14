@@ -129,11 +129,10 @@ public class UserPageActivity extends GeneralActivity implements ScrollViewListe
      */
     public void loadView(boolean my) {
         setTitle(userName + "的个人主页");
+        picturehave = false;
         if (my) {
             //加载我的个人主页
-            if (!getGallery(userName)) {
-                findViewById(R.id.textView4).setVisibility(View.VISIBLE);
-            }
+
             concernButton.setVisibility(View.GONE);
             hateButton.setVisibility(View.GONE);
             if (gallery.getChildAt(gallery.getChildCount() - 1) != loadingView) {
@@ -146,21 +145,25 @@ public class UserPageActivity extends GeneralActivity implements ScrollViewListe
                     getPicture.execute();
                 }
             }
+            if (!getGallery(userName)) {
+                findViewById(R.id.textView4).setVisibility(View.VISIBLE);
+            }
         } else {
             //加载别人的主页
             manageButton.setVisibility(View.GONE);
             uploadImageButton.setVisibility(View.GONE);
             getInfomationtask = new GetInfomation(userName);
             getInfomationtask.execute();
-            if (gallery.getChildAt(gallery.getChildCount() - 1) != loadingView) {
-                if (getPicture == null) {
-                    GalleryItem galleryItems[] = new GalleryItem[8];
-                    for (int i = 0; i < 8; i++) {
-                        galleryItems[i] = new GalleryItem(this);
-                    }
-                    getPicture = new GetPicture(userName, galleryItems);
-                    getPicture.execute();
+            if (getPicture == null) {
+                GalleryItem galleryItems[] = new GalleryItem[8];
+                for (int i = 0; i < 8; i++) {
+                    galleryItems[i] = new GalleryItem(this);
                 }
+                getPicture = new GetPicture(userName, galleryItems);
+                getPicture.execute();
+            }
+            if (!getGallery(userName)) {
+                findViewById(R.id.textView4).setVisibility(View.VISIBLE);
             }
         }
     }
@@ -375,7 +378,7 @@ public class UserPageActivity extends GeneralActivity implements ScrollViewListe
                 builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-                        //TODO 删除图片操作
+
                         galleryItems.remove(galleryItem);
                         //UI操作：
                         refreshGallery();
@@ -428,8 +431,10 @@ public class UserPageActivity extends GeneralActivity implements ScrollViewListe
                         galleryItems[i] = new GalleryItem(this);
                     }
                     //TODO:测试
-                    getPicture = new GetPicture(userName, galleryItems);
-                    getPicture.execute();
+                    if(getPicture==null) {
+                        getPicture = new GetPicture(userName, galleryItems);
+                        getPicture.execute();
+                    }
                 }
             }
         }
@@ -511,7 +516,7 @@ public class UserPageActivity extends GeneralActivity implements ScrollViewListe
                         concern = !concern;
                         concernButton.setText(getString(R.string.concern));
                     }
-                    loadContent(concern, blacklist);
+
                 } else {
                     if (blacklist) {
                         blacklist = !blacklist;
@@ -520,8 +525,9 @@ public class UserPageActivity extends GeneralActivity implements ScrollViewListe
                         blacklist = !blacklist;
                         hateButton.setText(getString(R.string.add_to_blacklist));
                     }
-                    loadContent(concern, blacklist);
+
                 }
+                loadView(isMe);
             } else {
                 myToast.show(getString(R.string.toast_operation_error));
             }
@@ -543,7 +549,7 @@ public class UserPageActivity extends GeneralActivity implements ScrollViewListe
 
         @Override
         protected void onPreExecute() {
-            //TODO:加入转圈效果 TO孙晓宇
+
         }
 
         @Override
@@ -566,7 +572,7 @@ public class UserPageActivity extends GeneralActivity implements ScrollViewListe
             if (success) {
                 loadContent(concern, blacklist);
             } else {
-                //TODO:关系读取错误 提示 TO:孙晓宇
+               myToast.show("获取信息失败");
             }
         }
 
@@ -594,7 +600,6 @@ public class UserPageActivity extends GeneralActivity implements ScrollViewListe
         @Override
         protected Boolean doInBackground(Void... params) {
             try {
-                //TODO 添加几个图片到 galleryItems 里
                 String url1 = "http://192.168.253.1/" + LoginState.username + "/image_of/" + userid + "/" + "/page/" + page + "/";
                 page++;
                 String url2 = "http://192.168.253.1/" + LoginState.username + "/image_of/" + userid + "/" + "/page/" + page + "/";
@@ -602,7 +607,6 @@ public class UserPageActivity extends GeneralActivity implements ScrollViewListe
                 new JsonGet(url2, db, null, "userpage");
                 Thread.sleep(1000);
             } catch (MyException.zeroException e) {
-                //TODO:没有下一页图片了
                 end = true;
             } catch (Exception e) {
                 return false;
@@ -640,6 +644,9 @@ public class UserPageActivity extends GeneralActivity implements ScrollViewListe
                 }
                 refreshGallery();
                 gallery.postInvalidate();
+                if(end){
+                    myToast.show("没有更多图片了");
+                }
             } else {
                 myToast.show(getString(R.string.toast_refreshing_error));
             }

@@ -2,7 +2,6 @@ package com.example.team.myapplication;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.Menu;
@@ -12,7 +11,6 @@ import android.widget.LinearLayout;
 
 import com.example.team.myapplication.Database.DB;
 import com.example.team.myapplication.Network.JsonGet;
-import com.example.team.myapplication.util.GalleryItem;
 import com.example.team.myapplication.util.GeneralActivity;
 import com.example.team.myapplication.util.LoadingView;
 import com.example.team.myapplication.util.MyException;
@@ -118,7 +116,6 @@ public class RecentActivity extends GeneralActivity implements ScrollViewListene
     }
 
     public void getRecent() {
-        //TODO 刷出来几个新图片，按照时间排序，新的先加进去，如果使用 新线程 来实现，请在执行完成之后在 UI线程 使用方法 refreshRecentItems()
 
     }
 
@@ -188,12 +185,10 @@ public class RecentActivity extends GeneralActivity implements ScrollViewListene
             try {
                 String url1 = "http://192.168.253.1/" + LoginState.username + "/concerned_image/page/" + page + "/";
                 new JsonGet(url1, newrecentItems, db, "recent");
-                //TODO 在这里写上拉刷新的操作
                 Thread.sleep(1000);
             } catch (InterruptedException e) {
                 return false;
             } catch (MyException.zeroException e) {
-                //TODO:没有下一页图片了
                 end = true;
             } catch (Exception e) {
                 return false;
@@ -220,8 +215,11 @@ public class RecentActivity extends GeneralActivity implements ScrollViewListene
                 refreshRecentItems();
                 scrollContent.postInvalidate();
                 page++;
+                if (end) {
+                    myToast.show("没有更多图片了");
+                }
             } else {
-                //TODO:获取图片错误
+                myToast.show("动态获取失败");
             }
         }
     }
@@ -239,7 +237,6 @@ public class RecentActivity extends GeneralActivity implements ScrollViewListene
                 page = 1;
                 getPicture = new GetPicture();
                 getPicture.execute();
-                //TODO 在这里写下拉刷新时的操作
                 /*
                 Thread.sleep(3000);
                 scrollContent.post(new Runnable() {
