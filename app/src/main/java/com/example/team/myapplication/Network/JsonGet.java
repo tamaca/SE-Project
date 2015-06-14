@@ -16,11 +16,8 @@ import org.json.JSONObject;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.sql.Timestamp;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
-import java.util.TimeZone;
 
 /**
  * Created by coco on 2015/6/3.
@@ -202,22 +199,15 @@ public class JsonGet {
                     }
                 } else if (galleryItems != null) {
                     for (int i = 0; i < count; i++) {
-                        String _time= jsonObject.getString("image" + i + "_date");
-                        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                        dateFormat.setTimeZone(TimeZone.getTimeZone("ETC/GMT-8"));
-                        Date dateTmp = dateFormat.parse(_time);
-                        galleryItems[i].textView.setText(dateTmp.toLocaleString());
+                        image_time[i] = jsonObject.getString("image" + i + "_date");
+                        galleryItems[i].textView.setText(image_time[i]);
                         galleryItems[i].textView.setVisibility(View.VISIBLE);
                     }
                 } else if (recentItems != null) {
                     for (int i = 0; i < count; i++) {
-                        String _time= jsonObject.getString("image" + i + "_date");
-                        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                        dateFormat.setTimeZone(TimeZone.getTimeZone("ETC/GMT-8"));
-                        Date dateTmp = dateFormat.parse(_time);
-                      //  image_time[i] = jsonObject.getString("image" + i + "_date");
+                        image_time[i] = jsonObject.getString("image" + i + "_date");
                         image_author[i] = jsonObject.getString("image" + i + "_owner");
-                        recentItems[i].time.setText(dateTmp.toLocaleString());
+                        recentItems[i].time.setText(image_time[i]);
                         recentItems[i].author.setText(image_author[i]);//todo:发送 图片上传者姓名
                         dbimagecaresave(image_id[i], image_author[i], image_time[i]);
                     }
