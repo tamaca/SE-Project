@@ -1,15 +1,12 @@
 package com.example.team.myapplication;
 
-import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
@@ -208,7 +205,7 @@ public class MainActivity extends Activity implements ScrollViewListener {
          * 展示出相应的界面
          */
         changeView(LoginState.getLogined());
-        if(!LoginState.fresh) {
+        if (!LoginState.fresh) {
             imagedownload();
         }
     }
@@ -248,9 +245,7 @@ public class MainActivity extends Activity implements ScrollViewListener {
             }
             if (!(mCursor.getCount() == 0)) {
                 LoginState.setPage(LoginState.getPage() + 1);
-            } else
-
-            {
+            } else {
                 end = true;
             }
             refreshSquare();
@@ -264,7 +259,7 @@ public class MainActivity extends Activity implements ScrollViewListener {
     public void onResume() {
         super.onResume();
         changeView(LoginState.getLogined());
-        if(LoginState.fresh) {
+        if (LoginState.fresh) {
             imagedownload();
         }
     }
@@ -454,7 +449,11 @@ public class MainActivity extends Activity implements ScrollViewListener {
                 showCameraTask = new ShowCameraTask();
                 showCameraTask.execute();
             }
+            if (end) {
+                end = false;
+            }
         }
+
         if (y + scrollView.getMeasuredHeight() + 50 > scrollContent.getMeasuredHeight()) {
             if (!end) {
                 if (scrollContent.getChildAt(scrollContent.getChildCount() - 1) != loadingView) {
@@ -466,6 +465,7 @@ public class MainActivity extends Activity implements ScrollViewListener {
                 }
             }
         }
+
     }
 
     class MyPagerAdapter extends PagerAdapter {
@@ -515,6 +515,7 @@ public class MainActivity extends Activity implements ScrollViewListener {
                 }
                 // Continue only if the File was successfully created
                 if (photoFile != null) {
+                    LoginState.photo=true;
                     takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT,
                             Uri.fromFile(photoFile));
                     startActivityForResult(takePictureIntent, REQUEST_TAKE_PHOTO);
@@ -553,13 +554,14 @@ public class MainActivity extends Activity implements ScrollViewListener {
                     sbFileTypes.append(getFileType(fileName));
                     params.put("fileTypes", sbFileTypes.toString());
                     String actionUrl = "http://192.168.253.1/upload/" + LoginState.username + "/";
-                    ImagePost imagePost = new ImagePost(this, actionUrl, params, file, 50);
+                    ImagePost imagePost = new ImagePost(this, actionUrl, params, file, 50,null);
                     imagePost.execute();
                     break;
             }
         } else {
             Toast.makeText(getApplicationContext(), "Picture is not Taken", Toast.LENGTH_SHORT).show();
         }
+        LoginState.photo=false;
     }
 
 
@@ -647,12 +649,12 @@ public class MainActivity extends Activity implements ScrollViewListener {
                     refreshSquare();
                     squareView.postInvalidate();
                 }
-            } else {
                 if (end) {
                     myToast.show("没有更多图片了");
-                } else {
-                    myToast.show(getString(R.string.toast_downloading_picture_error));
                 }
+            } else {
+                myToast.show(getString(R.string.toast_downloading_picture_error));
+
             }
         }
     }

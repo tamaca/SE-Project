@@ -106,7 +106,6 @@ public class ChoosePictureActivity extends GeneralActivity {
         okButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //TODO 上传状态为 have_picture 的组件的picture图片
                 finish();
             }
         });

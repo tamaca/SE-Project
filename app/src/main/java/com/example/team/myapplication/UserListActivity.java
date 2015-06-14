@@ -56,13 +56,11 @@ public class UserListActivity extends GeneralActivity {
             default:
                 break;
         }
-        showList(message);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        //TODO 回到该界面时要重新加载名单
         showList(message);
     }
 

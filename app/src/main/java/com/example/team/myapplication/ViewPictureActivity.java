@@ -130,7 +130,6 @@ public class ViewPictureActivity extends GeneralActivity implements ScrollViewLi
                         @Override
                         public void onClick(DialogInterface dialogInterface, int i) {
 
-                            //TODO 删除该用户的这个标签，请把UI操作放在删除完成之后
                             uploadTagProgress = new UploadTagProgress(tags.get(j).getTagid(), imageid, "tagdelete", tags.get(j));
                             uploadTagProgress.execute();
 
@@ -188,7 +187,7 @@ public class ViewPictureActivity extends GeneralActivity implements ScrollViewLi
                                     if (tagContent.isEmpty()) {
                                         return;
                                     }
-                                    //TODO 将标签上传 UI操作放在上传完成之后
+
                                     tags.get(j).tagText.setText(tagContent);
                                     tags.get(j).changeState(Tag.removable);
                                     refreshTags();
@@ -397,13 +396,16 @@ public class ViewPictureActivity extends GeneralActivity implements ScrollViewLi
             editText.setError("评论不能超过120字");
             return;
         }
-        //TODO:防止用户上传评论频率高
         Comment newcomments[] = new Comment[8];
         for (int i = 0; i < 8; i++) {
             newcomments[i] = new Comment(this);
         }
-        uploadComment = new UploadComment(db, comment, newcomments);
-        uploadComment.execute((Void) null);
+        if (uploadComment != null) {
+            myToast.show("5秒内只能上传一次评论");
+        } else {
+            uploadComment = new UploadComment(db, comment, newcomments);
+            uploadComment.execute((Void) null);
+        }
     }
 
     /**
@@ -440,7 +442,6 @@ public class ViewPictureActivity extends GeneralActivity implements ScrollViewLi
                 }
                 getCommentProgress = new GetCommentProgress(db, newcomments);
                 getCommentProgress.execute();
-                //TODO 可以开始加载剩余评论，加载完之后使用 scrollContent.removeView(loadingView);
             }
 
         }
@@ -514,7 +515,6 @@ public class ViewPictureActivity extends GeneralActivity implements ScrollViewLi
                 });
                 builder.create().show();
             } else {
-                //TODO 在这里添加想传入查看原图页面的信息，比如图片主人的名字，图片ID 啥的。
                 String bigfilepath = Localstorage.getImageFilePath(imageid, "big");
                 openPicture(bigfilepath);
             }
@@ -746,7 +746,6 @@ public class ViewPictureActivity extends GeneralActivity implements ScrollViewLi
             } catch (MyException.zeroException e) {
                 end = true;
                 return false;
-                //TODO:没有更多的评论了 把正在载入替换
             } catch (Exception e) {
                 return false;
             }
@@ -772,7 +771,12 @@ public class ViewPictureActivity extends GeneralActivity implements ScrollViewLi
                 }
                 refreshComments();
             } else {
-                //TODO:评论获取错误
+                if(end){
+                    myToast.show("没有更多评论了");
+                }
+                else {
+                    myToast.show("评论获取错误");
+                }
             }
 
         }
@@ -833,10 +837,23 @@ public class ViewPictureActivity extends GeneralActivity implements ScrollViewLi
                 refreshComments();
                 //  getCommentProgress =new GetCommentProgress(db,context);
                 // getCommentProgress.execute();
+                Thread thread = new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            Thread.sleep(5000);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                        uploadComment = null;
+                    }
+                });
+                thread.start();
             } else {
                 myToast.show(getString(R.string.toast_comment_failed));
+                uploadComment = null;
             }
-            uploadComment = null;
+
         }
 
     }
@@ -962,6 +979,7 @@ public class ViewPictureActivity extends GeneralActivity implements ScrollViewLi
                 String url = "http://192.168.253.1/download_origin/" + imageid + "/";
                 returnmap = new JsonGet(url, "origin").getReturnmap();
             } catch (Exception e) {
+                //TODO:错误
                 return false;
             }
             return true;
@@ -978,6 +996,10 @@ public class ViewPictureActivity extends GeneralActivity implements ScrollViewLi
                 targeturl=baseurl+originurl;
                 Origindownload origindownload=new Origindownload(context,targeturl,50,imageid);
                 origindownload.execute();
+            }
+            else
+            {
+                //TODO:错误
             }
         }
     }

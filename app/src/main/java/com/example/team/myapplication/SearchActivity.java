@@ -110,7 +110,6 @@ public class SearchActivity extends GeneralActivity implements ScrollViewListene
     public void toUserPageActivity(View view) {
         Intent intent = new Intent(this, UserPageActivity.class);
         intent.putExtra("user_name", ((TextView) view).getText());
-        //TODO 加入查看个人主页时传入的其他参数
         startActivity(intent);
     }
 
@@ -241,13 +240,6 @@ public class SearchActivity extends GeneralActivity implements ScrollViewListene
         @Override
         protected Boolean doInBackground(Void... voids) {
             try {
-
-                //TODO 根据 searchType 确定要搜索什么
-                /**
-                 * 如果搜索人名，直接把搜索结果放在 resultUsers 里
-                 * 如果搜索图片，请调用 addResultPicture(Bitmap )
-                 *
-                 */
                 String url = "http://192.168.253.1/search/user/page/" + page + "/";
                 HashMap<String, String> map = new HashMap<String, String>();
                 map.put("name", searchContent);
@@ -256,7 +248,6 @@ public class SearchActivity extends GeneralActivity implements ScrollViewListene
             } catch (MyException.zeroException e) {
                 end = true;
                 return false;
-                //TODO:搜索结果为空
             } catch (Exception e) {
                 return false;
             }
@@ -280,7 +271,11 @@ public class SearchActivity extends GeneralActivity implements ScrollViewListene
                     refreshScrollView();
                 }*/
             } else {
-                //TODO:搜索错误
+                if (end) {
+                    myToast.show("没有找到相关信息");
+                } else {
+                    myToast.show("搜索错误");
+                }
             }
         }
     }
@@ -306,13 +301,6 @@ public class SearchActivity extends GeneralActivity implements ScrollViewListene
         @Override
         protected Boolean doInBackground(Void... voids) {
             try {
-
-                //TODO 根据 searchType 确定要搜索什么
-                /**
-                 * 如果搜索人名，直接把搜索结果放在 resultUsers 里
-                 * 如果搜索图片，请调用 addResultPicture(Bitmap )
-                 *
-                 */
                 String url = "http://192.168.253.1/search/tag/page/" + page + "/";
                 HashMap<String, String> map = new HashMap<String, String>();
                 map.put("tag", searchContent);
@@ -321,7 +309,6 @@ public class SearchActivity extends GeneralActivity implements ScrollViewListene
             } catch (MyException.zeroException e) {
                 end=true;
                 return false;
-                //TODO:搜索结果为空
             } catch (Exception e) {
                 return false;
             }
@@ -340,14 +327,13 @@ public class SearchActivity extends GeneralActivity implements ScrollViewListene
                 }
                 refreshScrollView();
             }
-                /*
-                if (searchUserTask == search_users) {
-                    refreshListView();
-                } else {
-                    refreshScrollView();
-                }*/
-            else {
-                //TODO:搜索错误
+
+            else {if (end){
+                myToast.show("搜索结果为空");
+            }else {
+                myToast.show("搜索错误");
+            }
+
             }
         }
     }
