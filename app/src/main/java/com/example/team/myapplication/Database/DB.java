@@ -41,7 +41,7 @@ public class DB extends SQLiteOpenHelper {
     private final static String M_COMMENT_USERID = "m_comment_userid";
     private final static String M_COMMENT_IMAGEID = "m_comment_imageid";
     private final static String M_COMMENT_CONTENT = "m_comment_content";
-    private final static String M_COMMENT_COMMETNTDATE = "m_comment_commentdate";
+    private final static String M_COMMENT_COMMENTDATE = "m_comment_commentdate";
     //
     private final static String M_TAG = "m_tag";
     private final static String M_TAG_ID = "m_tag_id";
@@ -93,7 +93,7 @@ public class DB extends SQLiteOpenHelper {
                 + M_IMAGE_LIKENUMBER + " TEXT," + M_IMAGE_ISLIKE + " TEXT," + M_IMAGE_UPDATEDATE + " DATETIME);";
         String comment = "CREATE TABLE " + M_COMMENT + " (" + M_COMMENT_COMMENTID + " TEXT primary key, "
                 + M_COMMENT_USERID + " TEXT NOT NULL, " + M_COMMENT_IMAGEID + " TEXT NOT NULL, " + M_COMMENT_CONTENT + " TEXT NOT NULL,"
-                + M_COMMENT_COMMETNTDATE + " DATETIME NOT NULL,"
+                + M_COMMENT_COMMENTDATE + " DATETIME NOT NULL,"
                 + "FOREIGN KEY (M_COMMENT_IMAGEID) REFERENCES M_IMAGE(M_IMAGE_IMAGEID) ON DELETE CASCADE);";
         String tag = "CREATE TABLE " + M_TAG + " (" + M_TAG_ID
                 + " TEXT primary key," + M_TAG_NAME + " TEXT NOT NULL, " + M_TAG_IMAGEID + " TEXT NOT NULL,"
@@ -360,14 +360,20 @@ public class DB extends SQLiteOpenHelper {
     }
 
     //Comment
+    /*
     public Cursor commentselect() {
 
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db
                 .query(M_COMMENT, null, null, null, null, null, null);
         return cursor;
+    }*/
+    //TODO:设计说明书 删除了commentdelete
+    public Cursor commentselect(String imageid) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor = db.rawQuery("select * from M_COMMENT where M_COMMENT_IMAGEID='" + imageid.trim() + "'" + " order by M_COMMENT_COMMENTDATE ASC", null);
+        return cursor;
     }
-
     public long commentinsert(String commentid, String userid, String imageid, String content, Timestamp commentdate) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues cv = new ContentValues();
@@ -375,16 +381,9 @@ public class DB extends SQLiteOpenHelper {
         cv.put(M_COMMENT_USERID, userid);
         cv.put(M_COMMENT_IMAGEID, imageid);
         cv.put(M_COMMENT_CONTENT, content);
-        cv.put(M_COMMENT_COMMETNTDATE, new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(commentdate));
+        cv.put(M_COMMENT_COMMENTDATE, new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(commentdate));
         long row = db.insert(M_COMMENT, null, cv);
         return row;
-    }
-
-    public void commentdelete(String id) {
-        SQLiteDatabase db = this.getWritableDatabase();
-        String where = M_COMMENT_COMMENTID + " = ?";
-        String[] whereValue = {id};
-        db.delete(M_COMMENT, where, whereValue);
     }
 
     public void commentupdatecontent(String commentid, String newcontent) {

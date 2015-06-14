@@ -383,7 +383,7 @@ public class JsonGet {
         Timestamp updatetime = new Timestamp(System.currentTimeMillis());
         for (int i = 0; i < commentnum; i++) {
             updatetime.valueOf(comment.get("commentdate" + i));
-            db.commentinsert(comment.get("commentid" + i), comment.get("commentuser" + i), imageid, comment.get("comment"), updatetime);
+            db.commentinsert(comment.get("commentid" + i), comment.get("commentuser" + i), imageid, comment.get("comment"+i), updatetime);
         }
     }
 

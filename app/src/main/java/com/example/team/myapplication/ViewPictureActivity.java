@@ -323,6 +323,21 @@ public class ViewPictureActivity extends GeneralActivity implements ScrollViewLi
                         i++;
                     }
                     refreshTags();
+                    i=0;
+                    mCursor=db.commentselect(imageid);
+                    for (mCursor.moveToFirst(); !mCursor.isAfterLast(); mCursor.moveToNext()) {
+                        String comment=mCursor.getString((mCursor.getColumnIndex("m_comment_content")));
+                        String commentid=mCursor.getString((mCursor.getColumnIndex("m_comment_commentid")));
+                        String commentuser=mCursor.getString((mCursor.getColumnIndex("m_comment_userid")));
+                        Comment mycomment=new Comment(this);
+                        mycomment.setCommentid(commentid);
+                        mycomment.textView1.setText(commentuser);
+                        mycomment.textView2.setText(comment);
+                        comments.add(mycomment);
+                        i++;
+                    }
+                    commentpage =i/8+1;
+                    refreshComments();
                     refreshingProgressBar.setVisibility(View.GONE);
                 } else {
                     throw new Exception();
