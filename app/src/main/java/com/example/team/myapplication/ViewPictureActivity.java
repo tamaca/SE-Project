@@ -434,7 +434,7 @@ public class ViewPictureActivity extends GeneralActivity implements ScrollViewLi
     @Override
     public void onScrollChanged(MyScrollView scrollView, int x, int y, int oldX, int oldY) {
         if (y + scrollView.getMeasuredHeight() + 50 > scrollContent.getMeasuredHeight()) {
-            if (scrollContent.getChildAt(scrollContent.getChildCount() - 1) != loadingView) {
+            if (!end&&scrollContent.getChildAt(scrollContent.getChildCount() - 1) != loadingView) {
                 scrollContent.addView(loadingView);
                 Comment newcomments[] = new Comment[8];
                 for (int i = 0; i < 8; i++) {
@@ -445,6 +445,12 @@ public class ViewPictureActivity extends GeneralActivity implements ScrollViewLi
             }
 
         }
+        if (oldY - y >= 10) {
+            if (end) {
+                end = false;
+            }
+        }
+
     }
 
     private void changeLike() {
@@ -518,6 +524,7 @@ public class ViewPictureActivity extends GeneralActivity implements ScrollViewLi
                 String bigfilepath = Localstorage.getImageFilePath(imageid, "big");
                 openPicture(bigfilepath);
             }
+            LoginState.zoom=true;
         } else {
             //TODO:异常
             /*

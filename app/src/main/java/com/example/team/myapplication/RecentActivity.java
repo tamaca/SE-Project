@@ -54,6 +54,7 @@ public class RecentActivity extends GeneralActivity implements ScrollViewListene
         refreshableView = (RefreshableView) findViewById(R.id.refreshable_view);
         scrollContentLeft = (LinearLayout) findViewById(R.id.linearLayout6);
         scrollContentRight = (LinearLayout) findViewById(R.id.linearLayout7);
+        myScrollView.setScrollViewListener(this);
         myToast = new MyToast(this);
         loadingView = new LoadingView(this);
         db = new DB(this);
@@ -163,6 +164,12 @@ public class RecentActivity extends GeneralActivity implements ScrollViewListene
                 }
             }
         }
+        if (oldY - y >= 10) {
+            if (end) {
+                end = false;
+            }
+        }
+
     }
 
     //上拉刷新
@@ -238,6 +245,7 @@ public class RecentActivity extends GeneralActivity implements ScrollViewListene
                 page = 1;
                 getPicture = new GetPicture();
                 getPicture.execute();
+                end=false;
                 /*
                 Thread.sleep(3000);
                 scrollContent.post(new Runnable() {

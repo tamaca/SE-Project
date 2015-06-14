@@ -198,19 +198,21 @@ public class UserPageActivity extends GeneralActivity implements ScrollViewListe
                 }
                 // Continue only if the File was successfully created
                 if (photoFile != null) {
-                    LoginState.photo=true;
+                    LoginState.photo = true;
                     takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT,
                             Uri.fromFile(photoFile));
                     startActivityForResult(takePictureIntent, REQUEST_TAKE_PHOTO);
                 }
             }
-        }else {
+        } else {
             myToast.show(getString(R.string.toast_before_login));
         }
     }
+
     private String getFileType(String fileName) {
         return fileName.substring(fileName.lastIndexOf("."), fileName.length());
     }
+
     /**
      * 从相机中获取拍摄的照片
      *
@@ -226,15 +228,16 @@ public class UserPageActivity extends GeneralActivity implements ScrollViewListe
                 case REQUEST_TAKE_PHOTO:
                     /*setPic();*/
                     Toast.makeText(getApplicationContext(), "Picture is Taken", Toast.LENGTH_LONG).show();
-                    Map<String, String> params = new HashMap<String, String>();;
+                    Map<String, String> params = new HashMap<String, String>();
+                    ;
                     params.clear();
                     File file = new File(mCurrentPhotoPath);
                     StringBuffer sbFileTypes = new StringBuffer();
                     String fileName = file.getName();
                     sbFileTypes.append(getFileType(fileName));
                     params.put("fileTypes", sbFileTypes.toString());
-                    String actionUrl = "http://192.168.253.1/upload/"+LoginState.username+"/";
-                    ImagePost imagePost = new ImagePost(this, actionUrl, params, file,100,this);
+                    String actionUrl = "http://192.168.253.1/upload/" + LoginState.username + "/";
+                    ImagePost imagePost = new ImagePost(this, actionUrl, params, file, 100, this);
                     imagePost.execute();
 
                     break;
@@ -356,7 +359,6 @@ public class UserPageActivity extends GeneralActivity implements ScrollViewListe
     }
 
 
-
     /**
      * 添加图片进gallery，每次加一张
      * 给ImageView 添加跳转到查看大图监听器
@@ -426,18 +428,23 @@ public class UserPageActivity extends GeneralActivity implements ScrollViewListe
     @Override
     public void onScrollChanged(MyScrollView scrollView, int x, int y, int oldX, int oldY) {
         if (y + scrollView.getMeasuredHeight() + 50 > scrollContent.getMeasuredHeight()) {
-            if (gallery.getChildAt(gallery.getChildCount() - 1) != loadingView) {
+            if (!end && gallery.getChildAt(gallery.getChildCount() - 1) != loadingView) {
                 if (getPicture == null) {
                     GalleryItem galleryItems[] = new GalleryItem[8];
                     for (int i = 0; i < 8; i++) {
                         galleryItems[i] = new GalleryItem(this);
                     }
                     //TODO:测试
-                    if(getPicture==null) {
+                    if (getPicture == null) {
                         getPicture = new GetPicture(userName, galleryItems);
                         getPicture.execute();
                     }
                 }
+            }
+        }
+        if (oldY - y >= 10) {
+            if (end) {
+                end = false;
             }
         }
     }
@@ -574,7 +581,7 @@ public class UserPageActivity extends GeneralActivity implements ScrollViewListe
             if (success) {
                 loadContent(concern, blacklist);
             } else {
-               myToast.show("获取信息失败");
+                myToast.show("获取信息失败");
             }
         }
 
@@ -646,7 +653,7 @@ public class UserPageActivity extends GeneralActivity implements ScrollViewListe
                 }
                 refreshGallery();
                 gallery.postInvalidate();
-                if(end){
+                if (end) {
                     myToast.show("没有更多图片了");
                 }
             } else {

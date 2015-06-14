@@ -9,6 +9,7 @@ public class LoginState {
         return page;
     }
     public static boolean photo=false;
+    public static boolean zoom =false;
     public static void setPage(int page) {
         LoginState.page = page;
     }
