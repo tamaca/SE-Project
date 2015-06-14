@@ -153,16 +153,16 @@ public class DB extends SQLiteOpenHelper {
     }
 
     public String getmUserPassword(String id) {
-       // String encryptid = AES.encrypt(id);
+        // String encryptid = AES.encrypt(id);
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor cursor = db.rawQuery("select * from M_USER where M_USER_ID='" + id.trim() + "'", null);
         if (cursor.moveToFirst()) {
-         //   String encryptpassword = cursor.getString((cursor.getColumnIndex("m_user_password")));
+            //   String encryptpassword = cursor.getString((cursor.getColumnIndex("m_user_password")));
             String password = cursor.getString((cursor.getColumnIndex("m_user_password")));
          /*   if (encryptpassword == null) {
                 return null;
             }*/
-          //  String password = AES.decrypt(encryptpassword);
+            //  String password = AES.decrypt(encryptpassword);
             if (password == null) {
                 return null;
             }
@@ -211,6 +211,7 @@ public class DB extends SQLiteOpenHelper {
             return false;
         }
     }
+
     public Cursor lastuserselect() {
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db
@@ -304,6 +305,7 @@ public class DB extends SQLiteOpenHelper {
         Cursor cursor = db.rawQuery("select * from M_IMAGE where M_IMAGE_IMAGEID='" + imageid.trim() + "'", null);
         return cursor;
     }
+
     //缩略图插入数据库
     public long imageinsert(String imageid) {
         SQLiteDatabase db = this.getWritableDatabase();
@@ -448,24 +450,30 @@ public class DB extends SQLiteOpenHelper {
                 .query(M_LOBBYIMAGE, null, null, null, null, null, null);
         return cursor;
     }*/
-    public Cursor lobbyimageselectpage(int page){
-        String min=String.valueOf(8*(page)+1);
-        String max=String.valueOf(8*(page)+8);
+    public Cursor lobbyimageselectpage(int page) {
+        String min = String.valueOf(8 * (page) + 1);
+        String max = String.valueOf(8 * (page) + 8);
         SQLiteDatabase db = this.getWritableDatabase();
-        Cursor cursor = db.rawQuery("select * from M_LOBBYIMAGE where M_LOBBYIMAGE_RANK>='" + min.trim() + "'" + "and M_LOBBYIMAGE_RANK<='" + max.trim() + "'", null);
-        return  cursor;
+        Cursor cursor = db.rawQuery("select * from M_LOBBYIMAGE where M_LOBBYIMAGE_RANK>='" + min.trim() + "'" + "and M_LOBBYIMAGE_RANK<='" + max.trim() + "'"+" order by M_LOBBYIMAGE_RANK ASC", null);
+        return cursor;
     }
+
     //TODO:设计说明书
-    public boolean checklobbyimage (String rank,String imageid) {
+    public boolean checklobbyimage(String rank, String imageid) {
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor cur = db.rawQuery("select * from M_LOBBYIMAGE where M_LOBBYIMAGE_RANK='" + rank.trim() + "'", null);
         if (cur.moveToFirst()) {
-        
-            return true;
+            String id = cur.getString((cur.getColumnIndex("m_lobbyimage_imageid")));
+            if (id.equals(imageid)) {
+                return false;
+            } else {
+                return true;
+            }
         } else {
             return false;
         }
     }
+
     public long lobbyimageinsert(String rank, String imageid) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues cv = new ContentValues();
@@ -504,15 +512,17 @@ public class DB extends SQLiteOpenHelper {
         long row = db.insert(M_IMAGECARED, null, cv);
         return row;
     }
-    public boolean checkuserimage (String imageid,String userid) {
+
+    public boolean checkuserimage(String imageid, String userid) {
         SQLiteDatabase db = this.getWritableDatabase();
-        Cursor cur = db.rawQuery("select * from M_IMAGECARED where M_IMAGECARED_IMAGEID='" + imageid.trim() + "'"+"and M_IMAGECARED_USERID='" + userid.trim() + "'", null);
+        Cursor cur = db.rawQuery("select * from M_IMAGECARED where M_IMAGECARED_IMAGEID='" + imageid.trim() + "'" + "and M_IMAGECARED_USERID='" + userid.trim() + "'", null);
         if (cur.moveToFirst()) {
             return true;
         } else {
             return false;
         }
     }
+
     public void imagecareddelete(String imageid, String userid) {
         SQLiteDatabase db = this.getWritableDatabase();
         String where = M_IMAGECARED_IMAGEID + " = ?" + " AND " + M_IMAGECARED_USERID + " = ?";

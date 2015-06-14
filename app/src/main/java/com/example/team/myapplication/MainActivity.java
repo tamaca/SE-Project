@@ -226,6 +226,12 @@ public class MainActivity extends Activity implements ScrollViewListener {
             downloadPictureProgress2.execute();
         } else {
             Cursor mCursor = db.lobbyimageselectpage(LoginState.getPage());
+            if (!(mCursor.getCount() == 0)) {
+                LoginState.setPage(LoginState.getPage() + 1);
+            } else {
+                end = true;
+                scrollContent.removeView(loadingView);
+            }
             for (mCursor.moveToFirst(); !mCursor.isAfterLast(); mCursor.moveToNext()) {
                 String id = mCursor.getString((mCursor.getColumnIndex("m_lobbyimage_imageid")));
                 String smallfilepath = Localstorage.getImageFilePath(id, "small");
@@ -242,11 +248,9 @@ public class MainActivity extends Activity implements ScrollViewListener {
                 }
                 galleryItem.setContentDescription(jsonObject.toString());
                 galleryItems.add(galleryItem);
-            }
-            if (!(mCursor.getCount() == 0)) {
-                LoginState.setPage(LoginState.getPage() + 1);
-            } else {
-                end = true;
+                if (scrollContent.getChildAt(scrollContent.getChildCount() - 1) == loadingView) {
+                    scrollContent.removeView(loadingView);
+                }
             }
             refreshSquare();
         }

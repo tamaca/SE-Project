@@ -176,7 +176,7 @@ public class RegisterActivity extends GeneralActivity {
             userName.setError(getString(R.string.error_field_required));
             cancel = true;
             focusView = userName;
-        } else if (CheckValid.isUserNameValid(user_name)) {
+        } else if (!CheckValid.isUserNameValid(user_name)) {
             userName.setError(getString(R.string.user_name_invalid));
             cancel = true;
             focusView = userName;

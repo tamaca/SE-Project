@@ -193,8 +193,9 @@ public class JsonGet {
                 for (int i = 0; i < count; i++) {
                     dbimagesave(image_id[i]);
                 }
-                if (type.equals("lobby")) {
+                if (type.equals("lobby")&&galleryItems!=null) {
                     for (int i = 0; i < count; i++) {
+                        if(db.checklobbyimage(String.valueOf(i),image_id[i]));
                         dblobbyimagesave(String.valueOf(LoginState.getPage() * 8 + i + 1), image_id[i]);
                     }
                 } else if (galleryItems != null) {
