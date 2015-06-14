@@ -526,7 +526,7 @@ public class ViewPictureActivity extends GeneralActivity implements ScrollViewLi
             }
             LoginState.zoom=true;
         } else {
-            //TODO:异常
+            myToast.show("没有网络连接，无法下载原图");
             /*
             Intent intent = new Intent(this, PictureActivity.class);
             view.setDrawingCacheEnabled(true);
@@ -986,7 +986,7 @@ public class ViewPictureActivity extends GeneralActivity implements ScrollViewLi
                 String url = "http://192.168.253.1/download_origin/" + imageid + "/";
                 returnmap = new JsonGet(url, "origin").getReturnmap();
             } catch (Exception e) {
-                //TODO:错误
+
                 return false;
             }
             return true;
@@ -1006,7 +1006,7 @@ public class ViewPictureActivity extends GeneralActivity implements ScrollViewLi
             }
             else
             {
-                //TODO:错误
+                myToast.show("下载失败");
             }
         }
     }
