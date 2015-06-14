@@ -20,5 +20,5 @@
         android:divider="@color/天依蓝"
         android:dividerHeight="1dp"
         android:listSelector="@drawable/textstyle_list"
-        android:drawSelectorOnTop="false"/>
+        android:drawSelectorOnTop="true"/>
 </RelativeLayout>

@@ -65,6 +65,7 @@ public class RecentActivity extends GeneralActivity implements ScrollViewListene
         /**
          * 请在getRecent里获得所有动态
          */
+        scrollContent.addView(loadingView);
         getPicture=new GetPicture();
         getPicture.execute();
         //getRecent();
@@ -151,6 +152,7 @@ public class RecentActivity extends GeneralActivity implements ScrollViewListene
         if (y + scrollView.getMeasuredHeight() + 50 > scrollContent.getMeasuredHeight()) {
             if (!end && scrollContent.getChildAt(scrollContent.getChildCount() - 1) != loadingView) {
                 if (getPicture == null) {
+                    scrollContent.addView(loadingView);
                    /* RecentItem recentItems[] = new RecentItem[8];
                     for (int i = 0; i < 8; i++) {
                         recentItems[i] = new RecentItem(this);
@@ -177,7 +179,6 @@ public class RecentActivity extends GeneralActivity implements ScrollViewListene
 
                 newrecentItems[i] = new RecentItem(context);
             }
-            scrollContent.addView(loadingView);
         }
 
         @Override

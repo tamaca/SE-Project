@@ -64,7 +64,7 @@ public class ImagePost extends AsyncTask<String, Integer, String> {
         this.paramMap = paramMap;
         this.file = file;
         this.y = y;
-        userPageActivity=this.userPageActivity;
+        this.userPageActivity=userPageActivity;
     }
 
     @Override
@@ -120,6 +120,8 @@ public class ImagePost extends AsyncTask<String, Integer, String> {
         Log.i("info", result);
         Toast.makeText(context, result, Toast.LENGTH_LONG).show();
         if(userPageActivity!=null) {
+            userPageActivity.galleryItems.clear();
+            userPageActivity.page=1;
             userPageActivity.loadView(userPageActivity.isMe);
         }
         progressDialog.dismiss();

@@ -58,7 +58,7 @@ public class UserPageActivity extends GeneralActivity implements ScrollViewListe
     private GetInfomation getInfomationtask = null;
     private LoadingView loadingView;
     private boolean isManagingPicture = false;
-    private int page = 1;//page从1开始
+    public int page = 1;//page从1开始
     private DB db = new DB(this);
     private boolean end = false;
     private MyScrollView myScrollView;
@@ -198,6 +198,7 @@ public class UserPageActivity extends GeneralActivity implements ScrollViewListe
                 }
                 // Continue only if the File was successfully created
                 if (photoFile != null) {
+                    LoginState.photo=true;
                     takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT,
                             Uri.fromFile(photoFile));
                     startActivityForResult(takePictureIntent, REQUEST_TAKE_PHOTO);
