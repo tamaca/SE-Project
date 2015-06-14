@@ -431,6 +431,7 @@ public class ViewPictureActivity extends GeneralActivity implements ScrollViewLi
         commentView.postInvalidate();
     }
 
+    //TODO:向下滑的时候也会查找评论 bug
     @Override
     public void onScrollChanged(MyScrollView scrollView, int x, int y, int oldX, int oldY) {
         if (y + scrollView.getMeasuredHeight() + 50 > scrollContent.getMeasuredHeight()) {
@@ -502,15 +503,20 @@ public class ViewPictureActivity extends GeneralActivity implements ScrollViewLi
      * @param view
      */
     public void toPictureActivity(View view) {
+        String bigfilepath = Localstorage.getImageFilePath(imageid, "big");
+        openPicture(bigfilepath);
+    }
+
+    public void toOriginDownload(View view) {
         if (NetworkState.isNetworkConnected(getApplicationContext())) {
             if (!NetworkState.isWifiEnable(getApplicationContext())) {
+                getOrigin=new GetOrigin(this);
                 AlertDialog.Builder builder =
                         new AlertDialog.Builder(ViewPictureActivity.this).setMessage("将会消耗流量下载，继续？");
                 builder.setPositiveButton("继续", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-                        String bigfilepath = Localstorage.getImageFilePath(imageid, "big");
-                        openPicture(bigfilepath);
+                        getOrigin.execute();
                     }
                 });
                 builder.setNegativeButton("不了", new DialogInterface.OnClickListener() {
@@ -521,26 +527,11 @@ public class ViewPictureActivity extends GeneralActivity implements ScrollViewLi
                 });
                 builder.create().show();
             } else {
-                String bigfilepath = Localstorage.getImageFilePath(imageid, "big");
-                openPicture(bigfilepath);
+                getOrigin.execute();
             }
-            LoginState.zoom=true;
         } else {
             myToast.show("没有网络连接，无法下载原图");
-            /*
-            Intent intent = new Intent(this, PictureActivity.class);
-            view.setDrawingCacheEnabled(true);
-            Bitmap bitmap = view.getDrawingCache();
-            intent.putExtra("pic", bitmap);
-            startActivity(intent);*/
         }
-
-
-    }
-
-    public void toOriginDownload(View view) {
-        getOrigin=new GetOrigin(this);
-        getOrigin.execute();
     }
 
     public class getImageInformationProgress extends AsyncTask<Void, Void, Boolean> {
