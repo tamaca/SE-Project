@@ -251,7 +251,8 @@ public class RecentActivity extends GeneralActivity implements ScrollViewListene
             }*/
                 refreshableView.finishRefreshing();
             } catch (Exception e) {
-
+                myToast.show(getString(R.string.toast_refreshing_error));
+                //todo:刷新错误
             }
         }
     }

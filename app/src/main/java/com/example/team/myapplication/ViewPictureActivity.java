@@ -979,6 +979,7 @@ public class ViewPictureActivity extends GeneralActivity implements ScrollViewLi
                 String url = "http://192.168.253.1/download_origin/" + imageid + "/";
                 returnmap = new JsonGet(url, "origin").getReturnmap();
             } catch (Exception e) {
+                //TODO:错误
                 return false;
             }
             return true;
@@ -995,6 +996,10 @@ public class ViewPictureActivity extends GeneralActivity implements ScrollViewLi
                 targeturl=baseurl+originurl;
                 Origindownload origindownload=new Origindownload(context,targeturl,50,imageid);
                 origindownload.execute();
+            }
+            else
+            {
+                //TODO:错误
             }
         }
     }
