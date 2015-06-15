@@ -109,7 +109,9 @@ public class UserPageActivity extends GeneralActivity implements ScrollViewListe
                 dispatchTakePictureIntent(view);
             }
         });
-
+        /**
+         * 管理图片添加监听器
+         */
         manageButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
