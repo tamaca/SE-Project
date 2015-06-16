@@ -71,12 +71,18 @@ public class JsonGet {
         get.PostExecuteId(jsonObject, key);
     }
 
-    //原始地址获取
+    //原始地址获取 图片删除
     public JsonGet(String url, String type) throws Exception {
         this.url = url;
         Get get = new Get();
         JSONObject jsonObject = get.GetFromServer();
-        get.PostExecuteOrigin(jsonObject);
+        if(type.equals("imagedelete"))
+        {
+            get.PostExecute(jsonObject);
+        }
+        else {
+            get.PostExecuteOrigin(jsonObject);
+        }
     }
 
     //关注的人获取 或 黑名单获取
@@ -137,7 +143,18 @@ public class JsonGet {
                 throw new MyException.getException();
             }
         }
-
+        //删除图片
+        protected void PostExecute(JSONObject jsonObject) throws Exception
+        {
+            if (jsonObject == null) {
+                throw new MyException.nullException();
+                //TODO:网络通信错误
+            }
+            String status = jsonObject.getString("status");
+            if (!status.equals("normal")) {
+                throw new MyException.executeException();
+            }
+        }
         //接收图片(url) 大厅
         protected void PostExecuteImageUrl(JSONObject jsonObject, String type) throws Exception {
             if (jsonObject != null) {
@@ -203,6 +220,7 @@ public class JsonGet {
                         image_time[i] = jsonObject.getString("image" + i + "_date");
                         galleryItems[i].textView.setText(image_time[i]);
                         galleryItems[i].textView.setVisibility(View.VISIBLE);
+                        galleryItems[i].imageid=image_id[i];
                     }
                 } else if (recentItems != null) {
                     for (int i = 0; i < count; i++) {

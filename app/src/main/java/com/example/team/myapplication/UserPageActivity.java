@@ -1,5 +1,8 @@
 package com.example.team.myapplication;
 
+import android.app.AlertDialog;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -49,7 +52,6 @@ public class UserPageActivity extends GeneralActivity implements ScrollViewListe
     private LinearLayout galleryLeft;
     private LinearLayout galleryRight;
     private MyToast myToast;
-    private ProgressBar progressBar;
     private GetPicture getPicture = null;
     private LinearLayout scrollContent;
     private boolean picturehave = false;
@@ -62,6 +64,7 @@ public class UserPageActivity extends GeneralActivity implements ScrollViewListe
     private DB db = new DB(this);
     private boolean end = false;
     private MyScrollView myScrollView;
+    private DeletePictureProgress deletePictureProgress = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -92,7 +95,6 @@ public class UserPageActivity extends GeneralActivity implements ScrollViewListe
         uploadImageButton = (Button) findViewById(R.id.button10);
         gallery = (LinearLayout) findViewById(R.id.gallery);
         galleryItems = new ArrayList<>();
-        progressBar = (ProgressBar) findViewById(R.id.progressBar5);
         scrollContent = (LinearLayout) findViewById(R.id.scroll_content);
         myToast = new MyToast(this);
         loadingView = new LoadingView(this);
@@ -143,7 +145,7 @@ public class UserPageActivity extends GeneralActivity implements ScrollViewListe
                     for (int i = 0; i < 8; i++) {
                         galleryItems[i] = new GalleryItem(this);
                     }
-                    getPicture = new GetPicture(userName, galleryItems);
+                    getPicture = new GetPicture(userName, galleryItems, this);
                     getPicture.execute();
                 }
             }
@@ -161,7 +163,7 @@ public class UserPageActivity extends GeneralActivity implements ScrollViewListe
                 for (int i = 0; i < 8; i++) {
                     galleryItems[i] = new GalleryItem(this);
                 }
-                getPicture = new GetPicture(userName, galleryItems);
+                getPicture = new GetPicture(userName, galleryItems, this);
                 getPicture.execute();
             }
             if (!getGallery(userName)) {
@@ -355,53 +357,6 @@ public class UserPageActivity extends GeneralActivity implements ScrollViewListe
         }
     }
 
-    public void toChoosePictureActivity(View view) {
-        Intent intent = new Intent(this, ChoosePictureActivity.class);
-        startActivity(intent);
-    }
-
-
-    /**
-     * 添加图片进gallery，每次加一张
-     * 给ImageView 添加跳转到查看大图监听器
-     *
-     * @param bitmap
-     */
-    /*
-    public void addGalleryItem(Bitmap bitmap, String date) {
-        final GalleryItem galleryItem = new GalleryItem(this, bitmap, date);
-        galleryItem.imageView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                toViewPictureActivity(view);
-            }
-        });
-        galleryItem.removeButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                AlertDialog.Builder builder =
-                        new AlertDialog.Builder(getApplicationContext()).setMessage("删除图片?");
-                builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-
-                        galleryItems.remove(galleryItem);
-                        //UI操作：
-                        refreshGallery();
-                    }
-                });
-                builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-
-                    }
-                });
-                builder.create().show();
-            }
-        });
-        galleryItems.add(galleryItem);
-    }*/
-
     /**
      * 第一次加载ta的图片完成之后在UI线程刷新gallery
      */
@@ -414,6 +369,7 @@ public class UserPageActivity extends GeneralActivity implements ScrollViewListe
             } else {
                 galleryRight.addView(galleryItems.get(i));
             }
+            galleryItems.get(i).setRemovable(isManagingPicture);
         }
     }
 
@@ -438,7 +394,7 @@ public class UserPageActivity extends GeneralActivity implements ScrollViewListe
                     }
                     //TODO:测试
                     if (getPicture == null) {
-                        getPicture = new GetPicture(userName, galleryItems);
+                        getPicture = new GetPicture(userName, galleryItems, this);
                         getPicture.execute();
                     }
                 }
@@ -594,18 +550,79 @@ public class UserPageActivity extends GeneralActivity implements ScrollViewListe
 
     }
 
-    class GetPicture extends AsyncTask<Void, Void, Boolean> {
-        private String userid;
-        private GalleryItem galleryItem[];
+    public class DeletePictureProgress extends AsyncTask<Void, Void, Boolean> {
+        private String imageid;
+        private Context context;
 
-        public GetPicture(String userid, GalleryItem[] galleryItem) {
-            this.userid = userid;
-            this.galleryItem = galleryItem;
+        DeletePictureProgress(String imageid, Context context) {
+            this.imageid = imageid;
+            this.context = context;
         }
 
         @Override
         protected void onPreExecute() {
-            gallery.addView(loadingView);
+            if (gallery.getChildAt(gallery.getChildCount() - 1) != loadingView) {
+                gallery.addView(loadingView);
+            }
+        }
+
+        @Override
+        protected Boolean doInBackground(Void... params) {
+            try {
+                String url = "http://192.168.253.1/" + LoginState.username + "/image_delete/" + imageid + "/";
+                new JsonGet(url, "imagedelete");
+            } catch (Exception e) {
+                return false;
+            }
+            return true;
+        }
+
+        @Override
+        protected void onPostExecute(Boolean success) {
+            deletePictureProgress = null;
+            gallery.removeView(loadingView);
+            if (success) {
+                galleryItems.clear();
+                page = 1;
+                myToast.show("图片删除成功");
+                if (getPicture == null) {
+                    GalleryItem mygalleryItems[] = new GalleryItem[8];
+                    for (int i = 0; i < 8; i++) {
+                        mygalleryItems[i] = new GalleryItem(context);
+                    }
+                    getPicture = new GetPicture(userName, mygalleryItems, context);
+                    getPicture.execute();
+                } else {
+                    //TODO:刷新失败
+                }
+            } else {
+                myToast.show("图片删除失败");
+            }
+        }
+
+        @Override
+        protected void onCancelled() {
+            getInfomationtask = null;
+        }
+
+    }
+
+    class GetPicture extends AsyncTask<Void, Void, Boolean> {
+        private String userid;
+        private GalleryItem galleryItem[];
+        Context context;
+
+        public GetPicture(String userid, GalleryItem[] galleryItem, Context context) {
+            this.userid = userid;
+            this.galleryItem = galleryItem;
+            this.context = context;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            if (gallery.getChildAt(gallery.getChildCount() - 1) != loadingView) {
+                gallery.addView(loadingView);
+            }
         }
 
         @Override
@@ -643,12 +660,22 @@ public class UserPageActivity extends GeneralActivity implements ScrollViewListe
                         _galleryitem.removeButton.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
-                                //TODO 删除该图片的操作。
-                                /**
-                                 * UI操作
-                                 */
-                                galleryItems.remove(_galleryitem);
-                                refreshGallery();
+                                AlertDialog.Builder builder =
+                                        new AlertDialog.Builder(UserPageActivity.this).setMessage("删除图片?");
+                                builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialogInterface, int i) {
+                                        deletePictureProgress = new DeletePictureProgress(_galleryitem.imageid, context);
+                                        deletePictureProgress.execute();
+                                    }
+                                });
+                                builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialogInterface, int i) {
+
+                                    }
+                                });
+                                builder.create().show();
                             }
                         });
                     }

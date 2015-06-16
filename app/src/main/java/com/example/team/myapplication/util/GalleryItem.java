@@ -16,7 +16,7 @@ public class GalleryItem extends LinearLayout {
     public TextView textView;
     public ImageView imageView;
     public ImageButton removeButton;
-
+    public String imageid;
     public GalleryItem(Context context) {
         super(context);
         View view = LayoutInflater.from(context).inflate(R.layout.layout_gallery_item, null);

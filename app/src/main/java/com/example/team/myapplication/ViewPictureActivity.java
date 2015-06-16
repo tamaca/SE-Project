@@ -76,7 +76,8 @@ public class ViewPictureActivity extends GeneralActivity implements ScrollViewLi
     private int commentpage = 1;
     private boolean end = false;
     private GetCommentProgress getCommentProgress = null;
-    private GetOrigin getOrigin=null;
+    private GetOrigin getOrigin = null;
+
     @Override
 
     protected void onCreate(Bundle savedInstanceState) {
@@ -312,31 +313,31 @@ public class ViewPictureActivity extends GeneralActivity implements ScrollViewLi
                         //数据库存储错误
                         throw new Exception();
                     }
-                    int i=0;
-                    mCursor=db.tagselect(imageid);
+                    int i = 0;
+                    mCursor = db.tagselect(imageid);
                     for (mCursor.moveToFirst(); !mCursor.isAfterLast(); mCursor.moveToNext()) {
-                        String tagname=mCursor.getString((mCursor.getColumnIndex("m_tag_name")));
-                        String tagid=mCursor.getString((mCursor.getColumnIndex("m_tag_id")));
+                        String tagname = mCursor.getString((mCursor.getColumnIndex("m_tag_name")));
+                        String tagid = mCursor.getString((mCursor.getColumnIndex("m_tag_id")));
                         tags.get(i).tagText.setText(tagname);
                         tags.get(i).setTagid(tagid);
                         tags.get(i).changeState(Tag.showingTag);
                         i++;
                     }
                     refreshTags();
-                    i=0;
-                    mCursor=db.commentselect(imageid);
+                    i = 0;
+                    mCursor = db.commentselect(imageid);
                     for (mCursor.moveToFirst(); !mCursor.isAfterLast(); mCursor.moveToNext()) {
-                        String comment=mCursor.getString((mCursor.getColumnIndex("m_comment_content")));
-                        String commentid=mCursor.getString((mCursor.getColumnIndex("m_comment_commentid")));
-                        String commentuser=mCursor.getString((mCursor.getColumnIndex("m_comment_userid")));
-                        Comment mycomment=new Comment(this);
+                        String comment = mCursor.getString((mCursor.getColumnIndex("m_comment_content")));
+                        String commentid = mCursor.getString((mCursor.getColumnIndex("m_comment_commentid")));
+                        String commentuser = mCursor.getString((mCursor.getColumnIndex("m_comment_userid")));
+                        Comment mycomment = new Comment(this);
                         mycomment.setCommentid(commentid);
                         mycomment.textView1.setText(commentuser);
                         mycomment.textView2.setText(comment);
                         comments.add(mycomment);
                         i++;
                     }
-                    commentpage =i/8+1;
+                    commentpage = i / 8 + 1;
                     refreshComments();
                     refreshingProgressBar.setVisibility(View.GONE);
                 } else {
@@ -466,7 +467,7 @@ public class ViewPictureActivity extends GeneralActivity implements ScrollViewLi
     @Override
     public void onScrollChanged(MyScrollView scrollView, int x, int y, int oldX, int oldY) {
         if (y + scrollView.getMeasuredHeight() + 50 > scrollContent.getMeasuredHeight()) {
-            if (!end&&scrollContent.getChildAt(scrollContent.getChildCount() - 1) != loadingView) {
+            if (!end && scrollContent.getChildAt(scrollContent.getChildCount() - 1) != loadingView) {
                 scrollContent.addView(loadingView);
                 Comment newcomments[] = new Comment[8];
                 for (int i = 0; i < 8; i++) {
@@ -541,7 +542,7 @@ public class ViewPictureActivity extends GeneralActivity implements ScrollViewLi
     public void toOriginDownload(View view) {
         if (NetworkState.isNetworkConnected(getApplicationContext())) {
             if (!NetworkState.isWifiEnable(getApplicationContext())) {
-                getOrigin=new GetOrigin(this);
+                getOrigin = new GetOrigin(this);
                 AlertDialog.Builder builder =
                         new AlertDialog.Builder(ViewPictureActivity.this).setMessage("将会消耗流量下载，继续？");
                 builder.setPositiveButton("继续", new DialogInterface.OnClickListener() {
@@ -785,9 +786,7 @@ public class ViewPictureActivity extends GeneralActivity implements ScrollViewLi
         protected void onPostExecute(final Boolean success) {
             showProgress(false);
             getCommentProgress = null;
-            if (scrollContent.getChildAt(scrollContent.getChildCount() - 1) == loadingView) {
-                scrollContent.removeView(loadingView);
-            }
+            scrollContent.removeView(loadingView);
             if (success) {
                 commentpage = commentpage + 1;
                 String _commentnum = returnmap.get("commentnum");
@@ -800,10 +799,9 @@ public class ViewPictureActivity extends GeneralActivity implements ScrollViewLi
                 }
                 refreshComments();
             } else {
-                if(end){
+                if (end) {
                     myToast.show("没有更多评论了");
-                }
-                else {
+                } else {
                     myToast.show("评论获取错误");
                 }
             }
@@ -826,7 +824,7 @@ public class ViewPictureActivity extends GeneralActivity implements ScrollViewLi
 
 
         protected void onPreExecute() {
-            scrollContent.removeView(loadingView);
+            // scrollContent.removeView(loadingView);
             showProgress(true);
         }
 
@@ -866,18 +864,6 @@ public class ViewPictureActivity extends GeneralActivity implements ScrollViewLi
                 refreshComments();
                 //  getCommentProgress =new GetCommentProgress(db,context);
                 // getCommentProgress.execute();
-                Thread thread = new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            Thread.sleep(5000);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-                        uploadComment = null;
-                    }
-                });
-                thread.start();
             } else {
                 myToast.show(getString(R.string.toast_comment_failed));
                 uploadComment = null;
@@ -993,8 +979,9 @@ public class ViewPictureActivity extends GeneralActivity implements ScrollViewLi
         private String targeturl;
         HashMap<String, String> returnmap;
         Context context;
+
         public GetOrigin(Context context) {
-            this.context=context;
+            this.context = context;
         }
 
         @Override
@@ -1018,16 +1005,14 @@ public class ViewPictureActivity extends GeneralActivity implements ScrollViewLi
         protected void onPostExecute(final Boolean success) {
 
             showProgress(false);
-            getOrigin=null;
+            getOrigin = null;
             if (success) {
                 String baseurl = "http://192.168.253.1/media/";
-                String originurl=returnmap.get("url");
-                targeturl=baseurl+originurl;
-                Origindownload origindownload=new Origindownload(context,targeturl,50,imageid);
+                String originurl = returnmap.get("url");
+                targeturl = baseurl + originurl;
+                Origindownload origindownload = new Origindownload(context, targeturl, 50, imageid);
                 origindownload.execute();
-            }
-            else
-            {
+            } else {
                 myToast.show("下载失败");
             }
         }

@@ -248,9 +248,7 @@ public class MainActivity extends Activity implements ScrollViewListener {
                         toViewPictureActivity(view);
                     }
                 });
-                if (scrollContent.getChildAt(scrollContent.getChildCount() - 1) == loadingView) {
                     scrollContent.removeView(loadingView);
-                }
             }
             end=true;
             refreshSquare();
@@ -635,7 +633,6 @@ public class MainActivity extends Activity implements ScrollViewListener {
 
         @Override
         protected void onPostExecute(final Boolean success) {
-            if (scrollContent.getChildAt(scrollContent.getChildCount() - 1) == loadingView)
                 scrollContent.removeView(loadingView);
             if (success) {
                 if (galleryItem != null) {
