@@ -62,7 +62,7 @@
                         android:id="@+id/button10"
                         android:layout_gravity="left"
                         android:layout_alignParentLeft="true"
-                        android:background="@drawable/button_style1"/>
+                        android:background="@drawable/button_style2"/>
 
                     <Button
                         android:layout_width="0dp"

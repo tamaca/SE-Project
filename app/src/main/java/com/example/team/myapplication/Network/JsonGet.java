@@ -1,5 +1,6 @@
 package com.example.team.myapplication.Network;
 
+import android.media.Image;
 import android.view.View;
 import android.widget.ImageView;
 
@@ -15,9 +16,14 @@ import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.sql.Time;
 import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.Locale;
+import java.util.TimeZone;
 
 /**
  * Created by coco on 2015/6/3.
@@ -76,11 +82,9 @@ public class JsonGet {
         this.url = url;
         Get get = new Get();
         JSONObject jsonObject = get.GetFromServer();
-        if(type.equals("imagedelete"))
-        {
+        if (type.equals("imagedelete")) {
             get.PostExecute(jsonObject);
-        }
-        else {
+        } else {
             get.PostExecuteOrigin(jsonObject);
         }
     }
@@ -143,9 +147,9 @@ public class JsonGet {
                 throw new MyException.getException();
             }
         }
+
         //删除图片
-        protected void PostExecute(JSONObject jsonObject) throws Exception
-        {
+        protected void PostExecute(JSONObject jsonObject) throws Exception {
             if (jsonObject == null) {
                 throw new MyException.nullException();
                 //TODO:网络通信错误
@@ -155,6 +159,7 @@ public class JsonGet {
                 throw new MyException.executeException();
             }
         }
+
         //接收图片(url) 大厅
         protected void PostExecuteImageUrl(JSONObject jsonObject, String type) throws Exception {
             if (jsonObject != null) {
@@ -218,15 +223,27 @@ public class JsonGet {
                 } else if (galleryItems != null) {
                     for (int i = 0; i < count; i++) {
                         image_time[i] = jsonObject.getString("image" + i + "_date");
-                        galleryItems[i].textView.setText(image_time[i]);
+                        SimpleDateFormat format;
+                        format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.CHINA);
+                        format.setTimeZone(TimeZone.getTimeZone("GMT00:00"));
+                        Date result_date = format.parse(image_time[i]);
+                        format.setTimeZone(TimeZone.getDefault());
+                        String time = format.format(result_date);
+                        galleryItems[i].textView.setText(time);
                         galleryItems[i].textView.setVisibility(View.VISIBLE);
-                        galleryItems[i].imageid=image_id[i];
+                        galleryItems[i].imageid = image_id[i];
                     }
                 } else if (recentItems != null) {
                     for (int i = 0; i < count; i++) {
                         image_time[i] = jsonObject.getString("image" + i + "_date");
+                        SimpleDateFormat format;
+                        format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.CHINA);
+                        format.setTimeZone(TimeZone.getTimeZone("GMT00:00"));
+                        Date result_date = format.parse(image_time[i]);
+                        format.setTimeZone(TimeZone.getDefault());
+                        String time = format.format(result_date);
                         image_author[i] = jsonObject.getString("image" + i + "_owner");
-                        recentItems[i].time.setText(image_time[i]);
+                        recentItems[i].time.setText(time);
                         recentItems[i].author.setText(image_author[i]);
                         dbimagecaresave(image_id[i], LoginState.username, image_time[i]);
                     }
@@ -384,8 +401,8 @@ public class JsonGet {
     }
 
     private void dbimagecaresave(String imageid, String userid, String time) {
-        Timestamp updatetime = new Timestamp(System.currentTimeMillis());
-        updatetime.valueOf(time);
+        Timestamp updatetime;
+        updatetime = Timestamp.valueOf(time);
         db.imagecaredinsert(imageid, userid, updatetime);
     }
 

@@ -39,9 +39,14 @@ import com.example.team.myapplication.util.ScrollViewListener;
 import com.example.team.myapplication.util.Tag;
 
 import java.io.File;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
+import java.util.TimeZone;
 
 
 public class ViewPictureActivity extends GeneralActivity implements ScrollViewListener {
@@ -308,7 +313,19 @@ public class ViewPictureActivity extends GeneralActivity implements ScrollViewLi
                         isLike = (islike.equals("true"));
                         changeLike();
                         //时间显示
-                        uploadTime.setText(updatedate);
+                        SimpleDateFormat format;
+                        format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.CHINA);
+                        format.setTimeZone(TimeZone.getTimeZone("GMT00:00"));
+                        Date result_date = null;
+                        try {
+                            result_date = format.parse(updatedate);
+                        } catch (ParseException e) {
+                            //TODO：时间获取错误
+                            e.printStackTrace();
+                        }
+                        format.setTimeZone(TimeZone.getDefault());
+                        String time = format.format(result_date);
+                        uploadTime.setText(time);
                     } else {
                         //数据库存储错误
                         throw new Exception();
@@ -614,7 +631,19 @@ public class ViewPictureActivity extends GeneralActivity implements ScrollViewLi
                 likeNumber = returnmap.get("likenumber");
                 changeLike();
                 //时间显示
-                uploadTime.setText(returnmap.get("updatetime"));
+                SimpleDateFormat format;
+                format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.CHINA);
+                format.setTimeZone(TimeZone.getTimeZone("GMT00:00"));
+                Date result_date = null;
+                try {
+                    result_date = format.parse(returnmap.get("updatetime"));
+                } catch (ParseException e) {
+                    //TODO：时间获取错误
+                    e.printStackTrace();
+                }
+                format.setTimeZone(TimeZone.getDefault());
+                String time = format.format(result_date);
+                uploadTime.setText(time);
                 String _tagnum = returnmap.get("tagnum");
                 int tagnum = Integer.parseInt(_tagnum);
                 for (int i = 0; i < tagnum; i++) {
