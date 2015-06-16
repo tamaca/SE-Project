@@ -380,7 +380,7 @@ public class DB extends SQLiteOpenHelper {
     //TODO:说明书 删除了tagupdate tagimageselect
     public Cursor tagselect(String imageid) {
         SQLiteDatabase db = this.getWritableDatabase();
-        Cursor cursor = db.rawQuery("select * from M_TAG where M_TAG_IMAGEID='" + imageid.trim() + "'" +" order by M_TAG_ID ASC", null);
+        Cursor cursor = db.rawQuery("select * from M_TAG where M_TAG_IMAGEID='" + imageid.trim() + "'" + " order by M_TAG_ID ASC", null);
         return cursor;
     }
     public long taginsert(String tagid, String tagname, String imageid) {
@@ -400,12 +400,12 @@ public class DB extends SQLiteOpenHelper {
         db.delete(M_TAG, where, whereValue);
     }
     //lobbyimage
-   /* public Cursor lobbyimageselect() {
-        SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db
-                .query(M_LOBBYIMAGE, null, null, null, null, null, null);
-        return cursor;
-    }*/
+   public Cursor lobbyimageselect() {
+       SQLiteDatabase db = this.getWritableDatabase();
+       Cursor cursor = db.rawQuery("select * from M_LOBBYIMAGE order by M_LOBBYIMAGE_RANK ASC", null);
+       return cursor;
+    }
+    /*
     public Cursor lobbyimageselectpage(int page) {
         String min = String.valueOf(8 * (page) + 1);
         String max = String.valueOf(8 * (page) + 8);
@@ -413,7 +413,7 @@ public class DB extends SQLiteOpenHelper {
         Cursor cursor = db.rawQuery("select * from M_LOBBYIMAGE where M_LOBBYIMAGE_RANK>='" + min.trim() + "'" + "and M_LOBBYIMAGE_RANK<='" + max.trim() + "'"+" order by M_LOBBYIMAGE_RANK ASC", null);
         return cursor;
     }
-
+*/
     //TODO:设计说明书 加入了checklobbyimage
     public boolean checklobbyimage(String rank, String imageid) {
         SQLiteDatabase db = this.getWritableDatabase();

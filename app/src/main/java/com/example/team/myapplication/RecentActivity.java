@@ -119,6 +119,7 @@ public class RecentActivity extends GeneralActivity implements ScrollViewListene
             }
             refreshRecentItems();
             scrollContent.postInvalidate();
+            end=true;
             //  page++;
 
         }
