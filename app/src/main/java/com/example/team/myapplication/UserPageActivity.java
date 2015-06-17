@@ -249,6 +249,7 @@ public class UserPageActivity extends GeneralActivity implements ScrollViewListe
         } else {
             Toast.makeText(getApplicationContext(), "Picture is not Taken", Toast.LENGTH_SHORT).show();
         }
+        LoginState.photo=false;
     }
 
 

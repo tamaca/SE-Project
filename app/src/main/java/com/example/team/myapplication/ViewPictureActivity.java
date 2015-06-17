@@ -84,7 +84,6 @@ public class ViewPictureActivity extends GeneralActivity implements ScrollViewLi
     private GetOrigin getOrigin = null;
 
     @Override
-
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setTitle("查看图片");
@@ -391,6 +390,7 @@ public class ViewPictureActivity extends GeneralActivity implements ScrollViewLi
                 if (i == j) {
                     i++;
                 } else {
+                    tags.get(i).setTagid(tags.get(j).getTagid());
                     tags.get(i).tagText.setText(tags.get(j).tagText.getText().toString());
                     int y = tags.get(j).currentState;
                     tags.get(j).changeState(tags.get(i).currentState);
@@ -401,7 +401,12 @@ public class ViewPictureActivity extends GeneralActivity implements ScrollViewLi
             j++;
         }
     }
-
+    @Override
+    public void onResume()
+    {
+        super.onResume();
+        LoginState.zoom=false;
+    }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -543,6 +548,7 @@ public class ViewPictureActivity extends GeneralActivity implements ScrollViewLi
         Intent intent = new Intent(Intent.ACTION_VIEW);
         File file = new File(path);
         intent.setDataAndType(Uri.fromFile(file), "image/*");
+        LoginState.zoom = true;
         startActivity(intent);
     }
 
@@ -576,6 +582,7 @@ public class ViewPictureActivity extends GeneralActivity implements ScrollViewLi
                 });
                 builder.create().show();
             } else {
+                getOrigin = new GetOrigin(this);
                 getOrigin.execute();
             }
         } else {

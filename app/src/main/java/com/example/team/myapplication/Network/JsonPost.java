@@ -331,7 +331,11 @@ public class JsonPost {
                 //TODO:网络通信错误
             } else {
                 String status = jsonObject.getString("status");
-                if (status.equals("Email_not_match")) {
+                if(status.equals("normal"))
+                {
+
+                }
+                else if (status.equals("Email_not_match")) {
                     throw new MyException.emailNotMatchException();
                 }
                 else if(status.equals("old_password_not_match"))
