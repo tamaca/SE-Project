@@ -67,7 +67,7 @@ public class JsonPost {
         Post post = new Post(map);
         returnjsonObject = post.PostToServer();
         if (type.equals("register")) {
-            post.PostExecute(returnjsonObject);
+            post.PostExecuteRegister(returnjsonObject);
         } else if (type.equals("pwdchange")) {
             post.PostExecuteChangePassword(returnjsonObject);
         } else if (type.equals("imageinfo")) {
@@ -79,7 +79,7 @@ public class JsonPost {
         } else if (type.equals("tagdelete")) {
             post.PostExecute(returnjsonObject);
         } else {
-            throw new packageException();
+            throw new MyException.packageException();
         }
     }
 
@@ -233,7 +233,7 @@ public class JsonPost {
                 nameValuePair.add(new BasicNameValuePair("jsonString", jsonObject
                         .toString()));
             } catch (Exception e) {
-                throw new packageException();
+                throw new MyException.packageException();
             }
             try {
                 CloseableHttpResponse response;
@@ -256,21 +256,25 @@ public class JsonPost {
                 client.close();
                 return jsonObject1;
             } catch (Exception e) {
-                throw new postException();
+                throw new MyException.postException();
             }
         }
 
         protected void PostExecuteLogin(JSONObject jsonObject) throws Exception {
             if (jsonObject == null) {
-                throw new nullException();
+                throw new MyException.nullException();
                 //TODO:网络通信错误
             } else {
                 String status = jsonObject.getString("status");
                 if (status.equals("normal")) {
                     String _username = jsonObject.getString("username");
                     dbsaveuser(_username, this.jsonObject.getString("password"));
-                } else {
-                    throw new executeException();
+                } else if(status.equals("password_error")) {
+                    throw new MyException.passwordWrongException();
+                }
+                else
+                {
+                    throw new MyException.executeException();
                 }
             }
         }
@@ -307,7 +311,7 @@ public class JsonPost {
 
         protected void PostExecuteImageInformation(JSONObject jsonObject) throws Exception {
             if (jsonObject == null) {
-                throw new nullException();
+                throw new MyException.nullException();
                 //TODO:网络通信错误
             } else {
                 String status = jsonObject.getString("status");
@@ -316,34 +320,37 @@ public class JsonPost {
                     returnmap.putAll(getImageInformation(jsonObject));
                     returnmap.putAll(getTag(jsonObject));
                 } else {
-                    throw new executeException();
+                    throw new MyException.executeException();
                 }
             }
         }
 
         protected void PostExecuteChangePassword(JSONObject jsonObject) throws Exception {
             if (jsonObject == null) {
-                throw new nullException();
+                throw new MyException.nullException();
                 //TODO:网络通信错误
             } else {
                 String status = jsonObject.getString("status");
-                if (status.equals("normal")) {
-                    //  String email=jsonObject.getString("email");
-                    // String oldpassword=jsonObject.getString("oldpassword");
-                    //String newpassword=jsonObject.getString("newpassword");
-                        /*  if(db.checklastuserpassword())//有可能出错
-                          {
-                              db.lastuserupdatepassword(map.get("password"));
-                          }*/
-                } else {
-                    throw new executeException();
+                if (status.equals("Email_not_match")) {
+                    throw new MyException.emailNotMatchException();
+                }
+                else if(status.equals("old_password_not_match"))
+                {
+                    throw new MyException.oldPasswordNotMatchException();
+                }
+                else if(status.equals("password_invalid"))
+                {
+                    throw new MyException.passwordInvalidException();
+                }
+                else {
+                    throw new MyException.executeException();
                 }
             }
         }
 
         protected void PostExecuteRelation(JSONObject jsonObject) throws Exception {
             if (jsonObject == null) {
-                throw new nullException();
+                throw new MyException.nullException();
                 //TODO:网络通信错误
             } else {
                 String status = jsonObject.getString("status");
@@ -354,14 +361,14 @@ public class JsonPost {
                     returnmap.put("concern", _concern);
                     returnmap.put("blacklist", _blacklist);
                 } else {
-                    throw new executeException();
+                    throw new MyException.executeException();
                 }
             }
         }
 
         protected void PostExecuteIODRelation(JSONObject jsonObject) throws Exception {
             if (jsonObject == null) {
-                throw new nullException();
+                throw new MyException.nullException();
                 //TODO:网络通信错误
             } else {
                 String status = jsonObject.getString("status");
@@ -370,14 +377,14 @@ public class JsonPost {
                     returnmap = new HashMap<String, String>();
                     returnmap.put("picturecount", picturecount);
                 } else {
-                    throw new executeException();
+                    throw new MyException.executeException();
                 }
             }
         }
 
         protected void PostExecuteSearchUser(JSONObject jsonObject) throws Exception {
             if (jsonObject == null) {
-                throw new nullException();
+                throw new MyException.nullException();
                 //TODO:网络通信错误
             } else {
                 returnmap = new HashMap<String, String>();
@@ -394,7 +401,7 @@ public class JsonPost {
                         throw new MyException.zeroException();
                     }
                 } else {
-                    throw new executeException();
+                    throw new MyException.executeException();
                 }
                 for (int i = 0; i < count; i++) {
                     returnmap.put("name" + i, jsonObject.getString("target_name" + i));
@@ -404,7 +411,7 @@ public class JsonPost {
 
         protected void PostExecuteSearchTag(JSONObject jsonObject) throws Exception {
             if (jsonObject == null) {
-                throw new nullException();
+                throw new MyException.nullException();
                 //TODO:网络通信错误
             } else {
                 String status = jsonObject.getString("status");
@@ -447,33 +454,34 @@ public class JsonPost {
                 }
             }
         }
+        protected void PostExecuteRegister(JSONObject jsonObject) throws Exception {
+            if (jsonObject == null) {
+                throw new MyException.nullException();
+                //TODO:网络通信错误
+            }
+            String status = jsonObject.getString("status");
+            if(status.equals("normal"))
+            {
 
+            }
+            else if (status.equals("Email_invaild")) {
+                throw new MyException.emailInvalidException();
+            }
+            else
+            {
+                throw new MyException.executeException();
+            }
+        }
         protected void PostExecute(JSONObject jsonObject) throws Exception {
             if (jsonObject == null) {
-                throw new nullException();
+                throw new MyException.nullException();
                 //TODO:网络通信错误
             }
             String status = jsonObject.getString("status");
             if (!status.equals("normal")) {
-                throw new executeException();
+                throw new MyException.executeException();
             }
         }
     }
 
-    //异常类
-    class packageException extends Exception {
-        public String name = "package";
-    }
-
-    class postException extends Exception {
-        public String name = "post";
-    }
-
-    class nullException extends Exception {
-        public String name = "null";
-    }
-
-    class executeException extends Exception {
-        public String name = "execute";
-    }
 }

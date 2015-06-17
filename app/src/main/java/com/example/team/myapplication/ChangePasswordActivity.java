@@ -14,6 +14,7 @@ import android.widget.Toast;
 import com.example.team.myapplication.Database.DB;
 import com.example.team.myapplication.Network.JsonPost;
 import com.example.team.myapplication.util.GeneralActivity;
+import com.example.team.myapplication.util.MyException;
 
 import java.util.HashMap;
 
@@ -21,7 +22,12 @@ import java.util.HashMap;
 public class ChangePasswordActivity extends GeneralActivity {
     private ProgressBar progressBar;
     private ScrollView scrollView;
-    private DB db=new DB(this);
+    private DB db = new DB(this);
+    public EditText text1;
+    public EditText text2;
+    public EditText text3;
+    public EditText text4;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -29,7 +35,10 @@ public class ChangePasswordActivity extends GeneralActivity {
         getActionBar().setDisplayHomeAsUpEnabled(true);
         progressBar = (ProgressBar) findViewById(R.id.progressBar2);
         scrollView = (ScrollView) findViewById(R.id.scrollView2);
-
+        text1 = (EditText) findViewById(R.id.editText2);
+        text2 = (EditText) findViewById(R.id.editText3);
+        text3 = (EditText) findViewById(R.id.editText4);
+        text4 = (EditText) findViewById(R.id.editText5);
     }
 
     @Override
@@ -79,10 +88,6 @@ public class ChangePasswordActivity extends GeneralActivity {
         String oldPassword;
         String newPassword;
         String newPassword2;
-        EditText text1 = (EditText) findViewById(R.id.editText2);
-        EditText text2 = (EditText) findViewById(R.id.editText3);
-        EditText text3 = (EditText) findViewById(R.id.editText4);
-        EditText text4 = (EditText) findViewById(R.id.editText5);
         oldPassword = text1.getText().toString();
         newPassword = text2.getText().toString();
         newPassword2 = text3.getText().toString();
@@ -118,7 +123,7 @@ public class ChangePasswordActivity extends GeneralActivity {
         }
         if (isPasswordValid(newPassword)) {
             showProgress(true);
-            ChangePasswordProgress changePasswordProgress = new ChangePasswordProgress(oldPassword,newPassword,email);
+            ChangePasswordProgress changePasswordProgress = new ChangePasswordProgress(oldPassword, newPassword, email);
             changePasswordProgress.execute((Void) null);
         } else {
             text2.setError(getString(R.string.error_invalid_password));
@@ -126,42 +131,55 @@ public class ChangePasswordActivity extends GeneralActivity {
 
     }
 
-    class ChangePasswordProgress extends AsyncTask<Void, Void, Boolean> {
-        private String username=LoginState.username;
-        private String oldPassword ;
-        private String newPassword ;
+    class ChangePasswordProgress extends AsyncTask<Void, Void, Integer> {
+        private String username = LoginState.username;
+        private String oldPassword;
+        private String newPassword;
         private String email;
-        public ChangePasswordProgress(String oldPassword,String newPassword,String email) {
+
+        public ChangePasswordProgress(String oldPassword, String newPassword, String email) {
             this.oldPassword = oldPassword;
-            this.newPassword=newPassword;
-            this.email=email;
+            this.newPassword = newPassword;
+            this.email = email;
         }
 
         @Override
-        protected Boolean doInBackground(Void... voids) {
+        protected Integer doInBackground(Void... voids) {
+            Integer rettype = 0;
             try {
-                String url = "http://192.168.253.1/password_change/"+LoginState.username+"/";
+                String url = "http://192.168.253.1/password_change/" + LoginState.username + "/";
                 HashMap<String, String> map = new HashMap<String, String>();
-                map.put("email",email);
-                map.put("old_password",oldPassword);
+                map.put("email", email);
+                map.put("old_password", oldPassword);
                 map.put("new_password", newPassword);
-                JsonPost post = new JsonPost(map,url,"pwdchange",db);
+                JsonPost post = new JsonPost(map, url, "pwdchange", db);
                 Thread.sleep(1000);
+            } catch (MyException.emailNotMatchException e) {
+                rettype = 1;
+            } catch (MyException.oldPasswordNotMatchException e) {
+                rettype = 2;
+            } catch (MyException.passwordInvalidException e) {
+                rettype = 3;
             } catch (Exception e) {
-                return false;
+                rettype = 4;
             }
-            return true;
+            return rettype;
         }
 
         @Override
-        protected void onPostExecute(final Boolean success) {
+        protected void onPostExecute(final Integer rettype) {
             showProgress(false);
-            if (success) {
+            if (0 == rettype) {
                 Toast.makeText(getApplicationContext(), "修改成功!", Toast.LENGTH_SHORT).show();
                 finish();
+            } else if (1 == rettype) {
+                text4.setError("邮箱不匹配");
+            } else if (2 == rettype) {
+                text1.setError("旧密码不匹配");
+            } else if (3 == rettype) {
+                text2.setError("新密码格式错误");//TODO:%能当做密码 BUG
             } else {
                 Toast.makeText(getApplicationContext(), "修改失败", Toast.LENGTH_SHORT).show();
-
             }
         }
     }

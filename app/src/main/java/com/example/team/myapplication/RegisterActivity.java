@@ -21,6 +21,7 @@ import com.example.team.myapplication.Database.DB;
 import com.example.team.myapplication.Network.JsonPost;
 import com.example.team.myapplication.util.CheckValid;
 import com.example.team.myapplication.util.GeneralActivity;
+import com.example.team.myapplication.util.MyException;
 import com.example.team.myapplication.util.MyToast;
 
 import java.util.HashMap;
@@ -228,7 +229,7 @@ public class RegisterActivity extends GeneralActivity {
 
     }
 
-    public class UserRegisterTask extends AsyncTask<Void, Void, Boolean> {
+    public class UserRegisterTask extends AsyncTask<Void, Void, Integer> {
         private final String mUserName;
         private final String mEmail;
         private final String mPassword;
@@ -240,8 +241,8 @@ public class RegisterActivity extends GeneralActivity {
         }
 
         @Override
-        protected Boolean doInBackground(Void... params) {
-
+        protected Integer doInBackground(Void... params) {
+            Integer rettype = 0;
 
             try {
                 String username = mUserName;
@@ -259,21 +260,21 @@ public class RegisterActivity extends GeneralActivity {
                 // map.put("password", encrptPassword);
                 //  map.put("username", encrptname);
                 new JsonPost(map, url, "register", db);
-                Thread.sleep(3000);
+                Thread.sleep(1000);
+            } catch (MyException.emailInvalidException e) {
+                rettype = 1;
             } catch (Exception e) {
-
-                return false;
+                rettype = 2;
             }
-
-            return true;
+            return rettype;
         }
 
         @Override
-        protected void onPostExecute(final Boolean success) {
+        protected void onPostExecute(final Integer rettype) {
             mAuthTask = null;
             showProgress(false);
 
-            if (success) {
+            if (0 == rettype) {
                 Toast.makeText(getApplicationContext(), "注册成功", Toast.LENGTH_LONG).show();
                 Intent intent = getIntent();
 
@@ -284,6 +285,9 @@ public class RegisterActivity extends GeneralActivity {
                 RegisterActivity.this.setResult(RESULT_OK, intent);
                 RegisterActivity.this.finish();
 
+            } else if (1 == rettype) {
+                eMail.setError("邮箱格式错误");
+                myToast.show(getString(R.string.error_invalid_email));
             } else {
                 myToast.show(getString(R.string.toast_register_failed));
             }

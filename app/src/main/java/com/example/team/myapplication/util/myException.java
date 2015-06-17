@@ -19,17 +19,25 @@ public class MyException {
     public static class zeroException extends Exception {
         public String name = "countzero";
     }
-
-    public static class userNotExistException extends Exception {
-        public String name = "usernotexist";
+    public static class packageException extends Exception {
+        public String name = "package";
+    }
+    public static class postException extends Exception {
+        public String name = "post";
+    }
+    public static class emailInvalidException extends Exception {
+        public String name = "emailinvalid";
+    }
+    public static class emailNotMatchException extends Exception {
+        public String name = "emailnotmatch";
     }
     public static class passwordWrongException extends Exception {
         public String name = "passwordwrong";
     }
-    public static class usernameAlreadyExistException extends Exception {
-        public String name = "usernamealreadyexist";
+    public static class oldPasswordNotMatchException extends Exception {
+        public String name = "oldpasswordnotmatch";
     }
-    public static class emailAlreadyExistException extends Exception {
-        public String name = "emailalreadyexist";
+    public static class passwordInvalidException extends Exception {
+        public String name = "passwordinvalid";
     }
 }

@@ -33,6 +33,7 @@ import com.example.team.myapplication.Database.DB;
 import com.example.team.myapplication.Network.JsonPost;
 import com.example.team.myapplication.util.CheckValid;
 import com.example.team.myapplication.util.GeneralActivity;
+import com.example.team.myapplication.util.MyException;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -368,7 +369,7 @@ public class LoginActivity extends GeneralActivity implements LoaderCallbacks<Cu
      * Represents an asynchronous login/registration task used to authenticate
      * the user.
      */
-    public class UserLoginTask extends AsyncTask<Void, Void, Boolean> {
+    public class UserLoginTask extends AsyncTask<Void, Void, Integer> {
 
         private final String mUserName;
         private final String mPassword;
@@ -382,9 +383,8 @@ public class LoginActivity extends GeneralActivity implements LoaderCallbacks<Cu
 
 
         @Override
-        protected Boolean doInBackground(Void... params) {
-
-
+        protected Integer doInBackground(Void... params) {
+            Integer rettype=0;
             try {
                 String encryptuserName = "";
                 String encryptPassword = "";
@@ -402,7 +402,6 @@ public class LoginActivity extends GeneralActivity implements LoaderCallbacks<Cu
                         throw new Exception("参数错误");
                     } catch (Exception e) {
                         e.printStackTrace();
-
                     }
                 }
                 String url = "http://192.168.253.1/login/";
@@ -413,32 +412,32 @@ public class LoginActivity extends GeneralActivity implements LoaderCallbacks<Cu
                 map.put("password", mPassword);
                 JsonPost post = new JsonPost(map, url, autoLogin.isChecked(), rememPassword.isChecked(), db);
                 Thread.sleep(500);
-            } catch (Exception e) {
-                return false;
+            }catch (MyException.passwordWrongException e)
+            {
+                rettype=1;
             }
-
-            for (String credential : DUMMY_CREDENTIALS) {
-                String[] pieces = credential.split(":");
-                if (pieces[0].equals(mUserName)) {
-                    // Account exists, return true if the password matches.
-                    return pieces[1].equals(mPassword);
-                }
+            catch (Exception e) {
+                 rettype=2;
             }
-            return true;
+            return rettype;
         }
 
         @Override
-        protected void onPostExecute(final Boolean success) {
+        protected void onPostExecute(final Integer rettype) {
             mAuthTask = null;
             showProgress(false);
 
-            if (success) {
-                Toast.makeText(getApplicationContext(), "Login successfully!", Toast.LENGTH_SHORT).show();
+            if (0==rettype) {
+                Toast.makeText(getApplicationContext(), "登录成功!", Toast.LENGTH_SHORT).show();
                 LoginState.setLogined(true, mUserName);
                 finish();
-            } else {
+            } else if(1==rettype) {
                 mPasswordView.setError(getString(R.string.error_incorrect_password));
                 mPasswordView.requestFocus();
+            }
+            else
+            {
+                Toast.makeText(getApplicationContext(), "未知错误!", Toast.LENGTH_SHORT).show();
             }
         }
 
